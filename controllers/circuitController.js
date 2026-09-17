@@ -1,0 +1,326 @@
+'use strict';
+
+const prisma = require('../utils/prisma');
+const logger = require('../utils/logger');
+
+
+
+// ── Shared include block ──────────────────────────────────────────────────────
+const CIRCUIT_INCLUDE = {
+    vendor: { select: { id: true, name: true, status: true, emails: true } },
+    client: { select: { id: true, name: true, status: true, emails: true } },
+    vendorCircuits: { include: { vendor: { select: { id: true, name: true, status: true, emails: true } } } },
+};
+
+// ── Shared serialiser ─────────────────────────────────────────────────────────
+const serialize = (circuit) => ({
+    id:                   circuit.id,
+    type:                 circuit.type,
+    customerCircuitId:    circuit.customerCircuitId,
+    supplierCircuitId:    circuit.supplierCircuitId,
+    poNumber:             circuit.poNumber,
+    serviceDescription:   circuit.serviceDescription,
+    contractTermMonths:   circuit.contractTermMonths,
+    contractType:         circuit.contractType,
+    mrc:                  circuit.mrc,
+    supplierPoNumber:     circuit.supplierPoNumber,
+    supplierServiceDescription: circuit.supplierServiceDescription,
+    supplierContractTermMonths: circuit.supplierContractTermMonths,
+    supplierContractType: circuit.supplierContractType,
+    supplierMrc:          circuit.supplierMrc,
+    nrc:                  circuit.nrc,
+    supplierNrc:          circuit.supplierNrc,
+    clientId:             circuit.clientId,
+    vendorId:             circuit.vendorId,
+    vendor:               circuit.vendor,
+    client:               circuit.client,
+    isMultiVendor:        circuit.isMultiVendor,
+    vendorCircuits:       circuit.vendorCircuits,
+});
+
+// ── GET /api/circuits ─────────────────────────────────────────────────────────
+const getCircuits = async (req, res, next) => {
+    try {
+        const { vendorId, clientId } = req.query;
+        let whereClause = {};
+        if (vendorId) whereClause.vendorId = vendorId;
+        if (clientId) whereClause.clientId = clientId;
+
+        logger.debug('🐞 🔌 [CIRCUIT] 📝 Request received: getCircuits');
+        const circuits = await prisma.circuit.findMany({
+            where: whereClause,
+            include: CIRCUIT_INCLUDE,
+            orderBy: { createdAt: 'desc' },
+        });
+        logger.info(`🔌 [CIRCUIT] ✅ Successfully fetched ${circuits.length} circuits`);
+        res.status(200).json({ success: true, data: circuits.map(serialize) });
+    } catch (error) {
+        logger.error(`🚨 🔌 [CIRCUIT] ❌ Error fetching circuits: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+// ── POST /api/circuits ────────────────────────────────────────────────────────
+const createCircuit = async (req, res, next) => {
+    try {
+        logger.debug('🐞 🔌 [CIRCUIT] 📝 Request received: createCircuit');
+
+        const {
+            customerCircuitId: reqCustomerCircuitId,
+            supplierCircuitId: reqSupplierCircuitId,
+            isTemporary,
+            type = 'UNPROTECTED',
+            vendorId,
+            clientId,
+            // optional detail fields
+            poNumber,
+            serviceDescription,
+            contractTermMonths,
+            contractType,
+            mrc,
+            supplierPoNumber,
+            supplierServiceDescription,
+            supplierContractTermMonths,
+            supplierContractType,
+            billingStartDate,
+            supplierMrc,
+            nrc,
+            supplierNrc,
+            isMultiVendor,
+            vendorCircuits,
+        } = req.body;
+
+        if (!reqCustomerCircuitId || !reqCustomerCircuitId.trim()) {
+            return res.status(400).json({ success: false, message: 'customerCircuitId is required.' });
+        }
+
+        if (isMultiVendor && Array.isArray(vendorCircuits) && vendorCircuits.length > 4) {
+            return res.status(400).json({
+                success: false,
+                message: 'A Multi-Vendor circuit can have at most 4 vendors.'
+            });
+        }
+
+        let customerCircuitId = reqCustomerCircuitId.trim();
+        let supplierCircuitId = reqSupplierCircuitId?.trim();
+
+        if (isTemporary) {
+            customerCircuitId = `temp-${customerCircuitId}`;
+            if (supplierCircuitId) {
+                supplierCircuitId = `temp-${supplierCircuitId}`;
+            }
+        }
+
+
+        // supplierCircuitId must be unique — auto-generate if not provided
+        const resolvedSupplierCircuitId = supplierCircuitId 
+            || (isTemporary ? `temp-SUP-${reqCustomerCircuitId.trim()}-${Date.now()}` : `SUP-${reqCustomerCircuitId.trim()}-${Date.now()}`);
+
+        // Check for duplicate customerCircuitId
+        const existing = await prisma.circuit.findUnique({
+            where: { customerCircuitId },
+        });
+        if (existing) {
+            return res.status(409).json({
+                success: false,
+                message: `Circuit with ID "${customerCircuitId}" already exists.`,
+            });
+        }
+
+        const circuit = await prisma.circuit.create({
+            data: {
+                customerCircuitId:          customerCircuitId,
+                supplierCircuitId:          resolvedSupplierCircuitId,
+                type:                       ['PROTECTED', 'UNPROTECTED'].includes(type) ? type : 'UNPROTECTED',
+                vendorId:                   vendorId   || null,
+                clientId:                   clientId   || null,
+                poNumber:                   poNumber   || null,
+                serviceDescription:         serviceDescription || null,
+                contractTermMonths:         contractTermMonths ? Number(contractTermMonths) : null,
+                contractType:               contractType || null,
+                mrc:                        mrc != null ? Number(mrc) : 1000,
+                supplierPoNumber:           supplierPoNumber || null,
+                supplierServiceDescription: supplierServiceDescription || null,
+                supplierContractTermMonths: supplierContractTermMonths ? Number(supplierContractTermMonths) : null,
+                supplierContractType:       supplierContractType || null,
+                billingStartDate:           billingStartDate || null,
+                supplierMrc:                supplierMrc != null ? Number(supplierMrc) : 800,
+                nrc:                        nrc != null ? Number(nrc) : null,
+                supplierNrc:                supplierNrc != null ? Number(supplierNrc) : null,
+                isMultiVendor:              Boolean(isMultiVendor),
+                vendorCircuits: isMultiVendor && Array.isArray(vendorCircuits) ? {
+                    create: vendorCircuits.map(vc => ({
+                        vendorId: vc.vendorId || null,
+                        supplierCircuitId: vc.supplierCircuitId || `SUP-${customerCircuitId.trim()}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                        supplierPoNumber: vc.supplierPoNumber || null,
+                        supplierServiceDescription: vc.supplierServiceDescription || null,
+                        supplierContractTermMonths: vc.supplierContractTermMonths ? Number(vc.supplierContractTermMonths) : null,
+                        supplierContractType: vc.supplierContractType || null,
+                        billingStartDate: vc.billingStartDate || null,
+                        supplierMrc: vc.supplierMrc != null ? Number(vc.supplierMrc) : 800,
+                        supplierNrc: vc.supplierNrc != null ? Number(vc.supplierNrc) : null,
+                    }))
+                } : undefined,
+            },
+            include: CIRCUIT_INCLUDE,
+        });
+
+        logger.info(`🔌 [CIRCUIT] ✅ Circuit created: ${circuit.customerCircuitId} (id: ${circuit.id})`);
+        res.status(201).json({ success: true, data: serialize(circuit) });
+    } catch (error) {
+        logger.error(`🚨 🔌 [CIRCUIT] ❌ Error creating circuit: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+// ── PUT /api/circuits/:id ─────────────────────────────────────────────────────
+const updateCircuit = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        logger.debug(`🐞 🔌 [CIRCUIT] 📝 Request received: updateCircuit (id: ${id})`);
+
+        const existing = await prisma.circuit.findUnique({ where: { id } });
+        if (!existing) {
+            return res.status(404).json({ success: false, message: `Circuit not found: ${id}` });
+        }
+
+        const {
+            customerCircuitId,
+            supplierCircuitId,
+            type,
+            vendorId,
+            clientId,
+            poNumber,
+            serviceDescription,
+            contractTermMonths,
+            contractType,
+            mrc,
+            supplierPoNumber,
+            supplierServiceDescription,
+            supplierContractTermMonths,
+            supplierContractType,
+            billingStartDate,
+            supplierMrc,
+            nrc,
+            supplierNrc,
+            isMultiVendor,
+            vendorCircuits,
+        } = req.body;
+
+        if (isMultiVendor && Array.isArray(vendorCircuits) && vendorCircuits.length > 4) {
+            return res.status(400).json({
+                success: false,
+                message: 'A Multi-Vendor circuit can have at most 4 vendors.'
+            });
+        }
+
+        // Check duplicate customerCircuitId only if it's changing
+        if (customerCircuitId && customerCircuitId.trim() !== existing.customerCircuitId) {
+            const conflict = await prisma.circuit.findUnique({
+                where: { customerCircuitId: customerCircuitId.trim() },
+            });
+            if (conflict) {
+                return res.status(409).json({
+                    success: false,
+                    message: `Circuit ID "${customerCircuitId.trim()}" is already in use.`,
+                });
+            }
+        }
+
+        const updated = await prisma.circuit.update({
+            where: { id },
+            data: {
+                ...(customerCircuitId    != null && { customerCircuitId:          customerCircuitId.trim() }),
+                ...(supplierCircuitId    != null && { supplierCircuitId:          supplierCircuitId.trim() }),
+                ...(type                != null && { type:                        type }),
+                ...(vendorId            !== undefined && { vendorId:              vendorId   || null }),
+                ...(clientId            !== undefined && { clientId:              clientId   || null }),
+                ...(poNumber            !== undefined && { poNumber:              poNumber   || null }),
+                ...(serviceDescription  !== undefined && { serviceDescription:    serviceDescription || null }),
+                ...(contractTermMonths  !== undefined && { contractTermMonths:    contractTermMonths != null ? Number(contractTermMonths) : null }),
+                ...(contractType        !== undefined && { contractType:          contractType || null }),
+                ...(mrc                 !== undefined && { mrc:                   mrc != null ? Number(mrc) : existing.mrc }),
+                ...(supplierPoNumber    !== undefined && { supplierPoNumber:      supplierPoNumber || null }),
+                ...(supplierServiceDescription !== undefined && { supplierServiceDescription: supplierServiceDescription || null }),
+                ...(supplierContractTermMonths !== undefined && { supplierContractTermMonths: supplierContractTermMonths != null ? Number(supplierContractTermMonths) : null }),
+                ...(supplierContractType !== undefined && { supplierContractType: supplierContractType || null }),
+                ...(billingStartDate    !== undefined && { billingStartDate:      billingStartDate || null }),
+                ...(supplierMrc         !== undefined && { supplierMrc:           supplierMrc != null ? Number(supplierMrc) : existing.supplierMrc }),
+                ...(nrc                 !== undefined && { nrc:                   nrc != null ? Number(nrc) : existing.nrc }),
+                ...(supplierNrc         !== undefined && { supplierNrc:           supplierNrc != null ? Number(supplierNrc) : existing.supplierNrc }),
+                ...(isMultiVendor       !== undefined && { isMultiVendor:         Boolean(isMultiVendor) }),
+            },
+            include: CIRCUIT_INCLUDE,
+        });
+
+        if (isMultiVendor && Array.isArray(vendorCircuits)) {
+            // Recreate all vendor circuits for simplicity
+            await prisma.vendorCircuit.deleteMany({ where: { circuitId: id } });
+            if (vendorCircuits.length > 0) {
+                await prisma.vendorCircuit.createMany({
+                    data: vendorCircuits.map(vc => ({
+                        circuitId: id,
+                        vendorId: vc.vendorId || null,
+                        supplierCircuitId: vc.supplierCircuitId || `SUP-${updated.customerCircuitId.trim()}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                        supplierPoNumber: vc.supplierPoNumber || null,
+                        supplierServiceDescription: vc.supplierServiceDescription || null,
+                        supplierContractTermMonths: vc.supplierContractTermMonths ? Number(vc.supplierContractTermMonths) : null,
+                        supplierContractType: vc.supplierContractType || null,
+                        billingStartDate: vc.billingStartDate || null,
+                        supplierMrc: vc.supplierMrc != null ? Number(vc.supplierMrc) : 800,
+                        supplierNrc: vc.supplierNrc != null ? Number(vc.supplierNrc) : null,
+                    }))
+                });
+            }
+            // re-fetch updated with includes
+            const finalUpdated = await prisma.circuit.findUnique({ where: { id }, include: CIRCUIT_INCLUDE });
+            logger.info(`🔌 [CIRCUIT] ✅ Circuit updated: ${finalUpdated.customerCircuitId} (id: ${finalUpdated.id})`);
+            return res.status(200).json({ success: true, data: serialize(finalUpdated) });
+        }
+
+        logger.info(`🔌 [CIRCUIT] ✅ Circuit updated: ${updated.customerCircuitId} (id: ${updated.id})`);
+        res.status(200).json({ success: true, data: serialize(updated) });
+    } catch (error) {
+        logger.error(`🚨 🔌 [CIRCUIT] ❌ Error updating circuit: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+// ── DELETE /api/circuits/:id ──────────────────────────────────────────────────
+const deleteCircuit = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        logger.debug(`🐞 🔌 [CIRCUIT] 📝 Request received: deleteCircuit for id ${id}`);
+
+        const circuit = await prisma.circuit.findUnique({ where: { id } });
+        if (!circuit) {
+            return res.status(404).json({ success: false, message: 'Circuit not found' });
+        }
+
+        // 1. Delete associated CircuitSLAValue (if any)
+        await prisma.circuitSLAValue.deleteMany({ where: { circuitId: id } });
+
+        // 2. Delete associated SLAs and their cascaded rules and audit logs
+        const slas = await prisma.sla.findMany({ where: { circuitId: id }, select: { id: true } });
+        const slaIds = slas.map(s => s.id);
+        if (slaIds.length > 0) {
+            await prisma.slaRule.deleteMany({ where: { slaId: { in: slaIds } } });
+            await prisma.slaAuditLog.deleteMany({ where: { slaId: { in: slaIds } } });
+            await prisma.sla.deleteMany({ where: { id: { in: slaIds } } });
+        }
+
+        // 3. Delete associated VendorCircuits
+        await prisma.vendorCircuit.deleteMany({ where: { circuitId: id } });
+
+        // 4. Delete the circuit itself
+        await prisma.circuit.delete({ where: { id } });
+
+        logger.info(`🔌 [CIRCUIT] ✅ Circuit deleted: ${circuit.customerCircuitId} (id: ${circuit.id})`);
+        res.status(200).json({ success: true, message: `Circuit ${circuit.customerCircuitId} deleted successfully` });
+    } catch (error) {
+        logger.error(`🚨 🔌 [CIRCUIT] ❌ Error deleting circuit: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+module.exports = { getCircuits, createCircuit, updateCircuit, deleteCircuit };

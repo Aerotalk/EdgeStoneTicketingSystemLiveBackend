@@ -1,0 +1,302 @@
+const TicketModel = require('../models/ticket');
+const logger = require('../utils/logger');
+const prisma = require('../models/index');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getVendorEmailsForTicket
+// ─────────────────────────────────────────────────────────────────────────────
+const getVendorEmailsForTicket = async (ticketId, vendorId = null) => {
+    let ticket;
+    if (ticketId.startsWith('#')) {
+        const tickets = await TicketModel.findAllTickets();
+        ticket = tickets.find(t => t.ticketId === ticketId);
+    } else {
+        ticket = await TicketModel.findTicketById(ticketId);
+    }
+    if (!ticket) throw new Error(`Ticket ${ticketId} not found`);
+
+    const VendorModel = require('../models/vendor');
+
+    if (vendorId) {
+        const vendor = await VendorModel.findVendorById(vendorId);
+        if (vendor && vendor.emails && vendor.emails.length > 0) return vendor.emails;
+    }
+
+    let emails = [];
+    if (ticket.vendorId) {
+        const vendor = await VendorModel.findVendorById(ticket.vendorId);
+        if (vendor && vendor.emails) emails = vendor.emails;
+    } else if (ticket.circuitId) {
+        const circuit = await prisma.circuit.findFirst({
+            where: {
+                OR: [
+                    { customerCircuitId: ticket.circuitId },
+                    { supplierCircuitId: ticket.circuitId },
+                    { id: ticket.circuitId }
+                ]
+            },
+            include: { vendor: true, vendorCircuits: { include: { vendor: true } } }
+        });
+        if (circuit) {
+            if (vendorId && circuit.vendorCircuits) {
+                const vc = circuit.vendorCircuits.find(v => v.vendorId === vendorId);
+                if (vc && vc.vendor && vc.vendor.emails) return vc.vendor.emails;
+            }
+            if (circuit.vendor && circuit.vendor.emails) {
+                emails = circuit.vendor.emails;
+            } else if (circuit.vendorCircuits && circuit.vendorCircuits.length > 0 && circuit.vendorCircuits[0].vendor?.emails) {
+                emails = circuit.vendorCircuits[0].vendor.emails;
+            }
+        }
+    }
+    return emails;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// replyToVendor
+// Separated out to isolate vendor routing logic from the primary client ticketing
+// ─────────────────────────────────────────────────────────────────────────────
+const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
+    logger.info(`🎟️ [TICKET] 🔄 replyToVendor: Ticket ${ticketId} | Agent: ${agentName}`);
+
+    try {
+        const { message, to, cc, bcc, subject, htmlContent, attachments } = emailData;
+        logger.info(`🎟️ [TICKET] DEBUG emailData keys: ${Object.keys(emailData).join(', ')}`);
+        logger.info(`🎟️ [TICKET] DEBUG htmlContent exists? ${!!htmlContent}`);
+
+        // 1. Fetch the ticket
+        let ticket;
+        if (ticketId.startsWith('#')) {
+            const tickets = await TicketModel.findAllTickets();
+            ticket = tickets.find(t => t.ticketId === ticketId);
+        } else {
+            ticket = await TicketModel.findTicketById(ticketId);
+        }
+        if (!ticket) throw new Error(`Ticket ${ticketId} not found`);
+
+        let vendorContactEmails = [];
+        
+        if (to && Array.isArray(to) && to.length > 0) {
+            vendorContactEmails = to; // Use frontend provided explicit targets
+        } else {
+            // Determine vendor email dynamically using getVendorEmailsForTicket (handles vendorId, circuitId, multi-vendor)
+            try {
+                const resolvedEmails = await getVendorEmailsForTicket(ticket.id, emailData.vendorId);
+                if (resolvedEmails && resolvedEmails.length > 0) {
+                    vendorContactEmails = resolvedEmails;
+                }
+            } catch (resolveErr) {
+                logger.warn(`⚠️ [TICKET] getVendorEmailsForTicket resolution warning: ${resolveErr.message}`);
+            }
+
+            if (vendorContactEmails.length === 0 && process.env.DEFAULT_VENDOR_EMAIL) {
+                vendorContactEmails = [process.env.DEFAULT_VENDOR_EMAIL];
+            }
+
+            if (vendorContactEmails.length === 0) {
+                throw new Error(`No vendor email found for ticket ${ticket.ticketId}. Please make sure the assigned vendor has an email address, or set DEFAULT_VENDOR_EMAIL in .env.`);
+            }
+        }
+
+        logger.info(`🎟️ [TICKET] 📧 replyToVendor: Sending email to vendor emails: ${vendorContactEmails.join(', ')}`);
+
+        // CHG-017: Filter CC to protect client-side privacy when emailing vendors
+        const clientEmails = new Set();
+        if (ticket.email) clientEmails.add(ticket.email.toLowerCase().trim());
+        if (ticket.clientId) {
+            try {
+                const ClientModel = require('../models/client');
+                const client = await ClientModel.findClientById(ticket.clientId);
+                if (client && client.emails) {
+                    client.emails.forEach(e => clientEmails.add(e.toLowerCase().trim()));
+                }
+            } catch (err) {
+                logger.error(`Error loading client emails: ${err.message}`);
+            }
+        }
+        const commonPublicDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'edgestone.in'];
+        const clientDomains = Array.from(clientEmails)
+            .map(e => e.split('@')[1])
+            .filter(d => d && !commonPublicDomains.includes(d.toLowerCase()));
+
+        const isClientPerson = (email) => {
+            if (!email) return false;
+            const clean = email.toLowerCase().trim();
+            if (clientEmails.has(clean)) return true;
+            const domain = clean.split('@')[1];
+            if (domain && clientDomains.includes(domain)) return true;
+            return false;
+        };
+
+        vendorContactEmails = Array.from(new Set(vendorContactEmails.map(e => e && e.trim()).filter(Boolean)));
+        const toLowerSet = new Set(vendorContactEmails.map(e => e.toLowerCase()));
+
+        let visibleVendorCc = [];
+        let hiddenVendorBcc = Array.isArray(bcc) ? [...bcc] : [];
+
+        (cc || []).forEach(email => {
+            if (!email) return;
+            const clean = email.trim();
+            if (isClientPerson(clean)) {
+                // Client-side recipient MUST NOT be visible in vendor headers! Move to BCC!
+                if (!hiddenVendorBcc.includes(clean)) {
+                    hiddenVendorBcc.push(clean);
+                }
+                logger.info(`🔒 [VENDOR PRIVACY] Moved client-side recipient "${clean}" from CC to BCC to prevent exposure to vendor.`);
+            } else {
+                if (toLowerSet.has(clean.toLowerCase())) {
+                    return; // Skip if already present in TO
+                }
+                if (!visibleVendorCc.includes(clean)) {
+                    visibleVendorCc.push(clean);
+                }
+            }
+        });
+
+        // Ensure hiddenVendorBcc does not duplicate emails in visible CC
+        const ccLowerSet = new Set(visibleVendorCc.map(e => e.toLowerCase()));
+        hiddenVendorBcc = Array.from(new Set(hiddenVendorBcc.map(e => e && e.trim()).filter(Boolean)))
+            .filter(e => !ccLowerSet.has(e.toLowerCase()));
+
+        // 2. Create Reply Record natively mapped to the vendor category
+        const reply = await TicketModel.addReply(ticket.id, {
+            text: (message !== undefined && message !== null && message.trim() !== '') ? message : (htmlContent || ' '),
+            time: new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }),
+            date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+            author: agentName || 'Agent',
+            type: 'agent',
+            category: emailData.vendorId ? `vendor_${emailData.vendorId}` : 'vendor', // Explicitly marking this thread as vendor-side
+            to: vendorContactEmails,
+            cc: visibleVendorCc,
+            bcc: hiddenVendorBcc,
+            attachments: attachments || []
+        });
+
+        logger.info(`🎟️ [TICKET] ✅ Vendor Reply added to database for Ticket ${ticket.ticketId}`);
+
+        const emailService = require('./emailService');
+        
+        // 3.5 Find all message IDs in the vendor thread for RFC 5322 In-Reply-To and References chain
+        const isVendorOrMaintTicket = ticket.isMaintenance || ticket.ticketType === 'Vendor';
+        const vendorCategoryFilter = emailData.vendorId
+            ? { in: ['vendor', `vendor_${emailData.vendorId}`] }
+            : (isVendorOrMaintTicket ? undefined : { in: ['vendor'] });
+
+        const whereClause = {
+            ticketId: ticket.id,
+            messageId: { not: null }
+        };
+        if (vendorCategoryFilter) {
+            whereClause.OR = [
+                { category: vendorCategoryFilter },
+                { type: 'vendor' }
+            ];
+        }
+
+        const allVendorReplies = await prisma.reply.findMany({
+            where: whereClause,
+            orderBy: { createdAt: 'asc' }
+        });
+
+        // The parent message is the very last reply with a messageId, or ticket.messageId
+        const lastReply = allVendorReplies.length > 0 ? allVendorReplies[allVendorReplies.length - 1] : null;
+        const threadMessageId = (lastReply && lastReply.messageId) ? lastReply.messageId.trim() : (ticket.messageId ? ticket.messageId.trim() : null);
+
+        // Build RFC 5322 References chain:
+        // root message ID (ticket.messageId if present) + all reply message IDs up to the current one
+        const referencesList = [];
+        if (ticket.messageId && ticket.messageId.trim()) {
+            referencesList.push(ticket.messageId.trim());
+        }
+        for (const rep of allVendorReplies) {
+            if (rep.messageId && rep.messageId.trim()) {
+                const trimmed = rep.messageId.trim();
+                if (!referencesList.includes(trimmed)) {
+                    referencesList.push(trimmed);
+                }
+            }
+        }
+        if (referencesList.length === 0 && threadMessageId) {
+            referencesList.push(threadMessageId);
+        }
+
+        const referencesChain = referencesList.join(' ');
+
+        const emailHtml = htmlContent
+            ? `
+                <div style="font-family: Arial, sans-serif; margin-bottom: 16px;">
+                    <p>Hello Vendor Support Team,</p>
+                    <p>Regarding case number <strong>${ticket.ticketId}</strong>:</p>
+                </div>
+                ${htmlContent}
+              `
+            : `
+                <div style="font-family: Arial, sans-serif;">
+                    <p>Hello Vendor Support Team,</p>
+                    <p>Regarding case number <strong>${ticket.ticketId}</strong>:</p>
+                    <p>${message.replace(/\n/g, '<br>')}</p>
+                    <br/>
+                    <hr/>
+                    <p style="font-size: 12px; color: #666;">${agentName}<br/>EdgeStone NOC / Partner Support</p>
+                </div>
+            `;
+
+        const sentResult = await emailService.sendAgentReplyEmail({
+            to: vendorContactEmails,
+            cc: visibleVendorCc,
+            bcc: hiddenVendorBcc,
+            subject: subject ? 
+                (subject.includes(`[${ticket.ticketId}`) ? subject : `Re: [${ticket.ticketId}-V] ${subject}`) : 
+                ((ticket.isMaintenance || ticket.ticketType === 'Vendor') ?
+                    `Re: [${ticket.ticketId}-V] ${ticket.header.replace(/^(Re|Fwd|FW|RE|FWD):\s*/gi, '').trim()}` :
+                    `[${ticket.ticketId}-V] Vendor Support Request: ${ticket.header}`),
+            html: emailHtml,
+            text: message || '',
+            inReplyTo: threadMessageId, 
+            references: referencesChain || threadMessageId,
+            attachments: attachments || []
+        });
+
+        logger.info(`🎟️ [TICKET] 📤 Vendor reply email successfully routed to ${vendorContactEmails.join(', ')}`);
+
+        // 4. BULLETPROOF THREADING FIX: Save the outbound messageId!
+        // When the vendor replies, their email client will include this exact ID in the 'In-Reply-To' header.
+        // The backend `findExistingTicketForReply` will securely map it back using this ID, ignoring subject line completely.
+        try {
+            const outboundMessageId = sentResult?.messageId;
+            if (outboundMessageId) {
+                await TicketModel.updateReply(reply.id, { messageId: outboundMessageId });
+                logger.info(`🎟️ [TICKET] 💾 Saved outbound messageId ${outboundMessageId} to Vendor Reply for structural threading.`);
+            }
+        } catch (captureErr) {
+            logger.warn(`⚠️ 🎟️ [TICKET] ⚠️ Failed to capture vendor outbound messageId: ${captureErr.message}`);
+        }
+
+        // Log Activity
+        await prisma.activityLog.create({
+            data: {
+                action: 'vendor_replied',
+                description: `Agent ${agentName} replied in the vendor thread to ${vendorContactEmails.join(', ')}.`,
+                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                author: agentName || 'System',
+                ticketId: ticket.id
+            }
+        });
+
+
+        return reply;
+    } catch (error) {
+        logger.error(`🚨 🎟️ [TICKET] ❌ replyToVendor Error: ${error.message}`);
+        throw error;
+    }
+};
+
+module.exports = {
+    getVendorEmailsForTicket,
+    replyToVendor
+};

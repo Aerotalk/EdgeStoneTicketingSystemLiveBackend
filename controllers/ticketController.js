@@ -1,0 +1,193 @@
+const ticketService = require('../services/ticketService');
+const vendorTicketingService = require('../services/vendorTicketingService');
+const logger = require('../utils/logger');
+const { getISTString } = require('../utils/timeUtils');
+
+// ... (other controller methods remain pointing to ticketService)
+
+const getTickets = async (req, res, next) => {
+    try {
+        logger.debug('🐞 🎟️ [TICKET] 📝 Request received: getTickets');
+        const tickets = await ticketService.getTickets();
+        res.json(tickets);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const createTicket = async (req, res, next) => {
+    try {
+        logger.debug('🐞 🎟️ [TICKET] 📝 Request received: createTicket (Manual)');
+        // Logic
+        res.json({ message: 'Create Ticket' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateTicket = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { circuitId, priority, status, isMaintenance } = req.body;
+
+        logger.debug(`🐞 🎟️ [TICKET] 📝 Request received: updateTicket for ticket ${id}`);
+
+        const agentName = req.user ? req.user.name : 'Agent';
+        const agentEmail = req.user ? req.user.email : 'support@edgestone.in';
+
+        const updates = { circuitId, priority, status };
+        if (isMaintenance !== undefined) updates.isMaintenance = isMaintenance;
+
+        const updatedTicket = await ticketService.updateTicket(
+            id,
+            updates,
+            agentName
+        );
+
+        logger.info(`🎟️ [TICKET] ✅ Ticket ${id} updated successfully`);
+        res.json({ message: 'Ticket updated successfully', ticket: updatedTicket });
+    } catch (error) {
+        logger.error(`🚨 🎟️ [TICKET] ❌ Error updating ticket: ${error.message}`);
+        next(error);
+    }
+};
+
+const replyTicket = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { message, htmlContent, attachments, to, cc, bcc, subject } = req.body;   // htmlContent = full HTML with signature
+        // Assuming authMiddleware attaches user to req
+        const agentName = req.user ? req.user.name : 'Agent';
+        const agentEmail = req.user ? req.user.email : 'support@edgestone.in';
+
+        // Detailed Reply Logging
+        logger.info(`🎟️ [TICKET] 
+📨 OUTGOING REPLY LOG 📨
+--------------------------------------------------
+🕒 Timestamp (IST) : ${getISTString()}
+🆔 Ticket ID       : ${id}
+👤 Sender          : ${agentName} <${agentEmail}>
+📝 Content         : "${message}"
+🖊  Has HTML Sig   : ${!!htmlContent}
+📎 Attachments     : ${attachments ? attachments.length : 0}
+--------------------------------------------------
+`);
+
+        logger.info(`🎟️ [TICKET] 🗣️ Agent ${agentName} replying to ticket ${id}`);
+
+        const reply = await ticketService.replyToTicket(id, message, agentEmail, agentName, htmlContent, attachments, { to, cc, bcc, subject });
+        res.status(201).json({ message: 'Reply sent successfully', reply });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const replyVendorTicket = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const emailData = req.body; 
+        const agentName = req.user ? req.user.name : 'Agent';
+        const agentEmail = req.user ? req.user.email : 'support@edgestone.in';
+
+        logger.info(`🎟️ [TICKET] 📨 VENDOR REPLY | Ticket: ${id} | Agent: ${agentName}`);
+
+        const reply = await vendorTicketingService.replyToVendor(id, emailData, agentEmail, agentName);
+        res.status(201).json({ message: 'Vendor reply sent successfully', reply });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getVendorEmails = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { vendorId } = req.query;
+        const emails = await vendorTicketingService.getVendorEmailsForTicket(id, vendorId);
+        res.json({ emails });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const toggleSla = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { isSlaActive } = req.body;
+        const agentName = req.user ? req.user.name : 'Agent';
+        
+        logger.info(`🎟️ [TICKET] 🔄 Agent ${agentName} toggling SLA for ticket ${id} to ${isSlaActive}`);
+        
+        const prisma = require('../utils/prisma');
+        const targetTicket = await prisma.ticket.findUnique({
+            where: { id },
+            select: { id: true, ticketId: true, ticketType: true }
+        });
+
+        if (!targetTicket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        if (isSlaActive && (targetTicket.ticketId?.startsWith('#V') || targetTicket.ticketType === 'Vendor')) {
+            logger.warn(`⚠️ 🎟️ [TICKET] Rejected SLA toggle for ${targetTicket.ticketId}: SLA cannot be enabled for Vendor tickets.`);
+            return res.status(400).json({
+                message: 'SLA cannot be enabled for Vendor (#V) tickets. SLAs are strictly applicable to Client tickets.'
+            });
+        }
+        
+        const updatedTicket = await prisma.ticket.update({
+            where: { id },
+            data: { isSlaActive: targetTicket.ticketId?.startsWith('#V') || targetTicket.ticketType === 'Vendor' ? false : isSlaActive }
+        });
+        
+        res.json({ message: 'SLA Status Updated', ticket: updatedTicket });
+    } catch (error) {
+        logger.error(`🚨 🎟️ [TICKET] ❌ Error toggling SLA: ${error.message}`);
+        next(error);
+    }
+};
+
+const sendAutoReply = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { toEmails } = req.body;
+        const agentName = req.user ? req.user.name : 'Agent';
+        const agentEmail = req.user ? req.user.email : 'support@edgestone.in';
+
+        logger.info(`🎟️ [TICKET] 🤖 Agent ${agentName} manually triggering auto-reply for ticket ${id} to ${toEmails}`);
+
+        const ticket = await ticketService.sendManualAutoReply(id, toEmails, agentName, agentEmail);
+        res.json({ message: 'Auto-reply sent successfully', ticket });
+    } catch (error) {
+        logger.error(`🚨 🎟️ [TICKET] ❌ Error sending auto-reply: ${error.message}`);
+        next(error);
+    }
+};
+
+const deleteTicket = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const agentName = req.user ? req.user.name : 'Agent';
+        logger.info(`🎟️ [TICKET] 🗑️ Agent ${agentName} requested deletion of ticket ${id}`);
+
+        await ticketService.deleteTicket(id);
+        res.status(200).json({ success: true, message: `Ticket ${id} deleted successfully` });
+    } catch (error) {
+        if (error.message === 'Ticket not found') {
+            return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+        logger.error(`🚨 🎟️ [TICKET] ❌ Error deleting ticket: ${error.message}`);
+        next(error);
+    }
+};
+
+module.exports = {
+    getTickets,
+    createTicket,
+    updateTicket,
+    replyTicket,
+    replyVendorTicket,
+    getVendorEmails,
+    toggleSla,
+    sendAutoReply,
+    deleteTicket
+};

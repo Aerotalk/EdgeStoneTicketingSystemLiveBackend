@@ -1,0 +1,400 @@
+// This is the implementation of the Prisma schema based on the frontend analysis
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String @id @default(uuid())
+  name         String
+  email        String @unique
+  passwordHash String
+  status       String @default("Active") // Active, In-Active
+  createdOn    String // Storing as string to match frontend display format e.g., "10 Jan 2024"
+  access       Json // JSON object: { dashboard: boolean, sla: boolean, vendor: boolean, superAdmin: boolean, client: boolean }
+  role         String @default("Agent") // Helper field
+  profilePicture String? // URL for profile picture
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets   Ticket[]
+  notes     Note[]
+  workNotes WorkNote[]
+}
+
+model Agent {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique // Login email
+  passwordHash String
+  status       String   @default("Active") // Active, In-Active
+  createdOn    String // Display date string "10 Jan 2024"
+  emails       String[] // Secondary contact emails
+  isSuperAdmin Boolean  @default(false) // Kept for legacy/fallback
+  role         String   @default("Support crew") // "Super admin", "Manager", "Support crew"
+  profilePicture String? // URL for profile picture
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Potential future relations
+  // tickets Ticket[]
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  emails    String[]
+  status    String   @default("Active")
+  createdOn String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tickets   Ticket[]
+  circuits  Circuit[]
+  slas      Sla[] // customer SLAs
+}
+
+model Vendor {
+  id        String   @id @default(uuid())
+  name      String
+  emails    String[]
+  status    String   @default("Active")
+  createdOn String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  circuits  Circuit[]
+  vendorCircuits VendorCircuit[]
+  tickets   Ticket[]
+  slas      Sla[]
+}
+
+model Ticket {
+  id        String  @id @default(uuid())
+  ticketId  String  @unique // Friendly ID e.g., "#1234"
+  header    String
+  email     String // Requestor email
+  status    String // Open, In Progress, Closed
+  priority  String // Low, Medium, High
+  circuitId String?
+  messageId String? // Original email Message-ID for threading
+  date      String // Display date string
+
+  // Real-time timestamp fields for email received time
+  receivedAt   DateTime? // Actual email received timestamp (ISO format)
+  receivedTime String? // Display time (HH:MM format)
+
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id])
+
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+  
+  ticketType String @default("Client") // "Client" or "Vendor"
+
+  assignedUserId String?
+  assignedUser   User?   @relation(fields: [assignedUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  isSlaActive Boolean @default(true)
+  isMaintenance Boolean @default(false)
+  cc String[] @default([])
+
+  replies      Reply[]
+  notes        Note[]
+  slaRecords   SLARecord[]
+  activityLogs ActivityLog[]
+  workNotes    WorkNote[]
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  text      String
+  time      String
+  date      String
+  author    String // Name at time of reply
+  type      String // agent, client, vendor
+  category  String // client, vendor (for thread grouping)
+  to        String[]
+  cc        String[]
+  bcc       String[]
+  subject   String? // Optional subject override
+  messageId String? // Outgoing email Message-ID for threading
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  attachments Json? @default("[]")
+
+  createdAt DateTime @default(now())
+}
+
+model Note {
+  id     String @id @default(uuid())
+  text   String
+  time   String
+  author String
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model SLARecord {
+  id String @id @default(uuid())
+
+  startDate    String
+  startTime    String
+  closedTime   String?
+  closeDate    String?
+  status       String // Breached, Safe
+  compensation String?
+  statusReason String?
+  timeZone     String @default("UTC")
+
+  ticketId String
+  type     String @default("CLIENT") // "CLIENT" | "VENDOR"
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+}
+
+// --- Work Notes Model (ServiceNow-like internal notes) ---
+
+model WorkNote {
+  id       String  @id @default(uuid())
+  text     String  @db.Text
+  time     String // HH:MM format (24-hour)
+  date     String // Display format "11 Feb 2026"
+  author   String // Agent name
+  isSystem Boolean @default(false) // System-generated vs manual
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Activity Log Model (ServiceNow-like activity tracking) ---
+
+model ActivityLog {
+  id          String @id @default(uuid())
+  action      String // "created", "updated", "replied", "assigned", "status_changed", "priority_changed", "work_note_added", "auto_replied"
+  description String @db.Text // Human-readable description
+  time        String // HH:MM format (24-hour)
+  date        String // Display format "11 Feb 2026"
+  author      String // Who performed the action
+
+  // Store old and new values for changes
+  oldValue  String?
+  newValue  String?
+  fieldName String? // Which field changed
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// --- Global Note Model (Shift Handover) ---
+model GlobalNote {
+  id        String   @id @default("global-note")
+  content   String   @db.Text
+  updatedBy String   @default("System")
+  updatedAt DateTime @updatedAt
+}
+
+// --- Circuit Management Models ---
+
+model Circuit {
+  id   String @id @default(uuid())
+  type String @default("UNPROTECTED") // PROTECTED | UNPROTECTED
+
+  // --- Customer Details ---
+  customerCircuitId  String  @unique // "Customer Circuit ID"
+  poNumber           String? // "Po. Number"
+  serviceDescription String? // "Service description"
+  contractTermMonths Int? // "Contract term (In Months)"
+  contractType       String? // "Contract Type"
+  mrc                Float   @default(1000) // Monthly Recurring Charge
+  nrc                Float?
+
+  // --- Supplier Details ---
+  supplierCircuitId          String  @unique // "Suppiler Circuit ID"
+  supplierPoNumber           String? // "Supplier PO number"
+  supplierServiceDescription String? // "Supplier Service description"
+  supplierContractTermMonths Int? // "Supplicr Contract term (In Months)"
+  supplierContractType       String? // "Contract Type" (Supplier side)
+  billingStartDate           String? // "Billing Start Date"
+  supplierMrc                Float   @default(800) // Supplier Monthly Recurring Charge
+  supplierNrc                Float?
+
+  // --- Relations ---
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id])
+
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
+  // Legacy SLA value (stores raw % string like "99.50%")
+  circuitSlaValue CircuitSLAValue?
+
+  // New SLA management (full lifecycle SLAs per vendor/customer)
+  slas     Sla[]
+  
+  isMultiVendor Boolean @default(false)
+  vendorCircuits VendorCircuit[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VendorCircuit {
+  id                         String  @id @default(uuid())
+  circuitId                  String
+  circuit                    Circuit @relation(fields: [circuitId], references: [id], onDelete: Cascade)
+  
+  vendorId                   String?
+  vendor                     Vendor? @relation(fields: [vendorId], references: [id])
+  
+  supplierCircuitId          String?
+  supplierPoNumber           String?
+  supplierServiceDescription String?
+  supplierContractTermMonths Int?
+  supplierContractType       String?
+  billingStartDate           String?
+  supplierMrc                Float   @default(800)
+  supplierNrc                Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Legacy: stores raw SLA % string (e.g. "99.50%") against a circuit
+model CircuitSLAValue {
+  id    String @id @default(uuid())
+  value String // e.g. "99.50%"
+
+  circuitId String  @unique
+  circuit   Circuit @relation(fields: [circuitId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+// ============================================================
+// --- SLA Management Engine (new) ---
+// ============================================================
+
+// One SLA per (circuit + vendor) OR one per (circuit + customer)
+// Rules are fully dynamic per SLA — different vendors/circuits get different tiers
+model Sla {
+  id String @id @default(uuid())
+
+  circuitId String
+  circuit   Circuit @relation(fields: [circuitId], references: [id])
+
+  appliesTo String // VENDOR | CUSTOMER
+
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
+  customerId String?
+  customer   Client? @relation(fields: [customerId], references: [id])
+
+  // Calculated fields — updated by the calculation engine
+  totalDowntimeMinutes Float  @default(0)
+  availabilityFactor   Float? // percentage 0-100, null until first calculation
+  compensationAmount   Float  @default(0)
+
+  status       String  @default("SAFE") // SAFE | BREACHED
+  statusReason String?
+
+  // Dynamic rules — each SLA has its own independent tier set
+  rules     SlaRule[]
+  auditLogs SlaAuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Availability tier rule — fully dynamic per SLA
+// Semantics: upperLimit upperOperator Av lowerOperator lowerLimit  → compensationPercentage
+// Example:   99          >            Av >=            95           → 5%  of MRC
+model SlaRule {
+  id    String @id @default(uuid())
+  slaId String
+  sla   Sla    @relation(fields: [slaId], references: [id], onDelete: Cascade)
+
+  upperLimit    Float?  // null = open upper bound (e.g. Av > 99)
+  upperOperator String? // "<" | "<="
+  lowerLimit    Float?  // null = open lower bound
+  lowerOperator String? // ">" | ">="
+
+  compensationPercentage Float @default(0) // % of MRC
+
+  createdAt DateTime @default(now())
+}
+
+// Immutable audit trail for every SLA status change
+model SlaAuditLog {
+  id    String @id @default(uuid())
+  slaId String
+  sla   Sla    @relation(fields: [slaId], references: [id], onDelete: Cascade)
+
+  oldStatus String
+  newStatus String
+  reason    String
+
+  timestamp DateTime @default(now())
+}
+
+// ============================================================
+// --- Mail Signature Management ---
+// ============================================================
+
+// Per-agent email signature with HTML content + embedded images
+model Signature {
+  id      String @id @default(uuid())
+  agentId String // UUID of the Agent who owns this signature
+  name    String // Display name e.g. "Priyanshu Routh CTO AeroTalk"
+  content String @db.Text // HTML content (may include <img> tags with base64 or hosted URLs)
+
+  // Default assignment: "new" | "reply" | "both" | null
+  defaultFor String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// --- Notification Management ---
+// ============================================================
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String?
+  message     String
+  type        String   @default("info")
+  isRead      Boolean  @default(false)
+  ticketId    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
