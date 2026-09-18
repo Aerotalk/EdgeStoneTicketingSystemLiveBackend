@@ -57,6 +57,7 @@ const allowedOrigins = [
     'https://edgestonefrontend.vercel.app', // Production Vercel Frontend
     'https://edgestonefrontend-b4zz7k8lh-aerotalks-projects.vercel.app', // Vercel Preview/Production URL
     'https://ticketportal.edgestone.in', // EdgeStone Ticket Portal
+    'https://ticketportalnew-jvpmv.ondigitalocean.app', // DigitalOcean Frontend Portal
 ];
 
 
@@ -70,13 +71,16 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // Check against allowed origins list
-        const isAllowed = allowedOrigins.includes(origin);
+        const normalizedOrigin = origin.replace(/\/+$/, '');
 
-        // Check if it's a Vercel deployment (allow all *.vercel.app)
+        // Check against allowed origins list (normalizing trailing slashes)
+        const isAllowed = allowedOrigins.some(o => o.replace(/\/+$/, '') === normalizedOrigin);
+
+        // Check if it's a Vercel or DigitalOcean deployment
         const isVercel = origin.includes('.vercel.app');
+        const isDigitalOcean = origin.includes('.ondigitalocean.app');
 
-        if (isAllowed || isVercel) {
+        if (isAllowed || isVercel || isDigitalOcean) {
             return callback(null, true);
         } else {
             // Log the blocked origin for debugging
