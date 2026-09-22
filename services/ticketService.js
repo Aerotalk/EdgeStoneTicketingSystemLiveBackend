@@ -1609,7 +1609,9 @@ const createTicketFromEmail = async (emailData) => {
                     to: [from],
                     subject: autoReplySubject,
                     text: autoReplyText,
-                    html: autoReplyHtml
+                    html: autoReplyHtml,
+                    inReplyTo: ticket.messageId,
+                    references: ticket.messageId
                 });
             } catch(err) {
                 logger.error(`🎟️ [TICKET] ❌ Auto-Reply Error: ${err.message}`);

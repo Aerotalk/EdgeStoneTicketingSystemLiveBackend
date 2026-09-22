@@ -179,15 +179,235 @@ const sendViaGraph = async (options) => {
     const formattedInReplyTo = inReplyTo ? formatMsgId(inReplyTo) : null;
     const formattedReferences = references ? formatReferences(references) : null;
 
+    // Helper: Upload attachments to a draft message (direct or uploadSession for > 3MB)
+    const uploadDraftAttachments = async (draftId, attachmentsToUpload) => {
+        for (const att of attachmentsToUpload) {
+            if (att.buffer.length <= (3 * 1024 * 1024)) {
+                const addAttachUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/attachments`;
+                const attachPayload = {
+                    '@odata.type': '#microsoft.graph.fileAttachment',
+                    name: att.name,
+                    contentType: att.contentType,
+                    contentBytes: att.buffer.toString('base64'),
+                    isInline: att.isInline,
+                    contentId: att.contentId
+                };
+                const addRes = await fetch(addAttachUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(attachPayload)
+                });
+                if (!addRes.ok) {
+                    logger.error(`Failed to attach ${att.name} directly to draft ${draftId}`);
+                }
+            } else {
+                logger.info(`[EMAIL] Creating upload session for large attachment: ${att.name} (${(att.buffer.length / (1024*1024)).toFixed(2)} MB)`);
+                const sessionUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/attachments/createUploadSession`;
+                const sessionRes = await fetch(sessionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        AttachmentItem: {
+                            attachmentType: 'file',
+                            name: att.name,
+                            size: att.buffer.length,
+                            contentType: att.contentType
+                        }
+                    })
+                });
+
+                if (!sessionRes.ok) {
+                    const sessErr = await sessionRes.json().catch(() => ({}));
+                    throw new Error(`Failed to create upload session for ${att.name}: ${sessErr.error?.message || sessionRes.status}`);
+                }
+
+                const { uploadUrl } = await sessionRes.json();
+                const chunkSize = 320 * 1024 * 10;
+                let offset = 0;
+                while (offset < att.buffer.length) {
+                    const chunkEnd = Math.min(offset + chunkSize, att.buffer.length);
+                    const chunk = att.buffer.slice(offset, chunkEnd);
+                    const chunkRes = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Length': chunk.length.toString(),
+                            'Content-Range': `bytes ${offset}-${chunkEnd - 1}/${att.buffer.length}`
+                        },
+                        body: chunk
+                    });
+
+                    if (!chunkRes.ok && chunkRes.status !== 200 && chunkRes.status !== 201 && chunkRes.status !== 202) {
+                        throw new Error(`Failed to upload chunk for ${att.name} at offset ${offset}`);
+                    }
+                    offset = chunkEnd;
+                }
+                logger.info(`[EMAIL] Large attachment ${att.name} uploaded successfully to draft.`);
+            }
+        }
+    };
+
+    // Helper: Find parent message in Graph API by internetMessageId or Graph message ID
+    const findParentGraphMessage = async (replyToTarget, referencesTarget) => {
+        const candidateIds = [];
+        if (replyToTarget && typeof replyToTarget === 'string') {
+            candidateIds.push(replyToTarget.trim());
+        }
+        if (referencesTarget) {
+            const rawRefs = Array.isArray(referencesTarget) ? referencesTarget : referencesTarget.split(/\s+/);
+            for (let i = rawRefs.length - 1; i >= 0; i--) {
+                const r = rawRefs[i]?.trim();
+                if (r && !candidateIds.includes(r)) {
+                    candidateIds.push(r);
+                }
+            }
+        }
+
+        for (const rawId of candidateIds) {
+            if (!rawId) continue;
+            const clean = rawId.trim();
+
+            // Direct Graph ID check (Graph IDs are long alphanumeric base64 strings with no '@')
+            if (!clean.includes('@') && !clean.startsWith('<') && clean.length > 50) {
+                try {
+                    const directUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${clean}?$select=id,conversationId,subject`;
+                    const dRes = await fetch(directUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                    if (dRes.ok) {
+                        const data = await dRes.json();
+                        if (data && data.id) return data;
+                    }
+                } catch (e) {
+                    logger.warn(`[EMAIL] Direct Graph ID lookup failed for ${clean}: ${e.message}`);
+                }
+            }
+
+            const withBrackets = clean.startsWith('<') && clean.endsWith('>') ? clean : `<${clean.replace(/^<+|>+$/g, '')}>`;
+            const withoutBrackets = clean.replace(/^<+|>+$/g, '');
+
+            try {
+                const queryUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$filter=internetMessageId eq '${encodeURIComponent(withBrackets)}'&$select=id,conversationId,subject&$top=1`;
+                const res = await fetch(queryUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.value && data.value.length > 0) return data.value[0];
+                }
+            } catch (e) {
+                logger.warn(`[EMAIL] Parent lookup with brackets failed for ${withBrackets}: ${e.message}`);
+            }
+
+            try {
+                const queryUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$filter=internetMessageId eq '${encodeURIComponent(withoutBrackets)}'&$select=id,conversationId,subject&$top=1`;
+                const res = await fetch(queryUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.value && data.value.length > 0) return data.value[0];
+                }
+            } catch (e) {
+                logger.warn(`[EMAIL] Parent lookup without brackets failed for ${withoutBrackets}: ${e.message}`);
+            }
+        }
+
+        return null;
+    };
+
+    const toEmails = Array.isArray(to) ? to.join(', ') : to;
+
+    // --- NATIVE GRAPH THREADING: Use createReply when replying to an existing message ---
+    if (inReplyTo || references) {
+        logger.info(`[EMAIL] 🧵 Threading requested. Searching for parent message in MS Graph for inReplyTo: "${inReplyTo || ''}"...`);
+        const parentMsg = await findParentGraphMessage(inReplyTo, references);
+
+        if (parentMsg && parentMsg.id) {
+            logger.info(`[EMAIL] 🎯 Found parent Graph message ${parentMsg.id} (conversationId: ${parentMsg.conversationId}). Using native Graph createReply.`);
+            
+            // 1. Create a native reply draft linked directly to the parent's conversationId & conversationIndex
+            const createReplyUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${parentMsg.id}/createReply`;
+            const replyDraftRes = await fetch(createReplyUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+
+            if (replyDraftRes.ok) {
+                const draftData = await replyDraftRes.json();
+                const draftId = draftData.id;
+                const draftInternetMessageId = draftData.internetMessageId;
+
+                // 2. Patch draft with custom recipients, subject, and content
+                const patchUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}`;
+                const patchPayload = {
+                    subject: subject,
+                    body: {
+                        contentType: html ? 'HTML' : 'Text',
+                        content: html || text || body || ''
+                    },
+                    toRecipients: formatRecipients(to)
+                };
+                if (cc) patchPayload.ccRecipients = formatRecipients(cc);
+                if (bcc) patchPayload.bccRecipients = formatRecipients(bcc);
+
+                const patchRes = await fetch(patchUrl, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!patchRes.ok) {
+                    const patchErr = await patchRes.json().catch(() => ({}));
+                    throw new Error(`Failed to update reply draft: ${patchErr.error?.message || patchRes.status}`);
+                }
+
+                // 3. Attach files if any
+                if (processedAttachments.length > 0) {
+                    await uploadDraftAttachments(draftId, processedAttachments);
+                }
+
+                // 4. Send the reply draft
+                const sendDraftUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/send`;
+                const sendRes = await fetch(sendDraftUrl, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (sendRes.ok || sendRes.status === 202) {
+                    logger.info(`[EMAIL] 🚀 Native reply sent via Graph to ${toEmails} | Message-ID: ${draftInternetMessageId} | ConversationId: ${draftData.conversationId}`);
+                    processedGraphIds.add(draftId);
+                    if (draftInternetMessageId) processedGraphIds.add(draftInternetMessageId);
+
+                    return {
+                        messageId: draftInternetMessageId || null,
+                        conversationId: draftData.conversationId || parentMsg.conversationId || null,
+                        accepted: Array.isArray(to) ? to : [to],
+                        response: '202 Accepted'
+                    };
+                }
+
+                const sendErr = await sendRes.json().catch(() => ({}));
+                throw new Error(`Reply draft send failed: ${sendErr.error?.message || sendRes.status}`);
+            } else {
+                const repErr = await replyDraftRes.json().catch(() => ({}));
+                logger.warn(`[EMAIL] ⚠️ createReply failed (${repErr.error?.message || replyDraftRes.status}). Falling back to standard send.`);
+            }
+        } else {
+            logger.info(`[EMAIL] ℹ️ Parent message for inReplyTo "${inReplyTo || ''}" not found in MS Graph. Falling back to standard send.`);
+        }
+    }
+
+    // --- FALLBACK PATH: Standard draft/sendMail workflow for brand-new emails or when parent not found ---
     const headers = [];
-    if (formattedInReplyTo) {
-        headers.push({ name: 'In-Reply-To', value: formattedInReplyTo });
-    }
-    if (formattedReferences) {
-        headers.push({ name: 'References', value: formattedReferences });
-    }
     const addHeader = (name, value) => {
-        if (name) {
+        if (name && (name.toLowerCase().startsWith('x-') || name.toLowerCase() === 'reply-to')) {
             headers.push({ name, value });
         }
     };
@@ -198,10 +418,8 @@ const sendViaGraph = async (options) => {
         message.internetMessageHeaders = headers;
     }
 
-    const toEmails = Array.isArray(to) ? to.join(', ') : to;
-
     // Microsoft Graph /sendMail endpoint has a hard 4MB request payload limit.
-    // If total attachments > 3MB, we must create a draft message and upload attachments (using uploadSession for large files).
+    // If total attachments > 3MB, we must create a draft message and upload attachments.
     const isLargePayload = totalAttachmentBytes > (3 * 1024 * 1024);
 
     if (isLargePayload) {
@@ -227,81 +445,7 @@ const sendViaGraph = async (options) => {
         const draftId = draftData.id;
 
         // 2. Attach each file to the draft
-        for (const att of processedAttachments) {
-            if (att.buffer.length <= (3 * 1024 * 1024)) {
-                // Attach directly via regular attachment endpoint
-                const addAttachUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/attachments`;
-                const attachPayload = {
-                    '@odata.type': '#microsoft.graph.fileAttachment',
-                    name: att.name,
-                    contentType: att.contentType,
-                    contentBytes: att.buffer.toString('base64'),
-                    isInline: att.isInline,
-                    contentId: att.contentId
-                };
-                const addRes = await fetch(addAttachUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(attachPayload)
-                });
-                if (!addRes.ok) {
-                    logger.error(`Failed to attach ${att.name} directly to draft ${draftId}`);
-                }
-            } else {
-                // Create an upload session for large files > 3MB
-                logger.info(`[EMAIL] Creating upload session for large attachment: ${att.name} (${(att.buffer.length / (1024*1024)).toFixed(2)} MB)`);
-                const sessionUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/attachments/createUploadSession`;
-                const sessionRes = await fetch(sessionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        AttachmentItem: {
-                            attachmentType: 'file',
-                            name: att.name,
-                            size: att.buffer.length,
-                            contentType: att.contentType
-                        }
-                    })
-                });
-
-                if (!sessionRes.ok) {
-                    const sessErr = await sessionRes.json().catch(() => ({}));
-                    throw new Error(`Failed to create upload session for ${att.name}: ${sessErr.error?.message || sessionRes.status}`);
-                }
-
-                const { uploadUrl } = await sessionRes.json();
-                
-                // Upload in chunks of 3,276,800 bytes (multiple of 320 KiB required by MS Graph)
-                const chunkSize = 320 * 1024 * 10;
-                let offset = 0;
-                while (offset < att.buffer.length) {
-                    const chunkEnd = Math.min(offset + chunkSize, att.buffer.length);
-                    const chunk = att.buffer.slice(offset, chunkEnd);
-                    
-                    const chunkRes = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Length': chunk.length.toString(),
-                            'Content-Range': `bytes ${offset}-${chunkEnd - 1}/${att.buffer.length}`
-                        },
-                        body: chunk
-                    });
-
-                    if (!chunkRes.ok && chunkRes.status !== 200 && chunkRes.status !== 201 && chunkRes.status !== 202) {
-                        throw new Error(`Failed to upload chunk for ${att.name} at offset ${offset}`);
-                    }
-
-                    offset = chunkEnd;
-                }
-                logger.info(`[EMAIL] Large attachment ${att.name} uploaded successfully to draft.`);
-            }
-        }
+        await uploadDraftAttachments(draftId, processedAttachments);
 
         // 3. Send the draft
         const sendDraftUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/send`;
@@ -312,7 +456,9 @@ const sendViaGraph = async (options) => {
 
         if (sendRes.ok || sendRes.status === 202) {
             logger.info(`[EMAIL] Sent large email via Graph draft to ${toEmails}`);
-            return { messageId: null, accepted: Array.isArray(to) ? to : [to], response: '202 Accepted' };
+            processedGraphIds.add(draftId);
+            if (draftData.internetMessageId) processedGraphIds.add(draftData.internetMessageId);
+            return { messageId: draftData.internetMessageId || null, accepted: Array.isArray(to) ? to : [to], response: '202 Accepted' };
         }
 
         const sendErr = await sendRes.json().catch(() => ({}));
@@ -333,7 +479,6 @@ const sendViaGraph = async (options) => {
 
     const headersUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/sendMail`;
     const directMessage = { ...message };
-    delete directMessage.internetMessageHeaders;
 
     const response = await fetch(headersUrl, {
         method: 'POST',
