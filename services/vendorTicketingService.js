@@ -158,6 +158,8 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         hiddenVendorBcc = Array.from(new Set(hiddenVendorBcc.map(e => e && e.trim()).filter(Boolean)))
             .filter(e => !ccLowerSet.has(e.toLowerCase()));
 
+        const effectiveVendorId = emailData.vendorId || ticket.vendorId;
+
         // 2. Create Reply Record natively mapped to the vendor category
         const reply = await TicketModel.addReply(ticket.id, {
             text: (message !== undefined && message !== null && message.trim() !== '') ? message : (htmlContent || ' '),
@@ -169,7 +171,7 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
             author: agentName || 'Agent',
             type: 'agent',
-            category: emailData.vendorId ? `vendor_${emailData.vendorId}` : 'vendor', // Explicitly marking this thread as vendor-side
+            category: effectiveVendorId ? `vendor_${effectiveVendorId}` : 'vendor', // Explicitly marking this thread as vendor-side
             to: vendorContactEmails,
             cc: visibleVendorCc,
             bcc: hiddenVendorBcc,
@@ -182,8 +184,8 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         
         // 3.5 Find all message IDs in the vendor thread for RFC 5322 In-Reply-To and References chain
         const isVendorOrMaintTicket = ticket.isMaintenance || ticket.ticketType === 'Vendor';
-        const vendorCategoryFilter = emailData.vendorId
-            ? { in: ['vendor', `vendor_${emailData.vendorId}`] }
+        const vendorCategoryFilter = effectiveVendorId
+            ? { in: ['vendor', `vendor_${effectiveVendorId}`] }
             : (isVendorOrMaintTicket ? undefined : { in: ['vendor'] });
 
         const whereClause = {

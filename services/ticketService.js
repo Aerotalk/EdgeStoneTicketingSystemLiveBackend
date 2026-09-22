@@ -660,7 +660,8 @@ const appendVendorReplyToTicket = async (ticket, emailData, vendorId = null, isM
 
     let finalCategory = 'vendor';
     if (vendorId) {
-        if (isMultiVendor) {
+        const isVendorTicket = ticket.ticketType === 'Vendor' || (ticket.ticketId && ticket.ticketId.startsWith('#V')) || ticket.isMaintenance;
+        if (isMultiVendor || isVendorTicket) {
             finalCategory = `vendor_${vendorId}`;
         } else {
             // Check if ticket or circuit is multi-vendor or has prior replies for vendor_${vendorId}
@@ -846,12 +847,14 @@ const createTicketFromEmail = async (emailData) => {
                 } catch (_) {}
             }
 
+            const isVendorTicket = existingTicket.ticketType === 'Vendor' || (existingTicket.ticketId && existingTicket.ticketId.startsWith('#V')) || existingTicket.isMaintenance;
+
             // Determine if the sender is a known Vendor (case-insensitive)
             const VendorModel = require('../models/vendor');
             const vendors = await VendorModel.findAllVendors();
             let matchedVendors = vendors.filter(v => v.emails.some(e => e.toLowerCase() === from.toLowerCase()));
-            let isVendor = matchedVendors.length > 0;
-            let finalVendorId = null;
+            let isVendor = matchedVendors.length > 0 || isVendorTicket;
+            let finalVendorId = isVendorTicket ? (existingTicket.vendorId || (matchedVendors[0]?.id || null)) : null;
 
             if (isVendor) {
                 // Determine the best vendor match if multiple vendors share the same email
@@ -1013,32 +1016,38 @@ const createTicketFromEmail = async (emailData) => {
                 }
             }
 
-            // PREVENT FALSE POSITIVE: If the sender is the original ticket-raiser, is on ticket CC,
+            // PREVENT FALSE POSITIVE: If this is a CLIENT ticket, and the sender is the original ticket-raiser, is on ticket CC,
             // is a recognized contact of the client who owns the ticket, was in TO/CC of previous client replies,
             // or if the email's recipients include the ticket creator, AND subject is not marked as vendor (-V),
             // route to client thread.
             const isExplicitVendor = subject && /\[#?V?\d+-V\]/i.test(subject);
-            const cleanSenderFrom = from ? from.trim().toLowerCase() : '';
-            const incomingRecipients = [...(emailData.to || []), ...(emailData.cc || [])].map(e => e.toLowerCase().trim());
-            const includesTicketOwner = existingTicket.email && incomingRecipients.includes(existingTicket.email.toLowerCase().trim());
 
-            const isClientSender = (existingTicket.email && existingTicket.email.toLowerCase() === cleanSenderFrom) ||
-                (Array.isArray(existingTicket.cc) && existingTicket.cc.some(c => c.toLowerCase() === cleanSenderFrom)) ||
-                (existingTicket.client && Array.isArray(existingTicket.client.emails) && existingTicket.client.emails.some(e => e.toLowerCase() === cleanSenderFrom)) ||
-                (Array.isArray(previousReplies) && previousReplies.some(r => {
-                    const isClientReply = r.category === 'client' || (!r.category && r.type !== 'vendor');
-                    if (isClientReply) {
-                        const recips = [...(r.to || []), ...(r.cc || [])].map(e => e.toLowerCase().trim());
-                        return recips.includes(cleanSenderFrom);
-                    }
-                    return false;
-                })) ||
-                (includesTicketOwner && !isExplicitVendor);
+            if (isVendorTicket) {
+                isVendor = true;
+                if (!finalVendorId) finalVendorId = existingTicket.vendorId;
+            } else {
+                const cleanSenderFrom = from ? from.trim().toLowerCase() : '';
+                const incomingRecipients = [...(emailData.to || []), ...(emailData.cc || [])].map(e => e.toLowerCase().trim());
+                const includesTicketOwner = existingTicket.email && incomingRecipients.includes(existingTicket.email.toLowerCase().trim());
 
-            if (!isExplicitVendor && isClientSender) {
-                isVendor = false;
-                finalVendorId = null;
-                logger.info(`🎟️ [TICKET] 🎯 Sender ${from} is client/participant on Ticket ${existingTicket.ticketId} without vendor tag. Routing to Client thread.`);
+                const isClientSender = (existingTicket.email && existingTicket.email.toLowerCase() === cleanSenderFrom) ||
+                    (Array.isArray(existingTicket.cc) && existingTicket.cc.some(c => c.toLowerCase() === cleanSenderFrom)) ||
+                    (existingTicket.client && Array.isArray(existingTicket.client.emails) && existingTicket.client.emails.some(e => e.toLowerCase() === cleanSenderFrom)) ||
+                    (Array.isArray(previousReplies) && previousReplies.some(r => {
+                        const isClientReply = r.category === 'client' || (!r.category && r.type !== 'vendor');
+                        if (isClientReply) {
+                            const recips = [...(r.to || []), ...(r.cc || [])].map(e => e.toLowerCase().trim());
+                            return recips.includes(cleanSenderFrom);
+                        }
+                        return false;
+                    })) ||
+                    (includesTicketOwner && !isExplicitVendor);
+
+                if (!isExplicitVendor && isClientSender) {
+                    isVendor = false;
+                    finalVendorId = null;
+                    logger.info(`🎟️ [TICKET] 🎯 Sender ${from} is client/participant on Ticket ${existingTicket.ticketId} without vendor tag. Routing to Client thread.`);
+                }
             }
 
             // EXPLICIT ROUTING: If the subject contains the explicit vendor suffix
