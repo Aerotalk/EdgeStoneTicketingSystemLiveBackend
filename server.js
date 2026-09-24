@@ -111,11 +111,20 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 // Routes (Placeholders)
 // Health Check Route
 app.get('/', (req, res) => {
+    let emailStatus = null;
+    try {
+        const emailService = require('./services/emailService');
+        if (typeof emailService.getPollerStatus === 'function') {
+            emailStatus = emailService.getPollerStatus();
+        }
+    } catch (_) {}
+
     res.status(200).json({
         message: 'EdgeStone Ticket System API is running',
         status: 'OK',
         timestamp: new Date().toISOString(),
-        version: '1.0.0'
+        version: '1.0.0',
+        emailPoller: emailStatus
     });
 });
 
@@ -236,19 +245,21 @@ if (require.main === module || process.env.NODE_ENV === 'production') {
         const server = app.listen(PORT, () => {
             logger.info(`🚀 Server running on port ${PORT}`);
 
-            // Start IMAP Listener for incoming emails - ONLY ON PRIMARY CLUSTER INSTANCE
+            // Start IMAP / Graph Listener for incoming emails - ONLY ON PRIMARY CLUSTER INSTANCE
             // PM2 sets NODE_APP_INSTANCE for clustered apps (0, 1, 2...)
             if (process.env.NODE_APP_INSTANCE === '0' || !process.env.NODE_APP_INSTANCE) {
-                if (process.env.ENABLE_EMAIL_POLLING === 'true') {
+                // Email polling enabled by default unless explicitly disabled with ENABLE_EMAIL_POLLING=false
+                const isPollingEnabled = process.env.ENABLE_EMAIL_POLLING !== 'false';
+                if (isPollingEnabled) {
                     try {
                         const emailService = require('./services/emailService');
-                        logger.info('📧 Initializing IMAP Listener on primary instance...');
+                        logger.info('📧 Initializing IMAP/Graph Email Listener on primary instance...');
                         emailService.startImapListener();
                     } catch (err) {
-                        logger.error('❌ Failed to start IMAP listener:', err);
+                        logger.error('❌ Failed to start IMAP/Graph listener:', err);
                     }
                 } else {
-                    logger.info(`📧 IMAP Listener disabled. To enable email ticket creation, set ENABLE_EMAIL_POLLING=true in your .env file.`);
+                    logger.info(`📧 Email listener disabled (ENABLE_EMAIL_POLLING=false).`);
                 }
             } else {
                 logger.info(`🔄 Running as secondary worker instance (ID: ${process.env.NODE_APP_INSTANCE}). IMAP Listener disabled here.`);

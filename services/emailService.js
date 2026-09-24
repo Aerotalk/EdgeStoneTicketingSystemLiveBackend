@@ -8,6 +8,9 @@ let graphAccessToken = null;
 let tokenExpiresAt = 0;
 let isPolling = false;
 let graphPollInterval = null;
+let lastPolledAt = null;
+let lastPollError = null;
+let pollerActive = false;
 
 const processedGraphIds = new Set();
 
@@ -792,7 +795,10 @@ const fetchNewGraphEmails = async () => {
         // Also check Sent Items for replies sent directly from Outlook / external mail clients
         await syncSentItemsEmails(accessToken, userEmail);
 
+        lastPolledAt = new Date().toISOString();
+        lastPollError = null;
     } catch (err) {
+        lastPollError = err.message;
         logger.error(`[EMAIL] Fetch Error: ${err.message}`);
     } finally {
         isPolling = false;
@@ -801,10 +807,23 @@ const fetchNewGraphEmails = async () => {
 
 const startImapListener = () => {
     logger.info('[EMAIL] Starting Graph API Poller (Inbox & Sent Items)...');
+    pollerActive = true;
     fetchNewGraphEmails();
     if (!graphPollInterval) {
         graphPollInterval = setInterval(fetchNewGraphEmails, 5000);
+        logger.info('📧 Graph API Email Poller active (polling every 5 seconds)');
     }
+};
+
+const getPollerStatus = () => {
+    return {
+        active: pollerActive || !!graphPollInterval,
+        isPolling,
+        lastPolledAt,
+        lastPollError,
+        senderEmail: process.env.SENDER_EMAIL || process.env.MAIL_USER || null,
+        configured: !!(process.env.TENANT_ID && process.env.CLIENT_ID && process.env.CLIENT_SECRET)
+    };
 };
 
 module.exports = {
@@ -813,5 +832,6 @@ module.exports = {
     startImapListener,
     fetchNewGraphEmails,
     syncSentItemsEmails,
-    fetchMessageAttachments
+    fetchMessageAttachments,
+    getPollerStatus
 };

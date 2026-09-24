@@ -27,8 +27,38 @@ const getSuggestions = async (req, res, next) => {
     }
 };
 
+const getStatus = async (req, res, next) => {
+    try {
+        const status = emailService.getPollerStatus ? emailService.getPollerStatus() : { active: false };
+        res.json({
+            success: true,
+            status
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const triggerPoll = async (req, res, next) => {
+    try {
+        logger.info('[EMAIL CONTROLLER] Manual poll requested via API');
+        await emailService.fetchNewGraphEmails();
+        const status = emailService.getPollerStatus ? emailService.getPollerStatus() : { active: false };
+        res.json({
+            success: true,
+            message: 'Email poll cycle completed',
+            status
+        });
+    } catch (error) {
+        logger.error(`[EMAIL CONTROLLER] Error triggering email poll: ${error.message}`);
+        next(error);
+    }
+};
+
 module.exports = {
     handleWebhook,
     getSuggestions,
+    getStatus,
+    triggerPoll
 };
 
