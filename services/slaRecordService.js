@@ -249,13 +249,15 @@ const updateSLAClosure = async (id, closeDate, closedTime, oldRecordOverride = n
                 }
 
                 const circuitId = existingRecord.ticket?.circuitId;
-                if (circuitId && (diffMins > 0 || oldDiffMins > 0 || oldRecord.status === 'Breached')) {
+                if (circuitId) {
                     const circuit = await prisma.circuit.findFirst({
                         where: {
                             OR: [
                                 { customerCircuitId: circuitId },
                                 { supplierCircuitId: circuitId },
-                                { id: circuitId }
+                                { id: circuitId },
+                                { customerCircuitId: { equals: circuitId, mode: 'insensitive' } },
+                                { supplierCircuitId: { equals: circuitId, mode: 'insensitive' } }
                             ]
                         },
                         select: { id: true, mrc: true, supplierMrc: true }
@@ -266,7 +268,8 @@ const updateSLAClosure = async (id, closeDate, closedTime, oldRecordOverride = n
                             where: { 
                                 circuitId: circuit.id,
                                 appliesTo: { in: existingRecord.type === 'CLIENT' ? ['CLIENT', 'CUSTOMER'] : ['VENDOR'] }
-                            } 
+                            },
+                            include: { rules: true }
                         });
 
                         if (circuitSlas.length > 0) {
@@ -286,38 +289,10 @@ const updateSLAClosure = async (id, closeDate, closedTime, oldRecordOverride = n
                                 const effectiveUptime = Math.max(totalUptimeMinutes - diffMins, 0);
                                 const ticketAvailability = (effectiveUptime / totalUptimeMinutes) * 100;
 
-                                const rules = result.rules || [];
-                                let matchedRule = rules.find(r => {
-                                    const upperOk = r.upperLimit === null || r.upperOperator === null ? true :
-                                        (r.upperOperator === '>' ? r.upperLimit > ticketAvailability :
-                                         r.upperOperator === '>=' ? r.upperLimit >= ticketAvailability :
-                                         r.upperOperator === '<' ? r.upperLimit < ticketAvailability :
-                                         r.upperOperator === '<=' ? r.upperLimit <= ticketAvailability : false);
-                                    const lowerOk = r.lowerLimit === null || r.lowerOperator === null ? true :
-                                        (r.lowerOperator === '>' ? ticketAvailability > r.lowerLimit :
-                                         r.lowerOperator === '>=' ? ticketAvailability >= r.lowerLimit :
-                                         r.lowerOperator === '<' ? ticketAvailability < r.lowerLimit :
-                                         r.lowerOperator === '<=' ? ticketAvailability <= r.lowerLimit : false);
-                                    return upperOk && lowerOk;
-                                }) || null;
+                                const rules = result.rules || s.rules || [];
+                                const matchedRule = slaService.matchRuleForAvailability(rules, ticketAvailability);
 
-                                if (!matchedRule && rules.length > 0) {
-                                    const lowestBoundRule = rules.reduce((min, r) => {
-                                        if (r.lowerLimit === null) return min;
-                                        if (min.lowerLimit === null) return r;
-                                        return r.lowerLimit < min.lowerLimit ? r : min;
-                                    }, rules[0]);
-                                    if (lowestBoundRule.lowerLimit !== null && ticketAvailability < lowestBoundRule.lowerLimit) {
-                                        matchedRule = rules.reduce((max, r) => r.compensationPercentage > max.compensationPercentage ? r : max, rules[0]);
-                                    } else {
-                                        const rulesAbove = rules.filter(r => r.lowerLimit !== null && r.lowerLimit > ticketAvailability);
-                                        if (rulesAbove.length > 0) {
-                                            matchedRule = rulesAbove.reduce((closest, r) => r.lowerLimit < closest.lowerLimit ? r : closest);
-                                        }
-                                    }
-                                }
-
-                                const compPct = matchedRule ? matchedRule.compensationPercentage : 0;
+                                const compPct = matchedRule ? (matchedRule.compensationPercentage || 0) : 0;
                                 const status = compPct > 0 ? 'BREACHED' : 'SAFE';
 
                                 if (compPct > highestCompensation) {
@@ -348,7 +323,15 @@ const updateSLAClosure = async (id, closeDate, closedTime, oldRecordOverride = n
                             logger.info(`⏱️ [SLA] 💾 [SLA Closure] SLARecord ${existingRecord.id} updated — compensation: "${compensationDisplay}", status: "${slaStatusDisplay}"`);
                         } else {
                             logger.warn(`⚠️ ⏱️ [SLA] ⚠️ [SLA Closure] Circuit ${circuit.id} has no active SLAs configured for ${existingRecord.type}.`);
-                            updatedRecords.push(updated);
+                            const finalUpdated = await prisma.sLARecord.update({
+                                where: { id: existingRecord.id },
+                                data: {
+                                    compensation: '-',
+                                    status: 'Safe',
+                                    statusReason: `No active ${existingRecord.type} SLA configured for circuit`
+                                }
+                            });
+                            updatedRecords.push(finalUpdated);
                         }
                     } else {
                         logger.warn(`⚠️ ⏱️ [SLA] ⚠️ [SLA Closure] No circuit found for circuitId: ${circuitId}`);

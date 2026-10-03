@@ -35,16 +35,56 @@ function ruleMatches(rule, availability) {
     const upperOk =
         rule.upperLimit === null || rule.upperOperator === null
             ? true
-            // Evaluate as: Rule.UpperLimit [operator] Availability
-            : evalOperator(rule.upperOperator, rule.upperLimit, availability);
+            // If upperLimit is 100% and availability is >= 100%, match the top tier
+            : (rule.upperLimit >= 100 && availability >= 100)
+                ? true
+                : evalOperator(rule.upperOperator, rule.upperLimit, availability);
 
     const lowerOk =
         rule.lowerLimit === null || rule.lowerOperator === null
             ? true
-            // Evaluate as: Availability [operator] Rule.LowerLimit
             : evalOperator(rule.lowerOperator, availability, rule.lowerLimit);
 
     return upperOk && lowerOk;
+}
+
+/**
+ * Find the matched SLA rule for a given availability percentage.
+ * Rules evaluation logic:
+ * 1. Standard match against rule bounds (upperLimit op Av op lowerLimit).
+ * 2. If availability <= lowest upperLimit among all rules (e.g. availability <= 89.99%),
+ *    match the rule with that lowest upperLimit (e.g. 75%, 79%, 10% fall into this rule).
+ * 3. Fallback for gaps between tiers: match nearest tier whose target was breached.
+ * 4. Fallback: rule with highest compensation.
+ */
+function matchRuleForAvailability(rules, availability) {
+    if (!rules || rules.length === 0) return null;
+
+    // 1. Direct standard match
+    const directMatch = rules.find((r) => ruleMatches(r, availability));
+    if (directMatch) return directMatch;
+
+    // 2. Identify rule with the lowest upper limit
+    const rulesWithUpper = rules.filter(r => r.upperLimit !== null && r.upperLimit !== undefined);
+    if (rulesWithUpper.length > 0) {
+        const sortedByUpper = [...rulesWithUpper].sort((a, b) => a.upperLimit - b.upperLimit);
+        const lowestUpperRule = sortedByUpper[0];
+
+        // If availability is below or equal to the lowest upper limit, match this rule
+        if (availability <= lowestUpperRule.upperLimit) {
+            return lowestUpperRule;
+        }
+    }
+
+    // 3. Fallback for gaps between tiers: find rule just above current availability
+    const rulesAbove = rules.filter(r => r.lowerLimit !== null && r.lowerLimit !== undefined && r.lowerLimit > availability);
+    if (rulesAbove.length > 0) {
+        const closestAbove = rulesAbove.reduce((closest, r) => r.lowerLimit < closest.lowerLimit ? r : closest);
+        return closestAbove;
+    }
+
+    // 4. Fallback: rule with highest compensation
+    return rules.reduce((max, r) => (r.compensationPercentage || 0) > (max.compensationPercentage || 0) ? r : max, rules[0]);
 }
 
 /**
@@ -505,37 +545,11 @@ async function calculateSla(slaId, downtimeMinutes, totalUptimeMinutes) {
     logger.info(`⏱️ [SLA] 📉 [SLA ENGINE] Step 2: Availability calculated dropping to ➡️ ${availability.toFixed(4)}% Out of ${totalUptimeMinutes}m`);
 
     // ── 3. Match rule ─────────────────────────────────────────────────
-    let matchedRule = sla.rules.find((r) => ruleMatches(r, availability)) || null;
-    let fallbackTriggered = false;
-
-    if (!matchedRule && sla.rules.length > 0) {
-        const lowestBoundRule = sla.rules.reduce((min, r) => {
-            if (r.lowerLimit === null) return min;
-            if (min.lowerLimit === null) return r;
-            return r.lowerLimit < min.lowerLimit ? r : min;
-        }, sla.rules[0]);
-
-        if (lowestBoundRule.lowerLimit !== null && availability < lowestBoundRule.lowerLimit) {
-            matchedRule = sla.rules.reduce((max, r) => 
-                r.compensationPercentage > max.compensationPercentage ? r : max
-            , sla.rules[0]);
-            fallbackTriggered = true;
-            logger.info(`⏱️ [SLA] ⚠️ [SLA ENGINE] Availability (${availability.toFixed(4)}%) fell below lowest defined limit (${lowestBoundRule.lowerLimit}%). Applying max penalty fallback.`);
-        } else {
-            // Gap fallback logic: find the rule just ABOVE the current availability
-            const rulesAbove = sla.rules.filter(r => r.lowerLimit !== null && r.lowerLimit > availability);
-            if (rulesAbove.length > 0) {
-                matchedRule = rulesAbove.reduce((closest, r) => r.lowerLimit < closest.lowerLimit ? r : closest);
-                fallbackTriggered = true;
-                logger.info(`⏱️ [SLA] ⚠️ [SLA ENGINE] Availability (${availability.toFixed(4)}%) fell into a gap. Applying nearest higher tier penalty fallback (Rule lowerLimit: ${matchedRule.lowerLimit}%).`);
-            }
-        }
-    }
-
-    logger.info(`⏱️ [SLA] 🔍 [SLA ENGINE] Step 3: Match Engine evaluated ➡️ ${matchedRule ? (fallbackTriggered ? `Fallback to Max Penalty! Rule ID: ${matchedRule.id}` : `Rule Matched! Rule ID: ${matchedRule.id}`) : 'No Match Found. Safe.'}`);
+    const matchedRule = matchRuleForAvailability(sla.rules, availability);
+    logger.info(`⏱️ [SLA] 🔍 [SLA ENGINE] Step 3: Match Engine evaluated ➡️ ${matchedRule ? `Rule Matched! Rule ID: ${matchedRule.id}, Range: ${matchedRule.lowerLimit ?? '0'}%–${matchedRule.upperLimit ?? '100'}%, Compensation: ${matchedRule.compensationPercentage}%` : 'No Match Found. Safe.'}`);
 
     // ── 4. Assign compensation ────────────────────────────────────────
-    const compensationPct = matchedRule ? matchedRule.compensationPercentage : 0;
+    const compensationPct = matchedRule ? (matchedRule.compensationPercentage || 0) : 0;
     logger.info(`⏱️ [SLA] 💸 [SLA ENGINE] Step 4: Compensation Triggered ➡️ ${compensationPct}% payout required!`);
 
     // ── 5. Determine status ───────────────────────────────────────────
@@ -553,9 +567,9 @@ async function calculateSla(slaId, downtimeMinutes, totalUptimeMinutes) {
                 compensationAmount:   compensationPct,
                 status:               newStatus,
                 statusReason: matchedRule
-                    ? (fallbackTriggered 
-                        ? `Availability fell below lowest rule. Applied max penalty: ${compensationPct}% compensation`
-                        : `Matched rule: ${matchedRule.lowerLimit ?? '∞'}–${matchedRule.upperLimit ?? '∞'}% → ${compensationPct}% compensation`)
+                    ? (compensationPct > 0 
+                        ? `Circuit SLA breached: ${compensationPct}% compensation due (availability ${availability.toFixed(2)}%)`
+                        : `Circuit availability (${availability.toFixed(2)}%) within SLA bounds (0% compensation)`)
                     : 'No rule matched; availability within acceptable range.',
             },
         });
@@ -781,5 +795,7 @@ module.exports = {
     addRuleToSla,
     updateSlaRule,
     deleteSlaRule,
+    matchRuleForAvailability,
+    ruleMatches,
 };
 

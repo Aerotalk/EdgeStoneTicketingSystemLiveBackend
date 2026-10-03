@@ -3,8 +3,8 @@ const prisma = new PrismaClient();
 
 async function checkDb() {
   const records = await prisma.sLARecord.findMany({
-    include: { ticket: { select: { ticketId: true, circuitId: true } } },
-    where: { ticket: { circuitId: 'N1/PARO/2611' } }
+    include: { ticket: { select: { ticketId: true, circuitId: true, status: true } } },
+    take: 10
   });
   console.log(JSON.stringify(records, null, 2));
 }
