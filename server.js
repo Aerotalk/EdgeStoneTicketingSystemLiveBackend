@@ -223,6 +223,13 @@ try {
 }
 
 try {
+    app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+    logger.debug('📊 Dashboard Analytics routes registered');
+} catch (error) {
+    logger.error('❌ Failed to load Dashboard Routes:', error);
+}
+
+try {
     app.use('/api/notifications', require('./routes/notificationRoutes'));
     logger.debug('🔔 Notification routes registered');
 } catch (error) {
