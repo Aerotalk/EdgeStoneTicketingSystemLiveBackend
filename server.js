@@ -216,6 +216,13 @@ try {
 }
 
 try {
+    app.use('/api/handovers', require('./routes/handoverRoutes'));
+    logger.debug('🤝 Shift Handover routes registered');
+} catch (error) {
+    logger.error('❌ Failed to load Shift Handover Routes:', error);
+}
+
+try {
     app.use('/api/notifications', require('./routes/notificationRoutes'));
     logger.debug('🔔 Notification routes registered');
 } catch (error) {

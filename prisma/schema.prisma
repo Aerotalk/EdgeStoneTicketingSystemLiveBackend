@@ -210,13 +210,45 @@ model ActivityLog {
   createdAt DateTime @default(now())
 }
 
-// --- Global Note Model (Shift Handover) ---
+// --- Global Note Model (Shift Handover - Legacy) ---
 model GlobalNote {
   id        String   @id @default("global-note")
   content   String   @db.Text
   updatedBy String   @default("System")
   updatedAt DateTime @updatedAt
 }
+
+// --- Shift-wise & Date-wise Handover Model ---
+model ShiftHandover {
+  id              String    @id @default(uuid())
+  date            String    // Format: "YYYY-MM-DD" (operational date in IST)
+  shift           String    // "A" | "B" | "C"
+  shiftName       String    // "Morning" | "Afternoon" | "Night"
+  
+  content         String    @default("") @db.Text // Markdown / rich text notes
+  
+  // Structured metadata (checklist / critical tickets / pending tasks)
+  criticalTickets Json?     // Array of { ticketNumber: string, summary: string, priority: string }
+  pendingTasks    Json?     // Array of { id: string, text: string, completed: boolean }
+  
+  // Audit & Handover Lifecycle
+  status          String    @default("DRAFT") // "DRAFT" | "SUBMITTED" | "ACKNOWLEDGED"
+  
+  outgoingAgentId String?
+  outgoingAgent   String?   // Name of agent completing the handover
+  
+  incomingAgentId String?
+  incomingAgent   String?   // Name of agent acknowledging/receiving shift
+  acknowledgedAt  DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([date, shift])
+  @@index([date])
+  @@index([status])
+}
+
 
 // --- Circuit Management Models ---
 
