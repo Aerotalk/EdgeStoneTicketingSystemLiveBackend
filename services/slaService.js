@@ -140,6 +140,58 @@ const SLA_INCLUDE = {
 // ─────────────────────────────────────────────
 
 /**
+ * Recalculate an SLA's overall downtime & status from closed records,
+ * and re-evaluate each closed ticket SLARecord for the circuit against the updated SLA rules.
+ */
+async function recalculateCircuitSla(slaId, circuitId, appliesTo) {
+    try {
+        const slaRecordService = require('./slaRecordService');
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const totalUptimeMinutes = daysInMonth * 24 * 60;
+
+        // 1. Recalculate the SLA model itself
+        await calculateSla(slaId, 0, totalUptimeMinutes);
+
+        // 2. Find the circuit to get all identifier variants
+        const circuit = await prisma.circuit.findFirst({
+            where: {
+                OR: [
+                    { id: circuitId },
+                    { customerCircuitId: circuitId },
+                    { supplierCircuitId: circuitId }
+                ]
+            }
+        });
+        if (!circuit) return;
+
+        // 3. Find and recalculate all closed tickets on this circuit for this SLA type
+        const recordType = appliesTo === 'VENDOR' ? 'VENDOR' : 'CLIENT';
+        const matchingRecords = await prisma.sLARecord.findMany({
+            where: {
+                ticket: {
+                    circuitId: {
+                        in: [circuit.customerCircuitId, circuit.supplierCircuitId, circuit.id].filter(Boolean)
+                    }
+                },
+                type: recordType,
+                closedTime: { not: null },
+                closeDate: { not: null }
+            }
+        });
+
+        for (const rec of matchingRecords) {
+            if (rec.closeDate && rec.closeDate !== '-' && rec.closedTime && rec.closedTime !== '-') {
+                await slaRecordService.updateSLAClosure(rec.id, rec.closeDate, rec.closedTime);
+            }
+        }
+        logger.info(`⏱️ [SLA] 🔄 Recalculated ${matchingRecords.length} closed records for circuit ${circuitId} (${appliesTo})`);
+    } catch (err) {
+        logger.error(`🚨 ⏱️ [SLA] ❌ Failed to recalculate circuit SLA (${slaId}): ${err.message}`);
+    }
+}
+
+/**
  * Create a new SLA with its dynamic rule set.
  *
  * Body shape:
@@ -286,7 +338,11 @@ async function createSla(data) {
     });
 
     logger.info(`⏱️ [SLA] ✅ SLA created: ${sla.id} (${appliesTo}) for circuit ${circuitId}`);
-    return sla;
+
+    // Auto-recalculate SLA and existing closed records on this circuit
+    await recalculateCircuitSla(sla.id, circuitId, appliesTo);
+    const freshSla = await getSlaById(sla.id);
+    return freshSla || sla;
 }
 
 /**
@@ -365,7 +421,11 @@ async function updateSla(id, data) {
     });
 
     logger.info(`⏱️ [SLA] 🔄 SLA updated: ${updated.id} (${appliesTo})`);
-    return updated;
+
+    // Auto-recalculate SLA and existing closed records on this circuit
+    await recalculateCircuitSla(updated.id, updated.circuitId, updated.appliesTo);
+    const freshUpdated = await getSlaById(updated.id);
+    return freshUpdated || updated;
 }
 
 /** Return all SLAs with embedded rules. */
@@ -716,6 +776,10 @@ async function addRuleToSla(slaId, ruleData) {
     });
 
     logger.info(`⏱️ [SLA] ➕ Rule added to SLA ${slaId}: id=${newRule.id}, compensation=${newRule.compensationPercentage}%`);
+
+    // Auto-recalculate SLA and closed tickets on this circuit
+    await recalculateCircuitSla(sla.id, sla.circuitId, sla.appliesTo);
+
     return newRule;
 }
 
@@ -748,6 +812,13 @@ async function updateSlaRule(slaId, ruleId, ruleData) {
     });
 
     logger.info(`⏱️ [SLA] ✏️  Rule ${ruleId} updated on SLA ${slaId}: compensation=${updated.compensationPercentage}%`);
+
+    // Auto-recalculate SLA and closed tickets on this circuit
+    const parentSla = await prisma.sla.findUnique({ where: { id: slaId } });
+    if (parentSla) {
+        await recalculateCircuitSla(slaId, parentSla.circuitId, parentSla.appliesTo);
+    }
+
     return updated;
 }
 
@@ -777,8 +848,15 @@ async function deleteSlaRule(slaId, ruleId) {
         throw err;
     }
 
+    const parentSla = await prisma.sla.findUnique({ where: { id: slaId } });
     await prisma.slaRule.delete({ where: { id: ruleId } });
     logger.info(`⏱️ [SLA] 🗑️  Rule ${ruleId} removed from SLA ${slaId}`);
+
+    // Auto-recalculate SLA and closed tickets on this circuit
+    if (parentSla) {
+        await recalculateCircuitSla(slaId, parentSla.circuitId, parentSla.appliesTo);
+    }
+
     return { deleted: true, id: ruleId };
 }
 
@@ -790,6 +868,7 @@ module.exports = {
     getSlaById,
     updateSlaStatus,
     calculateSla,
+    recalculateCircuitSla,
     // Per-rule dynamic management
     getRulesForSla,
     addRuleToSla,

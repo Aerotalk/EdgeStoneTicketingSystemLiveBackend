@@ -327,7 +327,7 @@ const updateSLAClosure = async (id, closeDate, closedTime, oldRecordOverride = n
                                 where: { id: existingRecord.id },
                                 data: {
                                     compensation: '-',
-                                    status: 'Safe',
+                                    status: 'No SLA',
                                     statusReason: `No active ${existingRecord.type} SLA configured for circuit`
                                 }
                             });
