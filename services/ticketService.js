@@ -611,7 +611,7 @@ const appendClientReplyToTicket = async (ticket, emailData) => {
     try {
         const notificationService = require('./notificationService');
         const isClosed = ticket.status && ticket.status.toLowerCase() === 'closed';
-        const senderLabel = ticket.ticketType === 'Vendor' ? 'Vendor' : 'Client';
+        const senderLabel = 'Client';
         const senderName = fromName || from;
 
         if (isClosed) {
@@ -625,7 +625,7 @@ const appendClientReplyToTicket = async (ticket, emailData) => {
         } else {
             await notificationService.sendNotification({
                 type: 'client_reply',
-                title: 'Ticket Update',
+                title: ticket.isMaintenance ? `Client Maintenance Reply (${ticket.ticketId})` : 'Ticket Update',
                 message: `${senderLabel} (${senderName}) replied to Ticket ${ticket.ticketId}`,
                 ticketId: ticket.ticketId,
                 sender: 'client'
@@ -881,15 +881,17 @@ const createTicketFromEmail = async (emailData) => {
                     }
                 }
 
-                const prioritizedVendor = matchedVendors.find(v => circuitVendors.includes(v.id));
-                finalVendorId = prioritizedVendor ? prioritizedVendor.id : matchedVendors[0].id;
+                if (matchedVendors.length > 0) {
+                    const prioritizedVendor = matchedVendors.find(v => circuitVendors.includes(v.id));
+                    finalVendorId = prioritizedVendor ? prioritizedVendor.id : (matchedVendors[0]?.id || null);
+                }
 
                 // ── SMART VENDOR ACTIVE TICKET DISAMBIGUATION ──
                 // When vendors reply via email, they often reply to an existing email thread in their email client
                 // which might contain an older ticket tag (e.g., [#V1018]). Since vendors are NEVER sent
                 // automated emails, if there is a newer active maintenance/open ticket for the same circuit and vendor,
                 // we intelligently route the vendor's reply to that active ticket (e.g., #V1023).
-                if (existingTicket.circuitId) {
+                if (matchedVendors.length > 0 && existingTicket.circuitId) {
                     try {
                         const newerActiveTicket = await prisma.ticket.findFirst({
                             where: {
@@ -1022,32 +1024,53 @@ const createTicketFromEmail = async (emailData) => {
             // route to client thread.
             const isExplicitVendor = subject && /\[#?V?\d+-V\]/i.test(subject);
 
-            if (isVendorTicket) {
+            const cleanSenderFrom = from ? from.trim().toLowerCase() : '';
+            const incomingRecipients = [...(emailData.to || []), ...(emailData.cc || [])].map(e => e.toLowerCase().trim());
+            const includesTicketOwner = existingTicket.email && incomingRecipients.includes(existingTicket.email.toLowerCase().trim());
+
+            // Check if sender matches client of circuit
+            let isCircuitClient = false;
+            if (existingTicket.circuitId) {
+                try {
+                    const prisma = require('../models/index');
+                    const ckt = await prisma.circuit.findFirst({
+                        where: { OR: [ { customerCircuitId: existingTicket.circuitId }, { supplierCircuitId: existingTicket.circuitId }, { id: existingTicket.circuitId } ] },
+                        include: { client: true }
+                    });
+                    if (ckt && ckt.client && Array.isArray(ckt.client.emails)) {
+                        isCircuitClient = ckt.client.emails.some(e => e.toLowerCase().trim() === cleanSenderFrom);
+                        if (!isCircuitClient && cleanSenderFrom.includes('@')) {
+                            const senderDomain = cleanSenderFrom.split('@')[1];
+                            const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+                            if (!genericDomains.includes(senderDomain)) {
+                                isCircuitClient = ckt.client.emails.some(e => e.toLowerCase().endsWith('@' + senderDomain));
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            const isClientSender = (existingTicket.email && existingTicket.ticketType !== 'Vendor' && existingTicket.email.toLowerCase() === cleanSenderFrom) ||
+                (Array.isArray(existingTicket.cc) && existingTicket.cc.some(c => c.toLowerCase() === cleanSenderFrom)) ||
+                (existingTicket.client && Array.isArray(existingTicket.client.emails) && existingTicket.client.emails.some(e => e.toLowerCase() === cleanSenderFrom)) ||
+                isCircuitClient ||
+                (Array.isArray(previousReplies) && previousReplies.some(r => {
+                    const isClientReply = r.category === 'client' || (!r.category && r.type !== 'vendor');
+                    if (isClientReply) {
+                        const recips = [...(r.to || []), ...(r.cc || [])].map(e => e.toLowerCase().trim());
+                        return recips.includes(cleanSenderFrom);
+                    }
+                    return false;
+                })) ||
+                (includesTicketOwner && !isExplicitVendor && existingTicket.ticketType !== 'Vendor');
+
+            if (!isExplicitVendor && isClientSender) {
+                isVendor = false;
+                finalVendorId = null;
+                logger.info(`🎟️ [TICKET] 🎯 Sender ${from} is client/participant on Ticket ${existingTicket.ticketId} without vendor tag. Routing to Client thread.`);
+            } else if (isVendorTicket) {
                 isVendor = true;
                 if (!finalVendorId) finalVendorId = existingTicket.vendorId;
-            } else {
-                const cleanSenderFrom = from ? from.trim().toLowerCase() : '';
-                const incomingRecipients = [...(emailData.to || []), ...(emailData.cc || [])].map(e => e.toLowerCase().trim());
-                const includesTicketOwner = existingTicket.email && incomingRecipients.includes(existingTicket.email.toLowerCase().trim());
-
-                const isClientSender = (existingTicket.email && existingTicket.email.toLowerCase() === cleanSenderFrom) ||
-                    (Array.isArray(existingTicket.cc) && existingTicket.cc.some(c => c.toLowerCase() === cleanSenderFrom)) ||
-                    (existingTicket.client && Array.isArray(existingTicket.client.emails) && existingTicket.client.emails.some(e => e.toLowerCase() === cleanSenderFrom)) ||
-                    (Array.isArray(previousReplies) && previousReplies.some(r => {
-                        const isClientReply = r.category === 'client' || (!r.category && r.type !== 'vendor');
-                        if (isClientReply) {
-                            const recips = [...(r.to || []), ...(r.cc || [])].map(e => e.toLowerCase().trim());
-                            return recips.includes(cleanSenderFrom);
-                        }
-                        return false;
-                    })) ||
-                    (includesTicketOwner && !isExplicitVendor);
-
-                if (!isExplicitVendor && isClientSender) {
-                    isVendor = false;
-                    finalVendorId = null;
-                    logger.info(`🎟️ [TICKET] 🎯 Sender ${from} is client/participant on Ticket ${existingTicket.ticketId} without vendor tag. Routing to Client thread.`);
-                }
             }
 
             // EXPLICIT ROUTING: If the subject contains the explicit vendor suffix
@@ -1191,6 +1214,7 @@ const createTicketFromEmail = async (emailData) => {
         let circuitUUID = null;
         let foundLocation = 'none';
         let containsVendorCircuitId = false;
+        let detectedCircuitRecord = null;
         try {
             // Fetch circuits including supplier IDs, clientId and vendorId for disambiguation
             const allCircuits = await prisma.circuit.findMany({ 
@@ -1300,7 +1324,7 @@ const createTicketFromEmail = async (emailData) => {
 
             // --- Disambiguate Sender based on detected circuit ---
             if (circuitId) {
-                const detectedCircuitRecord = allCircuits.find(c => c.customerCircuitId === circuitId || c.supplierCircuitId === circuitId);
+                detectedCircuitRecord = allCircuits.find(c => c.customerCircuitId === circuitId || c.supplierCircuitId === circuitId);
                 if (detectedCircuitRecord) {
                     let matchedCircuitVendorId = null;
 
@@ -1357,8 +1381,8 @@ const createTicketFromEmail = async (emailData) => {
                     else if (isMaintenanceEmail && circuitVendorId && (isVendorCircuitMatched || (potentialClientIds.length === 0 && domainMatchedClientIds.length === 0) || domainMatchedVendorIds.includes(circuitVendorId))) {
                         vendorId = circuitVendorId;
                         ticketType = 'Vendor';
-                        clientId = null;
-                        logger.info(`🎟️ [TICKET] 🎯 Disambiguated Sender: Identified as VENDOR MAINTENANCE for Vendor ${vendorId} on Circuit ${circuitId} (Vendor Circuit ID: ${isVendorCircuitMatched})`);
+                        clientId = detectedCircuitRecord.clientId || null;
+                        logger.info(`🎟️ [TICKET] 🎯 Disambiguated Sender: Identified as VENDOR MAINTENANCE for Vendor ${vendorId} on Circuit ${circuitId} (Linked Client: ${clientId})`);
                     }
                     // 3. If explicitly vendor (contains Vendor Circuit ID or [#...-V]) AND sender is not a recognized client:
                     else if (isExplicitVendor && circuitVendorId && (!detectedCircuitRecord.clientId || (!potentialClientIds.includes(detectedCircuitRecord.clientId) && !domainMatchedClientIds.includes(detectedCircuitRecord.clientId)))) {
@@ -1414,6 +1438,72 @@ const createTicketFromEmail = async (emailData) => {
         if (!circuitId) {
             logger.warn(`⚠️ 🎟️ [TICKET] 🚫 DROPPED EMAIL: Subject "${subject}" from ${from} does not contain any recognized Circuit ID. Ticket will NOT be created.`);
             return null;
+        }
+
+        // ── SMART CLIENT ACTIVE MAINTENANCE INTERCEPTOR ──
+        // If sender is a recognized client for this circuit (or email is from a client domain),
+        // and there is currently an ACTIVE Maintenance ticket for this circuit:
+        // Do NOT raise a new duplicate ticket! Route the email directly as a client reply to the active Maintenance ticket.
+        if (ticketType === 'Client' && circuitId) {
+            try {
+                const prisma = require('../models/index');
+                const circuitKeys = [circuitId];
+                if (detectedCircuitRecord) {
+                    if (detectedCircuitRecord.customerCircuitId) circuitKeys.push(detectedCircuitRecord.customerCircuitId);
+                    if (detectedCircuitRecord.supplierCircuitId) circuitKeys.push(detectedCircuitRecord.supplierCircuitId);
+                    if (detectedCircuitRecord.id) circuitKeys.push(detectedCircuitRecord.id);
+                }
+
+                const activeMaintenanceTicket = await prisma.ticket.findFirst({
+                    where: {
+                        circuitId: { in: Array.from(new Set(circuitKeys)) },
+                        OR: [
+                            { isMaintenance: true },
+                            { status: 'Maintenance' }
+                        ]
+                    },
+                    orderBy: { createdAt: 'desc' }
+                });
+
+                if (activeMaintenanceTicket) {
+                    const subjectAndBody = `${subject || ''} ${body || ''}`;
+                    const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|downtime|activity|window|approved|noted|acknowledged|proceed|reschedule/i.test(subjectAndBody);
+                    const isReplyPattern = /^(?:re|fwd|fw):\s*/i.test(subject || '');
+
+                    if (isMaintContext || isReplyPattern) {
+                        logger.info(`🎟️ [TICKET] 🔀 Smart Client Maintenance Interceptor: Redirecting client email from ${from} into active Maintenance Ticket ${activeMaintenanceTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
+
+                        if (!activeMaintenanceTicket.clientId && detectedCircuitRecord?.clientId) {
+                            try {
+                                await prisma.ticket.update({
+                                    where: { id: activeMaintenanceTicket.id },
+                                    data: { clientId: detectedCircuitRecord.clientId }
+                                });
+                                activeMaintenanceTicket.clientId = detectedCircuitRecord.clientId;
+                            } catch (_) {}
+                        }
+
+                        // Append to the active maintenance ticket as a client reply
+                        const replyResult = await appendClientReplyToTicket(activeMaintenanceTicket, emailData);
+
+                        // Real-time notification to NOC agents
+                        try {
+                            const notificationService = require('./notificationService');
+                            await notificationService.sendNotification({
+                                type: 'client_reply',
+                                title: `Client Maintenance Reply (${activeMaintenanceTicket.ticketId})`,
+                                message: `${fromName || from} replied to Maintenance Ticket ${activeMaintenanceTicket.ticketId}`,
+                                ticketId: activeMaintenanceTicket.ticketId,
+                                sender: 'client'
+                            });
+                        } catch (_) {}
+
+                        return replyResult;
+                    }
+                }
+            } catch (interceptErr) {
+                logger.error(`Error in Smart Client Maintenance Interceptor: ${interceptErr.message}`);
+            }
         }
 
 

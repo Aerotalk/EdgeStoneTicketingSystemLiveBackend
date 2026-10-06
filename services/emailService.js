@@ -644,7 +644,29 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
             const fromName = msg.from?.emailAddress?.name || fromAddr;
 
             // Check if this sent message matches an existing ticket
-            const existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, subject, msg.body?.content, fromAddr);
+            let existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, subject, msg.body?.content, fromAddr);
+            if (!existingTicket) {
+                // Check if this outbound email from agent was sent regarding an active maintenance circuit
+                try {
+                    const prisma = require('../models/index');
+                    const textScan = `${subject || ''} ${msg.body?.content || ''}`.toUpperCase();
+                    const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(`${subject || ''} ${msg.body?.content || ''}`);
+                    if (isMaintContext) {
+                        const allActiveMaintTickets = await prisma.ticket.findMany({
+                            where: { OR: [ { isMaintenance: true }, { status: 'Maintenance' } ] },
+                            orderBy: { createdAt: 'desc' }
+                        });
+                        for (const amt of allActiveMaintTickets) {
+                            if (amt.circuitId && textScan.includes(amt.circuitId.toUpperCase())) {
+                                existingTicket = amt;
+                                logger.info(`[EMAIL] 📤 Linked outbound agent maintenance email from Outlook to active Maintenance Ticket ${amt.ticketId} for circuit ${amt.circuitId}`);
+                                break;
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
+
             if (!existingTicket) {
                 processedGraphIds.add(msg.id);
                 if (msg.internetMessageId) processedGraphIds.add(msg.internetMessageId);
