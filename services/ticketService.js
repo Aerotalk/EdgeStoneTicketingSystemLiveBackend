@@ -372,25 +372,40 @@ const appendAgentReplyFromOutlook = async (ticket, emailData) => {
         return dupText;
     }
 
-    // Determine category: Vendor thread or Client thread
+    // Determine category: Vendor thread or Client thread based on actual recipients
     let category = 'client';
     const isVendorTag = subject && /\[#?V?\d+-V\]/i.test(subject);
+    const toRecips = (Array.isArray(to) ? to : (to ? [to] : [])).map(r => (r || '').toLowerCase().trim());
+    const ccRecips = (Array.isArray(cc) ? cc : (cc ? [cc] : [])).map(r => (r || '').toLowerCase().trim());
+    const allRecips = [...toRecips, ...ccRecips];
+
     if (isVendorTag) {
         category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
-    } else if (ticket.ticketType === 'Vendor') {
-        category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
     } else {
-        // Check if recipients contain vendor emails
         try {
+            const ClientModel = require('../models/client');
             const VendorModel = require('../models/vendor');
+
+            // 1. Check if recipients match a registered client
+            const clients = await ClientModel.findAllClients();
+            const matchedClient = clients.find(c => (c.emails || []).some(e => allRecips.includes(e.toLowerCase().trim())));
+
+            // 2. Check if recipients match a registered vendor
             const vendors = await VendorModel.findAllVendors();
-            const toRecips = Array.isArray(to) ? to : (to ? [to] : []);
-            const matchedVendor = vendors.find(v => v.emails.some(e => toRecips.some(r => r.toLowerCase().trim() === e.toLowerCase().trim())));
-            if (matchedVendor) {
+            const matchedVendor = vendors.find(v => (v.emails || []).some(e => allRecips.includes(e.toLowerCase().trim())));
+
+            if (matchedClient && !matchedVendor) {
+                category = 'client';
+            } else if (matchedVendor && !matchedClient) {
                 category = `vendor_${matchedVendor.id}`;
+            } else if (ticket.ticketType === 'Vendor') {
+                category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
+            } else {
+                category = 'client';
             }
         } catch (e) {
-            logger.error(`Error checking vendor recipients: ${e.message}`);
+            logger.error(`Error checking recipient category: ${e.message}`);
+            category = ticket.ticketType === 'Vendor' ? (ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor') : 'client';
         }
     }
 
