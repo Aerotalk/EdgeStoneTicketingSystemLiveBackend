@@ -231,13 +231,13 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         const emailHtml = htmlContent
             ? `
                 <div style="font-family: Arial, sans-serif; margin-bottom: 16px;">
-                    <p>Hello,</p>
+                    <p> </p>
                 </div>
                 ${htmlContent}
               `
             : `
                 <div style="font-family: Arial, sans-serif;">
-                    <p>Hello,</p>
+                    <p> </p>
                     <p>${message.replace(/\n/g, '<br>')}</p>
                     <br/>
                     <hr/>
