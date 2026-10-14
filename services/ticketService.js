@@ -10,6 +10,58 @@ const logger = require('../utils/logger');
 // ─────────────────────────────────────────────────────────────────────────────
 const stripHtml = (str) => {
     if (!str) return '';
+
+    // Check if the content contains HTML table markup
+    const hasTable = /<\s*table[\s>]/i.test(str);
+
+    if (hasTable) {
+        // PRESERVE TABLE STRUCTURE: Clean scripts/styles/Office XML junk but keep table elements and paragraph breaks
+        let clean = str
+            .replace(/<style[\s\S]*?<\/style>/gi, '') // remove <style> blocks
+            .replace(/<script[\s\S]*?<\/script>/gi, '') // remove <script> blocks
+            .replace(/<head[\s\S]*?<\/head>/gi, '') // remove <head> blocks
+            .replace(/<xml[\s\S]*?<\/xml>/gi, '') // remove Office XML blocks
+            .replace(/<!--[\s\S]*?-->/gi, '') // remove HTML comments
+            .replace(/<\/?o:[^>]*>/gi, '') // remove Outlook <o:p> tags
+            .replace(/<\/?w:[^>]*>/gi, '') // remove Word <w:...> tags
+            .replace(/<\/?m:[^>]*>/gi, '') // remove MathML <m:...> tags
+            .replace(/<\/?font[^>]*>/gi, '') // remove <font>
+            .replace(/<\/?span[^>]*>/gi, '') // remove <span>
+            .replace(/<br\s*\/?>/gi, '<br/>')
+            .replace(/<p\s+[^>]*>/gi, '<p>')
+            .replace(/<div\s+[^>]*>/gi, '<div>')
+            .replace(/<\/div>/gi, '</div>');
+
+        // Clean table tag attributes to eliminate bloated MSO/Word styles while keeping colspan/rowspan
+        clean = clean.replace(/<table\b[^>]*>/gi, '<table class="edgestone-table">');
+        clean = clean.replace(/<tr\b[^>]*>/gi, '<tr>');
+        clean = clean.replace(/<th\b([^>]*)>/gi, (match, attrs) => {
+            const colspan = attrs.match(/colspan=["']?(\d+)["']?/i);
+            const rowspan = attrs.match(/rowspan=["']?(\d+)["']?/i);
+            const extra = [colspan ? `colspan="${colspan[1]}"` : '', rowspan ? `rowspan="${rowspan[1]}"` : ''].filter(Boolean).join(' ');
+            return `<th${extra ? ' ' + extra : ''}>`;
+        });
+        clean = clean.replace(/<td\b([^>]*)>/gi, (match, attrs) => {
+            const colspan = attrs.match(/colspan=["']?(\d+)["']?/i);
+            const rowspan = attrs.match(/rowspan=["']?(\d+)["']?/i);
+            const extra = [colspan ? `colspan="${colspan[1]}"` : '', rowspan ? `rowspan="${rowspan[1]}"` : ''].filter(Boolean).join(' ');
+            return `<td${extra ? ' ' + extra : ''}>`;
+        });
+
+        // Strip any remaining unwanted tags outside allowed whitelist
+        clean = clean.replace(/<(?!\/?(?:table|thead|tbody|tfoot|tr|th|td|p|br|b|strong|i|em|ul|ol|li|a)\b)[^>]+>/gi, '');
+
+        // Decode common entities
+        clean = clean
+            .replace(/&nbsp;/gi, ' ')
+            .replace(/&quot;/gi, '"')
+            .replace(/&#39;/gi, "'")
+            .trim();
+
+        return clean;
+    }
+
+    // Standard plain-text stripping when no table is present
     return str
         .replace(/<style[\s\S]*?<\/style>/gi, '') // remove <style> blocks entirely
         .replace(/<script[\s\S]*?<\/script>/gi, '') // remove <script> blocks
@@ -34,22 +86,28 @@ const stripHtml = (str) => {
 const stripQuotedReply = (text) => {
     if (!text) return '';
     
+    // Helper to check if a match index is safely outside an open HTML table
+    const isInsideTable = (str, index) => {
+        const lastTableOpen = str.lastIndexOf('<table', index);
+        const lastTableClose = str.lastIndexOf('</table>', index);
+        return lastTableOpen !== -1 && (lastTableClose === -1 || lastTableClose < lastTableOpen);
+    };
+
     // 1. Outlook / Exchange Style
     let idx = text.search(/From:\s.*?\nSent:\s/i);
-    if (idx !== -1) text = text.substring(0, idx);
+    if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
     // 2. Generic "Original Message" separator
     idx = text.search(/-+\s*Original Message\s*-+/i);
-    if (idx !== -1) text = text.substring(0, idx);
+    if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
     // 3. Gmail Style "On [date], [name] wrote:"
-    // (We look for "On " followed by "wrote:" within a reasonable distance at the start of a line)
     idx = text.search(/(?:^|\n)\s*On\s+[\s\S]{10,150}?wrote:/i);
-    if (idx !== -1) text = text.substring(0, idx);
+    if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
     
     // 4. Sometimes Outlook includes "________________________________" before From:
     idx = text.search(/_{10,}/);
-    if (idx !== -1) text = text.substring(0, idx);
+    if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
     return text.trim();
 };
@@ -181,6 +239,31 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                     }
                 }
                 return ticket;
+            }
+        }
+    }
+
+    // 0.5 Strategy A.2: Vendor Trouble Ticket / Docket Number match (e.g. EN_IM_03092026_170954, TT#..., Docket#...)
+    if (subject || body) {
+        const textToScan = `${subject || ''} ${body || ''}`;
+        const docketMatch = textToScan.match(/\b(EN_IM_\d+_\d+|TT\s*#?:?\s*[A-Za-z0-9_-]+|Docket\s*#?:?\s*[A-Za-z0-9_-]+)\b/i);
+        if (docketMatch && docketMatch[1]) {
+            const rawDocket = docketMatch[1].trim();
+            const prisma = require('../models/index');
+            const matchingDocketTicket = await prisma.ticket.findFirst({
+                where: {
+                    status: { notIn: ['Spam'] },
+                    OR: [
+                        { header: { contains: rawDocket, mode: 'insensitive' } },
+                        { replies: { some: { text: { contains: rawDocket, mode: 'insensitive' } } } }
+                    ]
+                },
+                include: { client: true, vendor: true },
+                orderBy: { createdAt: 'desc' }
+            });
+            if (matchingDocketTicket) {
+                logger.info(`🎟️ [TICKET] 🧵 Reply matched via Vendor TT Docket: "${rawDocket}" → Ticket ${matchingDocketTicket.ticketId}`);
+                return matchingDocketTicket;
             }
         }
     }
@@ -337,7 +420,7 @@ const appendAgentReplyFromOutlook = async (ticket, emailData) => {
 
     logger.info(`🎟️ [TICKET] 📩 Appending Agent reply from Outlook to existing Ticket ${ticket.ticketId} from ${from}`);
 
-    let replyText = stripHtml(body || html) || '(No Content)';
+    let replyText = stripHtml(html || body) || '(No Content)';
     replyText = stripQuotedReply(replyText) || replyText;
 
     const prisma = require('../models/index');
@@ -474,7 +557,7 @@ const appendClientReplyToTicket = async (ticket, emailData) => {
 
     logger.info(`🎟️ [TICKET] 📩 Appending client reply to existing Ticket ${ticket.ticketId} from ${from}`);
 
-    let replyText = stripHtml(body || html) || '(No Content)';
+    let replyText = stripHtml(html || body) || '(No Content)';
     replyText = stripQuotedReply(replyText) || replyText; // fallback if stripping removes everything somehow
 
     const toList = [from];
@@ -660,7 +743,7 @@ const appendVendorReplyToTicket = async (ticket, emailData, vendorId = null, isM
 
     logger.info(`📝 [TICKET] 📥 Appending vendor reply to existing Ticket ${ticket.ticketId} from ${from}`);
 
-    let replyText = stripHtml(body || html) || '(No Content)';
+    let replyText = stripHtml(html || body) || '(No Content)';
     replyText = stripQuotedReply(replyText) || replyText;
 
     const toList = [from];
@@ -1521,6 +1604,57 @@ const createTicketFromEmail = async (emailData) => {
             }
         }
 
+        // ── SMART VENDOR ACTIVE TICKET DEDUPLICATION & THREADING INTERCEPTOR ──
+        // When vendors send automated updates (e.g. ticket logged, status update, restoration notice, RFO)
+        // for a circuit that already has an active Ticket (Open, In Progress, Maintenance), DO NOT create duplicate tickets!
+        // Instead, route this automated vendor update directly into the active ticket's vendor thread.
+        if (ticketType === 'Vendor' && circuitId) {
+            try {
+                const prisma = require('../models/index');
+                const circuitKeys = [circuitId];
+                if (detectedCircuitRecord) {
+                    if (detectedCircuitRecord.customerCircuitId) circuitKeys.push(detectedCircuitRecord.customerCircuitId);
+                    if (detectedCircuitRecord.supplierCircuitId) circuitKeys.push(detectedCircuitRecord.supplierCircuitId);
+                    if (detectedCircuitRecord.id) circuitKeys.push(detectedCircuitRecord.id);
+                }
+
+                // Check for an active open ticket on this circuit
+                const activeVendorTicket = await prisma.ticket.findFirst({
+                    where: {
+                        circuitId: { in: Array.from(new Set(circuitKeys)) },
+                        OR: [
+                            { status: { in: ['Open', 'In Progress', 'Maintenance'] } },
+                            { isMaintenance: true }
+                        ]
+                    },
+                    orderBy: { createdAt: 'desc' }
+                });
+
+                if (activeVendorTicket) {
+                    logger.info(`🎟️ [TICKET] 🔀 Smart Vendor Active Ticket Interceptor: Redirecting automated/subsequent vendor email from ${from} into active Ticket ${activeVendorTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
+
+                    // Ensure finalVendorId is set
+                    const effectiveVendorId = vendorId || activeVendorTicket.vendorId;
+                    const replyResult = await appendVendorReplyToTicket(activeVendorTicket, emailData, effectiveVendorId, !!detectedCircuitRecord?.isMultiVendor);
+
+                    // Send notification to agents
+                    try {
+                        const notificationService = require('./notificationService');
+                        await notificationService.sendNotification({
+                            type: 'vendor_reply',
+                            title: `Vendor Update (${activeVendorTicket.ticketId})`,
+                            message: `${fromName || from} sent an update for Ticket ${activeVendorTicket.ticketId}`,
+                            ticketId: activeVendorTicket.ticketId,
+                            sender: 'vendor'
+                        });
+                    } catch (_) {}
+
+                    return replyResult;
+                }
+            } catch (vInterceptErr) {
+                logger.error(`Error in Smart Vendor Active Ticket Interceptor: ${vInterceptErr.message}`);
+            }
+        }
 
         let ticketId;
         let ticket;
@@ -1598,7 +1732,7 @@ const createTicketFromEmail = async (emailData) => {
                 cc: initialCcs,
                 replies: {
                     create: {
-                        text: stripQuotedReply(stripHtml(body)) || '(No Content)',
+                        text: stripQuotedReply(stripHtml(emailData.html || body)) || '(No Content)',
                         time: emailReceivedDate.toLocaleTimeString('en-US', {
                             hour: '2-digit',
                             minute: '2-digit',

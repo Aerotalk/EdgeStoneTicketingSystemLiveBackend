@@ -1,0 +1,34 @@
+[
+  {
+    "id": "62d12a61-0705-4c42-b226-8197c9ae2e06",
+    "name": "Akash Kumar Singh ",
+    "email": "akash@edgestone.in",
+    "passwordHash": "$2b$10$u8wZG39qqQc6jijD1v.PD.WTR3EYUZaGjusOXsSNcoNvZmrqhPP8m",
+    "status": "In-Active",
+    "createdOn": "03 Sept 2026",
+    "emails": [
+      "akash@edgestone.in"
+    ],
+    "isSuperAdmin": false,
+    "role": "Manager",
+    "profilePicture": null,
+    "createdAt": "2026-09-03T05:38:20.748Z",
+    "updatedAt": "2026-09-03T09:06:56.348Z"
+  },
+  {
+    "id": "539190e1-faef-4329-977e-8c1f446356ef",
+    "name": "Akash",
+    "email": "temp@gmail.com",
+    "passwordHash": "$2b$10$WROgyK69czrZCdR5L59LfeTwMnL8ENpRuXxv1mz2EBpce8tPuG2Vq",
+    "status": "Active",
+    "createdOn": "25 Sept 2026",
+    "emails": [
+      "temp@gmail.com"
+    ],
+    "isSuperAdmin": false,
+    "role": "Super admin",
+    "profilePicture": null,
+    "createdAt": "2026-09-25T11:49:14.953Z",
+    "updatedAt": "2026-10-04T14:32:40.527Z"
+  }
+]
