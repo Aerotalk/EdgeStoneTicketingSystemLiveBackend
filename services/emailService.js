@@ -409,9 +409,18 @@ const sendViaGraph = async (options) => {
 
     // --- FALLBACK PATH: Standard draft/sendMail workflow for brand-new emails or when parent not found ---
     const headers = [];
+    if (formattedInReplyTo) {
+        headers.push({ name: 'In-Reply-To', value: formattedInReplyTo });
+    }
+    if (formattedReferences) {
+        headers.push({ name: 'References', value: formattedReferences });
+    }
     const addHeader = (name, value) => {
-        if (name && (name.toLowerCase().startsWith('x-') || name.toLowerCase() === 'reply-to')) {
-            headers.push({ name, value });
+        if (name && (name.toLowerCase().startsWith('x-') || name.toLowerCase() === 'reply-to' || name.toLowerCase() === 'in-reply-to' || name.toLowerCase() === 'references')) {
+            // Avoid duplicate headers
+            if (!headers.some(h => h.name.toLowerCase() === name.toLowerCase())) {
+                headers.push({ name, value });
+            }
         }
     };
     Object.keys(extraHeaders).forEach(key => {
@@ -697,11 +706,28 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
                     const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(`${subject || ''} ${msg.body?.content || ''}`);
                     if (isMaintContext) {
                         const allActiveMaintTickets = await prisma.ticket.findMany({
-                            where: { OR: [ { isMaintenance: true }, { status: 'Maintenance' } ] },
+                            where: { 
+                                OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
+                                status: { notIn: ['Closed', 'Resolved'] }
+                            },
+                            include: { replies: { select: { text: true, subject: true } } },
                             orderBy: { createdAt: 'desc' }
                         });
+                        const outboundMeta = ticketService.extractMaintenanceMetadata(subject, msg.body?.content);
+
                         for (const amt of allActiveMaintTickets) {
                             if (amt.circuitId && textScan.includes(amt.circuitId.toUpperCase())) {
+                                const hasCompletion = (amt.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
+                                if (hasCompletion) continue; // Skip completed maintenance
+
+                                const amtMeta = ticketService.extractMaintenanceMetadata(amt.header, (amt.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
+                                if (outboundMeta.crqId && amtMeta.crqId && outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase()) {
+                                    continue; // Different CRQ, do not link to old ticket!
+                                }
+                                if (outboundMeta.maintDate && amtMeta.maintDate && outboundMeta.maintDate !== amtMeta.maintDate) {
+                                    continue; // Different scheduled date window, do not link to old ticket!
+                                }
+
                                 existingTicket = amt;
                                 logger.info(`[EMAIL] 📤 Linked outbound agent maintenance email from Outlook to active Maintenance Ticket ${amt.ticketId} for circuit ${amt.circuitId}`);
                                 break;

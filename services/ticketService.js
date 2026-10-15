@@ -159,6 +159,35 @@ const isEmailMatchingClientDomain = (email, client) => {
     return clientCorporateDomains.includes(senderDomain);
 };
 
+/**
+ * Extracts CRQ / Change ID and Maintenance Scheduled Date from text.
+ * Used for reliable deduplication so new maintenance activities never merge with past/unrelated tickets.
+ */
+const extractMaintenanceMetadata = (subject, body) => {
+    const text = `${subject || ''} \n ${body || ''}`;
+    
+    // 1. Extract CRQ / Change ID (e.g. CRQ: "1100493081", Change ID 1100493081, CRQ00000123)
+    let crqId = null;
+    const crqMatch = text.match(/(?:CRQ|Change(?:\s*Request)?(?:\s*ID|\s*No|\s*Number)?|Activity\s*ID)[\s:"]*([A-Za-z0-9_-]{5,})/i);
+    if (crqMatch) {
+        crqId = crqMatch[1].trim();
+    }
+
+    // 2. Extract Maintenance Scheduled Date / Window (e.g. 31-OCT-2026, 24-OCT-2026, 2026-10-31)
+    let maintDate = null;
+    const dateMatch1 = text.match(/(?:scheduled\s*date|activity\s*date|maintenance\s*date|window(?:\s*start)?)[\s:"]*([0-9]{1,2}[-/.][A-Za-z0-9]+[-/.][0-9]{2,4})/i);
+    if (dateMatch1) {
+        maintDate = dateMatch1[1].trim().toUpperCase();
+    } else {
+        const dateMatch2 = text.match(/\b\d{1,2}-(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{4}\b/i);
+        if (dateMatch2) {
+            maintDate = dateMatch2[0].trim().toUpperCase();
+        }
+    }
+
+    return { crqId, maintDate };
+};
+
 const generateTicketId = async (ticketType = 'Client') => {
     const prisma = require('../models/index');
     
@@ -1319,6 +1348,30 @@ const createTicketFromEmail = async (emailData) => {
                 select: { id: true, customerCircuitId: true, supplierCircuitId: true, clientId: true, vendorId: true, isMultiVendor: true, vendorCircuits: true } 
             });
             
+            // Helper to check if a circuit record is marked as temporary
+            const isCircuitTemp = (circuit) => {
+                if (!circuit) return false;
+                const cust = (circuit.customerCircuitId || '').toLowerCase();
+                const supp = (circuit.supplierCircuitId || '').toLowerCase();
+                return /^(?:temp|temporary)[\s-_:]+/i.test(cust) || /^(?:temp|temporary)[\s-_:]+/i.test(supp);
+            };
+
+            // Helper to extract clean searchable tokens from circuit IDs (strips "original", "temp-", and pulls out clean numeric LSIs)
+            const extractTokens = (id) => {
+                if (!id) return [];
+                const raw = String(id).trim();
+                const tokens = [raw];
+                const stripped = raw.replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
+                if (stripped && stripped !== raw && stripped.length > 2) {
+                    tokens.push(stripped);
+                }
+                const numMatch = raw.match(/\b\d{6,}\b/);
+                if (numMatch && !tokens.includes(numMatch[0])) {
+                    tokens.push(numMatch[0]);
+                }
+                return tokens;
+            };
+
             // Helper to check for whole word / token boundary match (prevents substring collision)
             const matchesCircuit = (text, targetId) => {
                 if (!text || !targetId) return false;
@@ -1327,9 +1380,18 @@ const createTicketFromEmail = async (emailData) => {
                 return regex.test(text);
             };
 
+            // Helper to detect if "temp" or "temporary" explicitly precedes the circuit identifier in text
+            const mentionsTempBeforeToken = (text, targetId) => {
+                if (!text || !targetId) return false;
+                const escaped = targetId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`(?:^|[^a-zA-Z0-9])(?:temp|temporary)[\\s-_:]*${escaped}`, 'i');
+                return regex.test(text);
+            };
+
             const subjectText = subject || '';
             const bodyText = body || '';
             const cleanBodyText = stripQuotedReply(stripHtml(bodyText)) || bodyText;
+            const fullScanText = `${subjectText} \n ${bodyText}`;
             const subjectUpper = subjectText.toUpperCase();
             const bodyUpper = bodyText.toUpperCase();
 
@@ -1364,41 +1426,76 @@ const createTicketFromEmail = async (emailData) => {
             }
 
             const findMatchInPool = (circuitPool) => {
-                const poolIds = [];
-                circuitPool.forEach(c => {
-                    if (c.customerCircuitId) poolIds.push({ id: c.customerCircuitId, circuit: c, isSupplier: false });
-                    if (c.supplierCircuitId) poolIds.push({ id: c.supplierCircuitId, circuit: c, isSupplier: true });
+                const candidates = [];
+
+                for (const c of circuitPool) {
+                    const isTemp = isCircuitTemp(c);
+                    const poolItems = [];
+
+                    if (c.customerCircuitId) {
+                        const tokens = extractTokens(c.customerCircuitId);
+                        tokens.forEach(tok => poolItems.push({ token: tok, isSupplier: false, fullId: c.customerCircuitId }));
+                    }
+                    if (c.supplierCircuitId) {
+                        const tokens = extractTokens(c.supplierCircuitId);
+                        tokens.forEach(tok => poolItems.push({ token: tok, isSupplier: true, fullId: c.supplierCircuitId }));
+                    }
                     if (c.isMultiVendor && Array.isArray(c.vendorCircuits)) {
                         c.vendorCircuits.forEach(vc => {
                             if (vc.supplierCircuitId) {
-                                poolIds.push({ id: vc.supplierCircuitId, circuit: c, isSupplier: true });
+                                const tokens = extractTokens(vc.supplierCircuitId);
+                                tokens.forEach(tok => poolItems.push({ token: tok, isSupplier: true, fullId: vc.supplierCircuitId }));
                             }
                         });
                     }
-                });
-                poolIds.sort((a, b) => b.id.length - a.id.length);
 
-                // 1. Scan subject first (explicit)
-                for (const item of poolIds) {
-                    if (matchesCircuit(subjectText, item.id)) {
-                        return { circuit: item.circuit, isSupplier: item.isSupplier, location: 'subject', matchedId: item.id };
-                    }
-                }
-                // 2. Scan fresh body (quoted conversation history stripped)
-                for (const item of poolIds) {
-                    if (matchesCircuit(cleanBodyText, item.id)) {
-                        return { circuit: item.circuit, isSupplier: item.isSupplier, location: 'body', matchedId: item.id };
-                    }
-                }
-                // 3. Scan full body (fallback if not in clean body)
-                if (cleanBodyText !== bodyText) {
-                    for (const item of poolIds) {
-                        if (matchesCircuit(bodyText, item.id)) {
-                            return { circuit: item.circuit, isSupplier: item.isSupplier, location: 'body_quoted', matchedId: item.id };
+                    for (const item of poolItems) {
+                        let location = null;
+                        if (matchesCircuit(subjectText, item.token)) {
+                            location = 'subject';
+                        } else if (matchesCircuit(cleanBodyText, item.token)) {
+                            location = 'body';
+                        } else if (cleanBodyText !== bodyText && matchesCircuit(bodyText, item.token)) {
+                            location = 'body_quoted';
+                        }
+
+                        if (location) {
+                            const hasTempInText = mentionsTempBeforeToken(fullScanText, item.token) ||
+                                /^(?:temp|temporary)[\s-_:]+/i.test(item.fullId && matchesCircuit(fullScanText, item.fullId) ? item.fullId : '');
+                            candidates.push({
+                                circuit: c,
+                                isSupplier: item.isSupplier,
+                                location,
+                                matchedId: item.token,
+                                isTemp,
+                                hasTempInText,
+                                tokenLength: item.token.length
+                            });
                         }
                     }
                 }
-                return null;
+
+                if (candidates.length === 0) return null;
+
+                // 🛑 CRITICAL USER RULE FOR TEMPORARY CIRCUITS:
+                // "if in the circuit id if temp is not mentioned before the circuit id it will be considered as the original circuit id"
+                // 1. If "temp" is explicitly mentioned before the circuit ID in text, match the temporary circuit!
+                const explicitTempMatches = candidates.filter(cand => cand.hasTempInText && cand.isTemp);
+                if (explicitTempMatches.length > 0) {
+                    explicitTempMatches.sort((a, b) => b.tokenLength - a.tokenLength);
+                    return explicitTempMatches[0];
+                }
+
+                // 2. If "temp" is NOT mentioned before the circuit ID in text, STRICTLY MATCH ORIGINAL CIRCUIT!
+                const originalMatches = candidates.filter(cand => !cand.isTemp);
+                if (originalMatches.length > 0) {
+                    originalMatches.sort((a, b) => b.tokenLength - a.tokenLength);
+                    return originalMatches[0];
+                }
+
+                // 3. Fallback: if only a temp circuit exists in DB for this identifier
+                candidates.sort((a, b) => b.tokenLength - a.tokenLength);
+                return candidates[0];
             };
 
             // Search circuits (restricted to sender's own circuits when sender is an identified client)
@@ -1532,10 +1629,20 @@ const createTicketFromEmail = async (emailData) => {
             logger.error(`🚨 🎟️ [TICKET] ❌ Failed to process AI Circuit identification: ${dbErr.message}`);
         }
 
-        // 🛡️ CRITICAL GATE: If no circuit matches the DB, absolutely DO NOT create a ticket!
+        // 🛡️ CRITICAL GATE: If no circuit matches the DB, do not create a standard ticket,
+        // EXCEPT if from a recognized vendor domain or explicit maintenance broadcast (which should be queued for agent review)
         if (!circuitId) {
-            logger.warn(`⚠️ 🎟️ [TICKET] 🚫 DROPPED EMAIL: Subject "${subject}" from ${from} does not contain any recognized Circuit ID. Ticket will NOT be created.`);
-            return null;
+            const isVendorSender = potentialVendorIds.length > 0 || domainMatchedVendorIds.length > 0;
+            const isMaintenanceContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|crq/i.test(`${subject || ''} ${body || ''}`);
+            if (isVendorSender && isMaintenanceContext) {
+                logger.warn(`⚠️ 🎟️ [TICKET] Circuit not matched, but recognized vendor ${from} sent maintenance notice "${subject}". Creating Vendor Maintenance Ticket for agent review instead of dropping.`);
+                ticketType = 'Vendor';
+                vendorId = potentialVendorIds[0] || domainMatchedVendorIds[0] || null;
+                circuitId = null;
+            } else {
+                logger.warn(`⚠️ 🎟️ [TICKET] 🚫 DROPPED EMAIL: Subject "${subject}" from ${from} does not contain any recognized Circuit ID. Ticket will NOT be created.`);
+                return null;
+            }
         }
 
         // ── SMART CLIENT ACTIVE MAINTENANCE INTERCEPTOR ──
@@ -1558,8 +1665,10 @@ const createTicketFromEmail = async (emailData) => {
                         OR: [
                             { isMaintenance: true },
                             { status: 'Maintenance' }
-                        ]
+                        ],
+                        status: { notIn: ['Closed', 'Resolved'] }
                     },
+                    include: { replies: { select: { text: true, subject: true } } },
                     orderBy: { createdAt: 'desc' }
                 });
 
@@ -1568,7 +1677,17 @@ const createTicketFromEmail = async (emailData) => {
                     const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|downtime|activity|window|approved|noted|acknowledged|proceed|reschedule/i.test(subjectAndBody);
                     const isReplyPattern = /^(?:re|fwd|fw):\s*/i.test(subject || '');
 
-                    if (isMaintContext || isReplyPattern) {
+                    // Check if candidate maintenance ticket has already completed
+                    const hasCompletion = (activeMaintenanceTicket.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
+
+                    // Check CRQ and Maintenance Date
+                    const incomingMeta = extractMaintenanceMetadata(subject, body);
+                    const existingMeta = extractMaintenanceMetadata(activeMaintenanceTicket.header, (activeMaintenanceTicket.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
+
+                    const isDifferentCrq = incomingMeta.crqId && existingMeta.crqId && incomingMeta.crqId.toUpperCase() !== existingMeta.crqId.toUpperCase();
+                    const isDifferentDate = incomingMeta.maintDate && existingMeta.maintDate && incomingMeta.maintDate !== existingMeta.maintDate;
+
+                    if ((isMaintContext || isReplyPattern) && !hasCompletion && !isDifferentCrq && !isDifferentDate) {
                         logger.info(`🎟️ [TICKET] 🔀 Smart Client Maintenance Interceptor: Redirecting client email from ${from} into active Maintenance Ticket ${activeMaintenanceTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
 
                         if (!activeMaintenanceTicket.clientId && detectedCircuitRecord?.clientId) {
@@ -1625,31 +1744,50 @@ const createTicketFromEmail = async (emailData) => {
                         OR: [
                             { status: { in: ['Open', 'In Progress', 'Maintenance'] } },
                             { isMaintenance: true }
-                        ]
+                        ],
+                        status: { notIn: ['Closed', 'Resolved'] }
                     },
+                    include: { replies: { select: { text: true, subject: true } } },
                     orderBy: { createdAt: 'desc' }
                 });
 
                 if (activeVendorTicket) {
-                    logger.info(`🎟️ [TICKET] 🔀 Smart Vendor Active Ticket Interceptor: Redirecting automated/subsequent vendor email from ${from} into active Ticket ${activeVendorTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
+                    // If this is a maintenance email, ensure it's not a different CRQ or different scheduled window
+                    const isMaintEmail = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|crq/i.test(`${subject || ''} ${body || ''}`);
+                    let shouldIntercept = true;
 
-                    // Ensure finalVendorId is set
-                    const effectiveVendorId = vendorId || activeVendorTicket.vendorId;
-                    const replyResult = await appendVendorReplyToTicket(activeVendorTicket, emailData, effectiveVendorId, !!detectedCircuitRecord?.isMultiVendor);
+                    if (isMaintEmail || activeVendorTicket.isMaintenance || activeVendorTicket.status === 'Maintenance') {
+                        const incomingMeta = extractMaintenanceMetadata(subject, body);
+                        const existingMeta = extractMaintenanceMetadata(activeVendorTicket.header, (activeVendorTicket.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
+                        const hasCompletion = (activeVendorTicket.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
 
-                    // Send notification to agents
-                    try {
-                        const notificationService = require('./notificationService');
-                        await notificationService.sendNotification({
-                            type: 'vendor_reply',
-                            title: `Vendor Update (${activeVendorTicket.ticketId})`,
-                            message: `${fromName || from} sent an update for Ticket ${activeVendorTicket.ticketId}`,
-                            ticketId: activeVendorTicket.ticketId,
-                            sender: 'vendor'
-                        });
-                    } catch (_) {}
+                        if (hasCompletion || (incomingMeta.crqId && existingMeta.crqId && incomingMeta.crqId.toUpperCase() !== existingMeta.crqId.toUpperCase()) || (incomingMeta.maintDate && existingMeta.maintDate && incomingMeta.maintDate !== existingMeta.maintDate)) {
+                            logger.info(`🎟️ [TICKET] Vendor maintenance email has different CRQ (${incomingMeta.crqId} vs ${existingMeta.crqId}) or different date. Creating NEW ticket instead of merging into Ticket ${activeVendorTicket.ticketId}`);
+                            shouldIntercept = false;
+                        }
+                    }
 
-                    return replyResult;
+                    if (shouldIntercept) {
+                        logger.info(`🎟️ [TICKET] 🔀 Smart Vendor Active Ticket Interceptor: Redirecting automated/subsequent vendor email from ${from} into active Ticket ${activeVendorTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
+
+                        // Ensure finalVendorId is set
+                        const effectiveVendorId = vendorId || activeVendorTicket.vendorId;
+                        const replyResult = await appendVendorReplyToTicket(activeVendorTicket, emailData, effectiveVendorId, !!detectedCircuitRecord?.isMultiVendor);
+
+                        // Send notification to agents
+                        try {
+                            const notificationService = require('./notificationService');
+                            await notificationService.sendNotification({
+                                type: 'vendor_reply',
+                                title: `Vendor Update (${activeVendorTicket.ticketId})`,
+                                message: `${fromName || from} sent an update for Ticket ${activeVendorTicket.ticketId}`,
+                                ticketId: activeVendorTicket.ticketId,
+                                sender: 'vendor'
+                            });
+                        } catch (_) {}
+
+                        return replyResult;
+                    }
                 }
             } catch (vInterceptErr) {
                 logger.error(`Error in Smart Vendor Active Ticket Interceptor: ${vInterceptErr.message}`);
@@ -2364,5 +2502,6 @@ module.exports = {
     findExistingTicketForReply,
     stripHtml,
     stripQuotedReply,
+    extractMaintenanceMetadata,
     deleteTicket
 };
