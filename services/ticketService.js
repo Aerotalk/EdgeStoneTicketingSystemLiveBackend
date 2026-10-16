@@ -217,15 +217,65 @@ const generateTicketId = async (ticketType = 'Client') => {
 // ─────────────────────────────────────────────────────────────────────────────
 // findExistingTicketForReply
 // Checks if an incoming email is a reply to an existing ticket using:
-//   1. In-Reply-To header  → matches Ticket.messageId (most reliable)
-//   2. References header   → checks each ID in the chain
-//   3. Re: subject match   → last resort for clients that strip headers
+//   0. Strategy A: Subject ticket ID match (supports [], 【】, -V)
+//   0.5 Strategy A.2: Vendor Trouble Ticket / Docket Number match (strict digit requirement)
+//   1. In-Reply-To header  → matches Ticket.messageId (with circuit isolation guard)
+//   2. References header   → checks each ID in the chain (with circuit isolation guard)
+//   3. Re:/RE： subject match → normalized prefix & circuit-verified fallback
 // ─────────────────────────────────────────────────────────────────────────────
 const findExistingTicketForReply = async (inReplyTo, references, subject, body = '', from = null) => {
+    const prisma = require('../models/index');
+
+    // ── PRE-FLIGHT: EXTRACT MENTIONED CIRCUITS & ENFORCE CIRCUIT ISOLATION ──
+    const allCircuits = await prisma.circuit.findMany({
+        select: { id: true, customerCircuitId: true, supplierCircuitId: true, clientId: true, vendorId: true }
+    });
+
+    const textToScan = `${subject || ''} \n ${body || ''}`;
+    const textToScanUpper = textToScan.toUpperCase();
+
+    let detectedCircuit = null;
+    for (const c of allCircuits) {
+        if (c.customerCircuitId && textToScanUpper.includes(c.customerCircuitId.toUpperCase())) {
+            detectedCircuit = c;
+            break;
+        }
+        if (c.supplierCircuitId && textToScanUpper.includes(c.supplierCircuitId.toUpperCase())) {
+            detectedCircuit = c;
+            break;
+        }
+    }
+
+    // Circuit compatibility check: prevents cross-circuit hijacking between different client/supplier circuits
+    const isCircuitCompatible = (ticketCircuitId, ticketSubjectId = null) => {
+        if (!detectedCircuit) return true; // No registered circuit found in text, cannot veto
+        const cleanTgt = (ticketCircuitId || '').toUpperCase().trim();
+        const custCkt = (detectedCircuit.customerCircuitId || '').toUpperCase().trim();
+        const suppCkt = (detectedCircuit.supplierCircuitId || '').toUpperCase().trim();
+        const idCkt = (detectedCircuit.id || '').toUpperCase().trim();
+
+        if (cleanTgt === custCkt || cleanTgt === suppCkt || cleanTgt === idCkt) {
+            return true;
+        }
+
+        // If ticket has NO circuitId assigned yet, don't veto
+        if (!ticketCircuitId) return true;
+
+        // If email subject explicitly has [#TicketId], user intended to reply to this ticket
+        if (subject && ticketSubjectId) {
+            const cleanSub = ticketSubjectId.replace(/^#/, '');
+            const hasExplicitTicketId = new RegExp(`(?:\\[|【)#?${cleanSub}(?:-V)?(?:\\]|】)`, 'i').test(subject);
+            if (hasExplicitTicketId) return true;
+        }
+
+        logger.warn(`🚫 [TICKET ISOLATION] Rejected ticket candidate with Circuit "${ticketCircuitId}" because incoming email explicitly targets different Circuit "${detectedCircuit.customerCircuitId}"`);
+        return false;
+    };
+
     // 0. Strategy A: Subject regex extraction (Most Reliable)
-    // Supports [#1234], [1234], [#V1234], [V1234], [#1234-V], [1234-V], [#TEST-MV-1234]
+    // Supports [#1234], [1234], [#V1234], [V1234], [#1234-V], [1234-V], [#TEST-MV-1234], and Chinese brackets 【#1234】
     if (subject) {
-        const ticketIdMatch = subject.match(/\[#?([A-Za-z0-9_-]+?)(?:-V)?\]/i);
+        const ticketIdMatch = subject.match(/(?:\[|【)#?([A-Za-z0-9_-]+?)(?:-V)?(?:\]|】)/i);
         if (ticketIdMatch && ticketIdMatch[1]) {
             const rawId = ticketIdMatch[1];
             const friendlyId = (rawId.startsWith('#') ? rawId : '#' + rawId).toUpperCase();
@@ -233,7 +283,6 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 ? '#' + friendlyId.substring(2)
                 : (friendlyId.startsWith('#') ? '#V' + friendlyId.substring(1) : '#V' + friendlyId);
 
-            const prisma = require('../models/index');
             const ticket = await prisma.ticket.findFirst({
                 where: {
                     OR: [
@@ -272,62 +321,64 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
-    // 0.5 Strategy A.2: Vendor Trouble Ticket / Docket Number match (e.g. EN_IM_03092026_170954, TT#..., Docket#...)
+    // 0.5 Strategy A.2: Vendor Trouble Ticket / Docket Number match (e.g. EN_IM_03092026_170954, CU#2608150173, INC000011658869, TT#123456)
+    // STRICT GUARD: Must require at least 4 digits! NEVER match English words like "TT for", "TT to", "TT is"!
     if (subject || body) {
-        const textToScan = `${subject || ''} ${body || ''}`;
-        const docketMatch = textToScan.match(/\b(EN_IM_\d+_\d+|TT\s*#?:?\s*[A-Za-z0-9_-]+|Docket\s*#?:?\s*[A-Za-z0-9_-]+)\b/i);
+        const docketMatch = textToScan.match(/\b(EN_IM_\d+_\d+|CU#\d{4,}|INC\d{5,}|(?:TT|Docket|Ticket|Case|SR)\s*#?[:\s-]*\d{4,}[A-Za-z0-9_-]*)\b/i);
         if (docketMatch && docketMatch[1]) {
             const rawDocket = docketMatch[1].trim();
-            const prisma = require('../models/index');
-            const matchingDocketTicket = await prisma.ticket.findFirst({
-                where: {
-                    status: { notIn: ['Spam'] },
-                    OR: [
-                        { header: { contains: rawDocket, mode: 'insensitive' } },
-                        { replies: { some: { text: { contains: rawDocket, mode: 'insensitive' } } } }
-                    ]
-                },
-                include: { client: true, vendor: true },
-                orderBy: { createdAt: 'desc' }
-            });
-            if (matchingDocketTicket) {
-                logger.info(`🎟️ [TICKET] 🧵 Reply matched via Vendor TT Docket: "${rawDocket}" → Ticket ${matchingDocketTicket.ticketId}`);
-                return matchingDocketTicket;
+            const hasDigits = /\d{4,}/.test(rawDocket);
+            if (hasDigits) {
+                const matchingDocketTicket = await prisma.ticket.findFirst({
+                    where: {
+                        status: { notIn: ['Spam'] },
+                        OR: [
+                            { header: { contains: rawDocket, mode: 'insensitive' } },
+                            { replies: { some: { text: { contains: rawDocket, mode: 'insensitive' } } } }
+                        ]
+                    },
+                    include: { client: true, vendor: true },
+                    orderBy: { createdAt: 'desc' }
+                });
+                if (matchingDocketTicket && isCircuitCompatible(matchingDocketTicket.circuitId, matchingDocketTicket.ticketId)) {
+                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via Vendor TT Docket: "${rawDocket}" → Ticket ${matchingDocketTicket.ticketId}`);
+                    return matchingDocketTicket;
+                }
             }
         }
     }
 
-    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID
+    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit isolation guard)
     if (inReplyTo) {
         const cleanId = inReplyTo.trim();
         const ticket = await TicketModel.findTicketByMessageId(cleanId);
-        if (ticket) {
+        if (ticket && isCircuitCompatible(ticket.circuitId, ticket.ticketId)) {
             logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Ticket): ${cleanId} → Ticket ${ticket.ticketId}`);
             return ticket;
         }
 
-        // 1.5. Strategy B.2: In-Reply-To matches an Agent Reply Message-ID
+        // 1.5. Strategy B.2: In-Reply-To matches an Agent Reply Message-ID (with circuit isolation guard)
         const reply = await TicketModel.findReplyByMessageId(cleanId);
-        if (reply && reply.ticket) {
+        if (reply && reply.ticket && isCircuitCompatible(reply.ticket.circuitId, reply.ticket.ticketId)) {
             logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Agent Reply): ${cleanId} → Ticket ${reply.ticket.ticketId}`);
             reply.ticket._matchedReply = reply;
             return reply.ticket;
         }
     }
 
-    // 2. References: space/comma-separated chain of parent Message-IDs
+    // 2. References: space/comma-separated chain of parent Message-IDs (with circuit isolation guard)
     if (references) {
         const refIds = (Array.isArray(references) ? references : references.split(/[\s,]+/))
             .map(r => r.trim())
             .filter(Boolean);
         for (const refId of refIds) {
             const ticket = await TicketModel.findTicketByMessageId(refId);
-            if (ticket) {
+            if (ticket && isCircuitCompatible(ticket.circuitId, ticket.ticketId)) {
                 logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Ticket): ${refId} → Ticket ${ticket.ticketId}`);
                 return ticket;
             }
             const reply = await TicketModel.findReplyByMessageId(refId);
-            if (reply && reply.ticket) {
+            if (reply && reply.ticket && isCircuitCompatible(reply.ticket.circuitId, reply.ticket.ticketId)) {
                 logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Reply): ${refId} → Ticket ${reply.ticket.ticketId}`);
                 reply.ticket._matchedReply = reply;
                 return reply.ticket;
@@ -335,31 +386,24 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
-    // 3. Subject fallback: "Re: <original subject>" — strip Re:/Fwd: prefixes and match
+    // 3. Subject fallback: "Re: <original subject>" or Chinese "RE：<original subject>"
     // STRICT ISOLATION: Must verify Circuit ID and Sender to prevent cross-client hijacking!
     if (subject) {
-        const isReplyPattern = /^(Re|Fwd|FW|RE|FWD):\s*/i.test(subject);
-        const stripped = subject.replace(/^(Re|Fwd|FW|RE|FWD):\s*/gi, '').trim();
+        const isReplyPattern = /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i.test(subject);
+        const stripped = subject.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
         
         if (stripped && isReplyPattern) {
-            const prisma = require('../models/index');
-            // Fetch circuits to check if a circuit ID is explicitly mentioned in the reply
-            const allCircuits = await prisma.circuit.findMany({
-                select: { id: true, customerCircuitId: true, supplierCircuitId: true, clientId: true, vendorId: true }
-            });
-            
-            const textToScan = `${subject} ${body || ''}`.toUpperCase();
-            let detectedCircuitId = null;
-            for (const c of allCircuits) {
-                if (c.customerCircuitId && textToScan.includes(c.customerCircuitId.toUpperCase())) {
-                    detectedCircuitId = c.customerCircuitId;
-                    break;
-                }
-                if (c.supplierCircuitId && textToScan.includes(c.supplierCircuitId.toUpperCase())) {
-                    detectedCircuitId = c.supplierCircuitId;
-                    break;
-                }
-            }
+            const normalizeSubject = (str) => {
+                if (!str) return '';
+                return str
+                    .replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '')
+                    .replace(/(?:\[|【)#?[A-Za-z0-9_-]+?(?:-V)?(?:\]|】)\s*/gi, '')
+                    .trim()
+                    .toLowerCase();
+            };
+
+            const targetNormalized = normalizeSubject(stripped);
+            const detectedCircuitId = detectedCircuit ? (detectedCircuit.customerCircuitId || detectedCircuit.id) : null;
 
             const allTickets = await prisma.ticket.findMany({ 
                 where: {
@@ -408,11 +452,11 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             };
 
             let match = null;
-            if (detectedCircuitId) {
+            if (detectedCircuit) {
                 // If a circuit was detected, ONLY match tickets on THAT specific circuit!
                 match = allTickets.find(t =>
-                    t.circuitId === detectedCircuitId &&
-                    t.header && t.header.replace(/^(Re|Fwd|FW|RE|FWD):\s*/gi, '').trim().toLowerCase() === stripped.toLowerCase() &&
+                    isCircuitCompatible(t.circuitId, t.ticketId) &&
+                    normalizeSubject(t.header) === targetNormalized &&
                     isAuthorizedSender(t, from)
                 );
                 if (match) {
@@ -421,7 +465,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             } else if (from) {
                 // If no circuit in reply, match subject ONLY if sender is verified on this ticket
                 match = allTickets.find(t =>
-                    t.header && t.header.replace(/^(Re|Fwd|FW|RE|FWD):\s*/gi, '').trim().toLowerCase() === stripped.toLowerCase() &&
+                    normalizeSubject(t.header) === targetNormalized &&
                     isAuthorizedSender(t, from)
                 );
                 if (match) {

@@ -129,6 +129,9 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         };
 
         vendorContactEmails = Array.from(new Set(vendorContactEmails.map(e => e && e.trim()).filter(Boolean)));
+        if (vendorContactEmails.length === 0) {
+            throw new Error(`No valid vendor recipient specified for ticket ${ticket.ticketId}. Please add at least one vendor email address in the 'To' field.`);
+        }
         const toLowerSet = new Set(vendorContactEmails.map(e => e.toLowerCase()));
 
         let visibleVendorCc = [];

@@ -101,13 +101,18 @@ const sendViaGraph = async (options) => {
         return cleaned.map(email => ({ emailAddress: { address: email } }));
     };
 
+    const formattedToRecipients = formatRecipients(to);
+    if (!formattedToRecipients || formattedToRecipients.length === 0) {
+        throw new Error('Cannot send email: No valid recipient email address was provided.');
+    }
+
     const message = {
         subject: subject,
         body: {
             contentType: html ? 'HTML' : 'Text',
             content: html || text || body || ''
         },
-        toRecipients: formatRecipients(to)
+        toRecipients: formattedToRecipients
     };
 
     let processedAttachments = [];
@@ -352,7 +357,7 @@ const sendViaGraph = async (options) => {
                         contentType: html ? 'HTML' : 'Text',
                         content: html || text || body || ''
                     },
-                    toRecipients: formatRecipients(to)
+                    toRecipients: formattedToRecipients
                 };
                 if (cc) patchPayload.ccRecipients = formatRecipients(cc);
                 if (bcc) patchPayload.bccRecipients = formatRecipients(bcc);
