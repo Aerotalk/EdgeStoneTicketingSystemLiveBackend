@@ -5,55 +5,94 @@ const TicketModel = require('../../models/ticket');
 const logger = require('../../utils/logger');
 
 /**
+ * Top-level circuit compatibility check (P6 Circuit-First Veto Rule).
+ * If an incoming email mentions a registered circuit that differs from the candidate ticket's circuit,
+ * it strictly returns false to prevent cross-circuit thread hijacking.
+ */
+const checkCircuitCompatibility = (ticketCircuitId, detectedCircuit, ticketSubjectId = null) => {
+    if (!detectedCircuit) return true; // No registered circuit found in text, cannot veto
+    const cleanTgt = (ticketCircuitId || '').toUpperCase().trim();
+    const custCkt = (detectedCircuit.customerCircuitId || '').toUpperCase().trim();
+    const suppCkt = (detectedCircuit.supplierCircuitId || '').toUpperCase().trim();
+    const idCkt = (detectedCircuit.id || '').toUpperCase().trim();
+
+    // Check if ticket circuit matches detected circuit
+    if (cleanTgt === custCkt || cleanTgt === suppCkt || cleanTgt === idCkt) {
+        return true;
+    }
+
+    // If circuit has vendor circuits, check if any supplier circuit matches
+    if (detectedCircuit.isMultiVendor && Array.isArray(detectedCircuit.vendorCircuits)) {
+        const hasMatch = detectedCircuit.vendorCircuits.some(vc =>
+            (vc.supplierCircuitId || '').toUpperCase().trim() === cleanTgt
+        );
+        if (hasMatch) return true;
+    }
+
+    // If ticket has NO circuitId assigned yet, don't veto
+    if (!ticketCircuitId) return true;
+
+    // P6 STRICT VETO: A different circuit ID mentioned in text VETOES merging into this ticket!
+    // Even if subject has [#TicketId], user is reporting an issue on a different circuit.
+    logger.warn(`🚫 [P6 CIRCUIT VETO] Rejected ticket candidate ${ticketSubjectId || ''} (Circuit "${ticketCircuitId}") because incoming email explicitly mentions a DIFFERENT Circuit "${detectedCircuit.customerCircuitId || detectedCircuit.supplierCircuitId}". A separate ticket will be created.`);
+    return false;
+};
+
+/**
  * Finds an existing Ticket that this incoming email is replying to.
  * Uses a multi-stage reverse-matching engine with strict circuit isolation guards.
+ *
+ * CRITICAL RULE (P6 Fix):
+ * If an incoming email explicitly mentions Circuit B, it will NEVER merge into
+ * a ticket belonging to Circuit A — even if the customer clicked "Reply" on an email
+ * containing [#TicketA] or has In-Reply-To headers pointing to Ticket A.
  */
 const findExistingTicketForReply = async (inReplyTo, references, subject, body = '', from = null) => {
     // ── PRE-FLIGHT: EXTRACT MENTIONED CIRCUITS & ENFORCE CIRCUIT ISOLATION ──
     const allCircuits = await prisma.circuit.findMany({
-        select: { id: true, customerCircuitId: true, supplierCircuitId: true, clientId: true, vendorId: true }
+        select: {
+            id: true,
+            customerCircuitId: true,
+            supplierCircuitId: true,
+            clientId: true,
+            vendorId: true,
+            isMultiVendor: true,
+            vendorCircuits: { select: { supplierCircuitId: true, vendorId: true } }
+        }
     });
 
     const textToScan = `${subject || ''} \n ${body || ''}`;
-    const textToScanUpper = textToScan.toUpperCase();
+
+    // Token boundary matcher to avoid partial substring collisions
+    const matchesCircuitToken = (text, targetId) => {
+        if (!text || !targetId) return false;
+        const escaped = String(targetId).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?:^|[^a-zA-Z0-9_-])${escaped}(?:$|[^a-zA-Z0-9_-])`, 'i');
+        return regex.test(text);
+    };
 
     let detectedCircuit = null;
     for (const c of allCircuits) {
-        if (c.customerCircuitId && textToScanUpper.includes(c.customerCircuitId.toUpperCase())) {
+        if (c.customerCircuitId && matchesCircuitToken(textToScan, c.customerCircuitId)) {
             detectedCircuit = c;
             break;
         }
-        if (c.supplierCircuitId && textToScanUpper.includes(c.supplierCircuitId.toUpperCase())) {
+        if (c.supplierCircuitId && matchesCircuitToken(textToScan, c.supplierCircuitId)) {
             detectedCircuit = c;
             break;
+        }
+        if (c.isMultiVendor && Array.isArray(c.vendorCircuits)) {
+            const vcMatch = c.vendorCircuits.find(vc => vc.supplierCircuitId && matchesCircuitToken(textToScan, vc.supplierCircuitId));
+            if (vcMatch) {
+                detectedCircuit = c;
+                break;
+            }
         }
     }
 
-    // Circuit compatibility check: prevents cross-circuit hijacking between different client/supplier circuits
-    const isCircuitCompatible = (ticketCircuitId, ticketSubjectId = null) => {
-        if (!detectedCircuit) return true; // No registered circuit found in text, cannot veto
-        const cleanTgt = (ticketCircuitId || '').toUpperCase().trim();
-        const custCkt = (detectedCircuit.customerCircuitId || '').toUpperCase().trim();
-        const suppCkt = (detectedCircuit.supplierCircuitId || '').toUpperCase().trim();
-        const idCkt = (detectedCircuit.id || '').toUpperCase().trim();
-
-        if (cleanTgt === custCkt || cleanTgt === suppCkt || cleanTgt === idCkt) {
-            return true;
-        }
-
-        // If ticket has NO circuitId assigned yet, don't veto
-        if (!ticketCircuitId) return true;
-
-        // If email subject explicitly has [#TicketId], user intended to reply to this ticket
-        if (subject && ticketSubjectId) {
-            const cleanSub = ticketSubjectId.replace(/^#/, '');
-            const hasExplicitTicketId = new RegExp(`(?:\\[|【)#?${cleanSub}(?:-V)?(?:\\]|】)`, 'i').test(subject);
-            if (hasExplicitTicketId) return true;
-        }
-
-        logger.warn(`🚫 [TICKET ISOLATION] Rejected ticket candidate with Circuit "${ticketCircuitId}" because incoming email explicitly targets different Circuit "${detectedCircuit.customerCircuitId}"`);
-        return false;
-    };
+    // Circuit compatibility check: prevents cross-circuit hijacking between different circuits
+    const isCircuitCompatible = (ticketCircuitId, ticketSubjectId = null) =>
+        checkCircuitCompatibility(ticketCircuitId, detectedCircuit, ticketSubjectId);
 
     // 0. Strategy A: Subject regex extraction (Most Reliable)
     // Supports [#1234], [1234], [#V1234], [V1234], [#1234-V], [1234-V], [#TEST-MV-1234], and Chinese brackets 【#1234】
@@ -75,7 +114,9 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 },
                 include: { client: true, vendor: true }
             });
-            if (ticket) {
+
+            // Enforce circuit compatibility check on Strategy A (Fixes P6)
+            if (ticket && isCircuitCompatible(ticket.circuitId, ticket.ticketId)) {
                 logger.info(`🎟️ [TICKET] 🧵 Reply matched via Subject ID: ${friendlyId} → Ticket ${ticket.ticketId}`);
                 if (inReplyTo || references) {
                     try {
@@ -266,5 +307,6 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
 };
 
 module.exports = {
-    findExistingTicketForReply
+    findExistingTicketForReply,
+    checkCircuitCompatibility
 };

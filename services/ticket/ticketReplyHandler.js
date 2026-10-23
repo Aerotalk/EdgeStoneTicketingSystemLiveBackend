@@ -398,32 +398,25 @@ const appendVendorReplyToTicket = async (ticket, emailData, vendorId = null, isM
         attachments: emailData.attachments || []
     });
 
-    // Auto-register new vendor email contacts into Vendor database
-    if (vendorId) {
+    // Safeguard (P3): Only consider explicit sender 'from' for vendor contact registration.
+    // NEVER auto-register CC or TO recipients into Vendor.emails as it causes removed contacts to resurrect.
+    if (vendorId && from) {
         try {
             const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
             if (vendor) {
                 const currentEmails = Array.isArray(vendor.emails) ? vendor.emails : [];
                 const clientCcs = Array.isArray(ticket.cc) ? ticket.cc.map(c => c.toLowerCase().trim()) : [];
                 const clientEmail = ticket.email ? ticket.email.toLowerCase().trim() : null;
-                const newEmailsToAdd = [];
+                const cleanFrom = from.trim().toLowerCase();
 
-                const candidates = [from, ...(emailData.to || []), ...(emailData.cc || [])];
-                candidates.forEach(email => {
-                    const clean = email && email.trim().toLowerCase();
-                    if (clean && !clean.includes('edgestone.in') && clean !== clientEmail && !clientCcs.includes(clean)) {
-                        if (!currentEmails.some(e => e.toLowerCase() === clean) && !newEmailsToAdd.some(e => e.toLowerCase() === clean)) {
-                            newEmailsToAdd.push(email.trim());
-                        }
+                if (cleanFrom && !cleanFrom.includes('edgestone.in') && cleanFrom !== clientEmail && !clientCcs.includes(cleanFrom)) {
+                    if (!currentEmails.some(e => e.toLowerCase() === cleanFrom)) {
+                        await prisma.vendor.update({
+                            where: { id: vendorId },
+                            data: { emails: [...currentEmails, from.trim()] }
+                        });
+                        logger.info(`🏢 [VENDOR] ➕ Auto-registered sender ${from.trim()} for ${vendor.name}`);
                     }
-                });
-
-                if (newEmailsToAdd.length > 0) {
-                    await prisma.vendor.update({
-                        where: { id: vendorId },
-                        data: { emails: [...currentEmails, ...newEmailsToAdd] }
-                    });
-                    logger.info(`🏢 [VENDOR] ➕ Auto-registered new vendor contact emails for ${vendor.name}: ${newEmailsToAdd.join(', ')}`);
                 }
             }
         } catch (vErr) {

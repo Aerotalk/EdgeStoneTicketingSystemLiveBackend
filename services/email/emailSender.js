@@ -6,6 +6,61 @@ const logger = require('../../utils/logger');
 const { getGraphAccessToken, markGraphIdProcessed } = require('./graphClient');
 const { MAX_EMAIL_ATTACHMENT_SIZE } = require('./emailAttachmentService');
 
+/**
+ * Normalizes HTML tables to ensure crisp borders, padding, and layout preservation
+ * across Microsoft Outlook desktop, Outlook Web, and mobile clients.
+ */
+const normalizeEmailTablesForOutlook = (html) => {
+    if (!html || typeof html !== 'string' || !/<table[\s>]/i.test(html)) {
+        return html;
+    }
+
+    let modified = html;
+
+    // 1. Ensure table tags have proper presentation attributes and MSO inline styles
+    modified = modified.replace(/<table\b([^>]*)>/gi, (match, attrs) => {
+        let styleVal = '';
+        const styleMatch = attrs.match(/style=["']([^"']*)["']/i);
+        if (styleMatch) {
+            styleVal = styleMatch[1].replace(/;?$/, '; ');
+        }
+        const cleanAttrs = attrs
+            .replace(/\s*style=["'][^"']*["']/gi, '')
+            .replace(/\s*border=["'][^"']*["']/gi, '')
+            .replace(/\s*cellpadding=["'][^"']*["']/gi, '')
+            .replace(/\s*cellspacing=["'][^"']*["']/gi, '');
+
+        const tableStyle = `width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; border: 1px solid #cbd5e1; mso-table-lspace: 0pt; mso-table-rspace: 0pt; ${styleVal}`.trim();
+        return `<table border="1" cellpadding="0" cellspacing="0" class="edgestone-table" style="${tableStyle}" ${cleanAttrs}>`;
+    });
+
+    // 2. Ensure th tags have header styles
+    modified = modified.replace(/<th\b([^>]*)>/gi, (match, attrs) => {
+        let styleVal = '';
+        const styleMatch = attrs.match(/style=["']([^"']*)["']/i);
+        if (styleMatch) {
+            styleVal = styleMatch[1].replace(/;?$/, '; ');
+        }
+        const cleanAttrs = attrs.replace(/\s*style=["'][^"']*["']/gi, '');
+        const thStyle = `background-color: #f1f5f9; color: #0f172a; font-weight: 700; padding: 8px 12px; border: 1px solid #cbd5e1; text-align: left; font-size: 13px; ${styleVal}`.trim();
+        return `<th style="${thStyle}" ${cleanAttrs}>`;
+    });
+
+    // 3. Ensure td tags have cell borders and padding
+    modified = modified.replace(/<td\b([^>]*)>/gi, (match, attrs) => {
+        let styleVal = '';
+        const styleMatch = attrs.match(/style=["']([^"']*)["']/i);
+        if (styleMatch) {
+            styleVal = styleMatch[1].replace(/;?$/, '; ');
+        }
+        const cleanAttrs = attrs.replace(/\s*style=["'][^"']*["']/gi, '');
+        const tdStyle = `padding: 8px 12px; border: 1px solid #cbd5e1; color: #334155; vertical-align: top; font-size: 13px; ${styleVal}`.trim();
+        return `<td style="${tdStyle}" ${cleanAttrs}>`;
+    });
+
+    return modified;
+};
+
 const sendViaGraph = async (options) => {
     let { to, cc, bcc, subject, text, body, html, inReplyTo, references, extraHeaders = {} } = options;
     const accessToken = await getGraphAccessToken();
@@ -31,6 +86,9 @@ const sendViaGraph = async (options) => {
             
             return `src="cid:${cid}"`;
         });
+
+        // Normalize HTML tables for Outlook email clients
+        html = normalizeEmailTablesForOutlook(html);
     }
 
     const formatRecipients = (recipients) => {
@@ -386,14 +444,9 @@ const sendViaGraph = async (options) => {
         message.internetMessageHeaders = headers;
     }
 
-    // Microsoft Graph /sendMail endpoint has a hard 4MB request payload limit.
-    // If total attachments > 3MB, we must create a draft message and upload attachments.
-    const isLargePayload = totalAttachmentBytes > (3 * 1024 * 1024);
-
-    if (isLargePayload) {
-        logger.info(`[EMAIL] Total attachment size is ${(totalAttachmentBytes / (1024 * 1024)).toFixed(2)} MB. Using Graph Draft + Upload Session workflow.`);
-        
-        // 1. Create Draft Message
+    // Use Graph Draft + Send workflow so internetMessageId is ALWAYS captured and returned for reply threading.
+    // This solves Problem 1 (threading breaks because sendMail returns 202 without Message-ID).
+    try {
         const draftUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages`;
         const draftRes = await fetch(draftUrl, {
             method: 'POST',
@@ -404,36 +457,42 @@ const sendViaGraph = async (options) => {
             body: JSON.stringify(message)
         });
 
-        if (!draftRes.ok) {
+        if (draftRes.ok) {
+            const draftData = await draftRes.json();
+            const draftId = draftData.id;
+
+            // Upload attachments (handles both small base64 attachments and large upload sessions)
+            if (processedAttachments.length > 0) {
+                await uploadDraftAttachments(draftId, processedAttachments);
+            }
+
+            const sendDraftUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/send`;
+            const sendRes = await fetch(sendDraftUrl, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+
+            if (sendRes.ok || sendRes.status === 202) {
+                logger.info(`[EMAIL] 🚀 Sent email via Graph draft to ${toEmails} | Message-ID: ${draftData.internetMessageId || draftId}`);
+                markGraphIdProcessed(draftId);
+                if (draftData.internetMessageId) markGraphIdProcessed(draftData.internetMessageId);
+                return {
+                    messageId: draftData.internetMessageId || null,
+                    conversationId: draftData.conversationId || null,
+                    accepted: Array.isArray(to) ? to : [to],
+                    response: '202 Accepted'
+                };
+            }
+            logger.warn(`[EMAIL] Draft send returned status ${sendRes.status}. Falling back to sendMail.`);
+        } else {
             const draftErr = await draftRes.json().catch(() => ({}));
-            throw new Error(`Failed to create draft for large email: ${draftErr.error?.message || draftRes.status}`);
+            logger.warn(`[EMAIL] Draft creation returned ${draftRes.status}: ${draftErr.error?.message}. Falling back to sendMail.`);
         }
-
-        const draftData = await draftRes.json();
-        const draftId = draftData.id;
-
-        // 2. Attach each file to the draft
-        await uploadDraftAttachments(draftId, processedAttachments);
-
-        // 3. Send the draft
-        const sendDraftUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}/send`;
-        const sendRes = await fetch(sendDraftUrl, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-
-        if (sendRes.ok || sendRes.status === 202) {
-            logger.info(`[EMAIL] Sent large email via Graph draft to ${toEmails}`);
-            markGraphIdProcessed(draftId);
-            if (draftData.internetMessageId) markGraphIdProcessed(draftData.internetMessageId);
-            return { messageId: draftData.internetMessageId || null, accepted: Array.isArray(to) ? to : [to], response: '202 Accepted' };
-        }
-
-        const sendErr = await sendRes.json().catch(() => ({}));
-        throw new Error(`Draft send failed: ${sendErr.error?.message || sendRes.status}`);
+    } catch (draftWorkflowErr) {
+        logger.warn(`[EMAIL] Draft workflow failed (${draftWorkflowErr.message}). Falling back to standard sendMail.`);
     }
 
-    // Standard fast path for payloads <= 3MB
+    // --- FALLBACK PATH: Direct /sendMail ---
     if (processedAttachments.length > 0) {
         message.hasAttachments = true;
         message.attachments = processedAttachments.map(att => ({
@@ -458,7 +517,7 @@ const sendViaGraph = async (options) => {
     });
 
     if (response.ok || response.status === 202) {
-        logger.info(`[EMAIL] Sent email via Graph to ${toEmails}`);
+        logger.info(`[EMAIL] Sent email via Graph sendMail fallback to ${toEmails}`);
         return { messageId: null, accepted: Array.isArray(to) ? to : [to], response: '202 Accepted' };
     }
     

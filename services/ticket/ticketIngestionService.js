@@ -673,14 +673,23 @@ const createTicketFromEmail = async (emailData) => {
             logger.error(`🚨 🎟️ [TICKET] ❌ Failed to process AI Circuit identification: ${dbErr.message}`);
         }
 
-        // CRITICAL GATE: If no circuit matches DB, drop email unless recognized vendor maintenance
+        // CRITICAL GATE: If no circuit matches DB, drop email unless maintenance/CRQ notice
         if (!circuitId) {
             const isVendorSender = potentialVendorIds.length > 0 || domainMatchedVendorIds.length > 0;
+            const isClientSender = potentialClientIds.length > 0 || domainMatchedClientIds.length > 0;
             const isMaintenanceContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|crq/i.test(`${subject || ''} ${body || ''}`);
-            if (isVendorSender && isMaintenanceContext) {
-                logger.warn(`⚠️ 🎟️ [TICKET] Circuit not matched, but recognized vendor ${from} sent maintenance notice "${subject}". Creating Vendor Maintenance Ticket for agent review instead of dropping.`);
-                ticketType = 'Vendor';
-                vendorId = potentialVendorIds[0] || domainMatchedVendorIds[0] || null;
+
+            if (isMaintenanceContext) {
+                logger.warn(`⚠️ 🎟️ [TICKET] Circuit not matched in DB, but maintenance/CRQ context detected in "${subject}" from ${from}. Creating Maintenance Ticket for NOC review instead of dropping.`);
+                if (isClientSender && !isVendorSender) {
+                    ticketType = 'Client';
+                    clientId = potentialClientIds[0] || domainMatchedClientIds[0] || null;
+                    vendorId = null;
+                } else {
+                    ticketType = 'Vendor';
+                    vendorId = potentialVendorIds[0] || domainMatchedVendorIds[0] || null;
+                    clientId = null;
+                }
                 circuitId = null;
             } else {
                 logger.warn(`⚠️ 🎟️ [TICKET] 🚫 DROPPED EMAIL: Subject "${subject}" from ${from} does not contain any recognized Circuit ID. Ticket will NOT be created.`);
@@ -862,9 +871,9 @@ const createTicketFromEmail = async (emailData) => {
                 });
             }
 
-            const isMaintenanceNotification = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(`${subject || ''} ${body || ''}`);
-            const initialStatus = (ticketType === 'Vendor' && isMaintenanceNotification) ? 'Maintenance' : 'Open';
-            const initialIsMaintenance = (ticketType === 'Vendor' && isMaintenanceNotification);
+            const isMaintenanceNotification = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|crq/i.test(`${subject || ''} ${body || ''}`);
+            const initialStatus = isMaintenanceNotification ? 'Maintenance' : 'Open';
+            const initialIsMaintenance = isMaintenanceNotification;
             const isVendorTicket = (ticketType === 'Vendor' || ticketId.startsWith('#V'));
 
             try {
@@ -950,21 +959,15 @@ const createTicketFromEmail = async (emailData) => {
                     } catch (cErr) {
                         logger.error(`Error auto-registering client emails: ${cErr.message}`);
                     }
-                } else if (vendorId) {
+                } else if (vendorId && from) {
                     try {
                         const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
                         if (vendor) {
                             const currentEmails = Array.isArray(vendor.emails) ? vendor.emails : [];
-                            const newEmails = [];
-                            [from, ...initialCcs].forEach(em => {
-                                const c = em && em.trim().toLowerCase();
-                                if (c && !c.includes('edgestone.in') && !currentEmails.some(x => x.toLowerCase() === c) && !newEmails.some(x => x.toLowerCase() === c)) {
-                                    newEmails.push(em.trim());
-                                }
-                            });
-                            if (newEmails.length > 0) {
-                                await prisma.vendor.update({ where: { id: vendorId }, data: { emails: [...currentEmails, ...newEmails] } });
-                                logger.info(`🏢 [VENDOR] ➕ Auto-registered contact emails for ${vendor.name}: ${newEmails.join(', ')}`);
+                            const c = from.trim().toLowerCase();
+                            if (c && !c.includes('edgestone.in') && !currentEmails.some(x => x.toLowerCase() === c)) {
+                                await prisma.vendor.update({ where: { id: vendorId }, data: { emails: [...currentEmails, from.trim()] } });
+                                logger.info(`🏢 [VENDOR] ➕ Auto-registered sender email for ${vendor.name}: ${from.trim()}`);
                             }
                         }
                     } catch (vErr) {
@@ -987,7 +990,10 @@ const createTicketFromEmail = async (emailData) => {
         logger.info(`🎟️ [TICKET] ✅ ${ticketType} Ticket Created Successfully: ${ticket.ticketId} at ${ticket.receivedTime}`);
         try {
             const notificationService = require('../notificationService');
-            notificationService.sendNotification({ type: 'new_ticket', message: `New Ticket Raised: ${ticket.ticketId}`, ticketId: ticket.ticketId });
+            const notifMsg = (!circuitId && initialIsMaintenance)
+                ? `🚨 New Maintenance Notice (Needs Circuit): ${ticket.ticketId} - ${ticket.header}`
+                : `New Ticket Raised: ${ticket.ticketId}`;
+            notificationService.sendNotification({ type: 'new_ticket', message: notifMsg, ticketId: ticket.ticketId });
         } catch(err) { logger.error(`Notification Error: ${err.message}`) }
 
         // Auto-reply logic

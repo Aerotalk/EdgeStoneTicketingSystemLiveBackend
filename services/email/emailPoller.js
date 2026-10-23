@@ -145,6 +145,96 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
     }
 };
 
+/**
+ * Handles Non-Delivery Reports (NDR) / bounces from postmaster or mailer-daemon.
+ * Extracts failed recipient email, identifies originating ticket, logs activity, and alerts agents.
+ */
+const handleSystemBounce = async (msg, accessToken) => {
+    try {
+        const ticketService = require('../ticketService');
+        const ActivityLogModel = require('../../models/activityLog');
+        const notificationService = require('../notificationService');
+
+        const bodyContent = msg.body?.content || '';
+        const subject = msg.subject || '';
+        const combinedText = `${subject} ${bodyContent}`;
+
+        // 1. Extract failed recipient email
+        let failedEmail = null;
+        const prefixMatch = combinedText.match(/(?:couldn['’]?t be delivered to|failed recipients?|was unable to deliver.*?to the following addresses:?|Final-Recipient:\s*rfc822;\s*|recipient\s*address:?)\s*<?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})>?/i);
+        if (prefixMatch && prefixMatch[1]) {
+            failedEmail = prefixMatch[1].replace(/[<>]/g, '').trim().toLowerCase();
+        } else {
+            const allEmails = combinedText.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g) || [];
+            const ownEmail = (process.env.SENDER_EMAIL || process.env.MAIL_USER || '').toLowerCase();
+            for (const em of allEmails) {
+                const clean = em.replace(/[<>]/g, '').trim().toLowerCase();
+                if (!clean.includes('postmaster') && !clean.includes('mailer-daemon') && !clean.includes('microsoft') && clean !== ownEmail) {
+                    failedEmail = clean;
+                    break;
+                }
+            }
+        }
+
+        // 2. Extract bounce diagnostic reason if present
+        let diagnosticCode = 'Undeliverable / Mailbox rejected';
+        const diagMatch = combinedText.match(/(?:Remote Server returned|Diagnostic-Code:.*?|Diagnostic explanation:?)\s*['"]?([^\r\n<]+)/i) ||
+            combinedText.match(/(?:5\d{2}\s+5\.\d+\.\d+[^<\r\n]+)/i);
+        if (diagMatch && diagMatch[1]) {
+            diagnosticCode = diagMatch[1].trim().substring(0, 150);
+        } else if (diagMatch && diagMatch[0]) {
+            diagnosticCode = diagMatch[0].trim().substring(0, 150);
+        }
+
+        // 3. Find matching ticket via headers or subject
+        const inReplyToHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'in-reply-to')?.value || null;
+        const referencesHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'references')?.value || null;
+
+        const ticket = await ticketService.findExistingTicketForReply(
+            inReplyToHeader,
+            referencesHeader,
+            subject,
+            bodyContent,
+            msg.from?.emailAddress?.address
+        );
+
+        if (ticket) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            const alertText = `⚠️ Delivery Failure: Email to ${failedEmail || 'recipient'} could not be delivered. Reason: ${diagnosticCode}`;
+
+            // Create activity log
+            await ActivityLogModel.createActivityLog({
+                ticketId: ticket.id,
+                action: 'delivery_failure',
+                description: alertText,
+                time: timeStr,
+                date: dateStr,
+                author: 'Mailer Daemon'
+            });
+
+            // Emit live notification to agents
+            try {
+                await notificationService.sendNotification({
+                    type: 'delivery_failure',
+                    title: `⚠️ Delivery Failed (${ticket.ticketId})`,
+                    message: `Outbound email to ${failedEmail || 'recipient'} bounced: ${diagnosticCode}`,
+                    ticketId: ticket.ticketId,
+                    sender: 'system'
+                });
+            } catch (_) {}
+
+            logger.warn(`🚨 [BOUNCE] NDR detected for Ticket ${ticket.ticketId} | Failed recipient: ${failedEmail} | Reason: ${diagnosticCode}`);
+        } else {
+            logger.warn(`🚨 [BOUNCE] Unmatched NDR received | Failed recipient: ${failedEmail || 'unknown'} | Subject: ${subject}`);
+        }
+    } catch (err) {
+        logger.error(`[BOUNCE] Error processing NDR bounce: ${err.message}`);
+    }
+};
+
 const fetchNewGraphEmails = async () => {
     if (isPolling) return;
     isPolling = true;
@@ -172,9 +262,12 @@ const fetchNewGraphEmails = async () => {
                 }
 
                 const isOwnEmail = ownEmail && fromAddr.toLowerCase() === ownEmail;
-                const isSystemBounce = fromAddr.toLowerCase().includes('postmaster') || fromAddr.toLowerCase().includes('mailer-daemon');
-                
+                const isSystemBounce = fromAddr.toLowerCase().includes('postmaster') ||
+                    fromAddr.toLowerCase().includes('mailer-daemon') ||
+                    /^(?:undeliverable|delivery\s*status\s*notification|mail\s*delivery\s*failed)/i.test(msg.subject || '');
+
                 if (isSystemBounce) {
+                    await handleSystemBounce(msg, accessToken);
                     await markEmailAsRead(msg.id, accessToken);
                     continue;
                 }
