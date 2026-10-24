@@ -35,7 +35,6 @@ function ruleMatches(rule, availability) {
     const upperOk =
         rule.upperLimit === null || rule.upperOperator === null
             ? true
-            // If upperLimit is 100% and availability is >= 100%, match the top tier
             : (rule.upperLimit >= 100 && availability >= 100)
                 ? true
                 : evalOperator(rule.upperOperator, rule.upperLimit, availability);

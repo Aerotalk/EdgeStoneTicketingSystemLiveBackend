@@ -26,6 +26,7 @@ const {
 const {
     sendEmail,
     sendAgentReplyEmail,
+    sendAutoReplyEmail,
     sendViaGraph
 } = require('./email/emailSender');
 
@@ -49,6 +50,7 @@ module.exports = {
     // Outbound Sending
     sendEmail,
     sendAgentReplyEmail,
+    sendAutoReplyEmail,
     sendViaGraph,
 
     // Poller & Lifecycle

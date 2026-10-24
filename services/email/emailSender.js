@@ -535,8 +535,15 @@ const sendAgentReplyEmail = async (options) => {
     return sendViaGraph(options);
 };
 
+const sendAutoReplyEmail = async (options) => {
+    const toEmails = Array.isArray(options.to) ? options.to.join(', ') : options.to;
+    logger.info(`[EMAIL] 🤖 Sending Auto-Reply to ${toEmails} for Subject: ${options.subject}`);
+    return sendViaGraph(options);
+};
+
 module.exports = {
     sendEmail,
     sendAgentReplyEmail,
+    sendAutoReplyEmail,
     sendViaGraph
 };

@@ -18,6 +18,20 @@ const { generateTicketId } = require('./ticketManagementService');
 const emailSender = require('../email/emailSender');
 
 /**
+ * Determines whether client auto-reply on new ticket generation is enabled via environment variables.
+ * Supported env variables: AUTOREPLY, AUTO_REPLY, ENABLE_AUTO_REPLY, AUTO_REPLY_ENABLED
+ * Returns true by default unless explicitly disabled ('false', '0', 'off', 'disabled').
+ */
+const isAutoReplyEnabled = () => {
+    const envVal = process.env.AUTOREPLY ?? process.env.AUTO_REPLY ?? process.env.ENABLE_AUTO_REPLY ?? process.env.AUTO_REPLY_ENABLED;
+    if (envVal === undefined || envVal === null || envVal === '') {
+        return true;
+    }
+    const normalized = String(envVal).replace(/^["']|["']$/g, '').trim().toLowerCase();
+    return normalized !== 'false' && normalized !== '0' && normalized !== 'off' && normalized !== 'disabled';
+};
+
+/**
  * Ingestion and classification pipeline for incoming emails.
  * Handles threading checks, sender identification, circuit discovery,
  * temporary vs original circuit prioritization, deduplication, and ticket creation.
@@ -997,8 +1011,10 @@ const createTicketFromEmail = async (emailData) => {
         } catch(err) { logger.error(`Notification Error: ${err.message}`) }
 
         // Auto-reply logic
-        // Skip auto-reply for all vendor-raised tickets (including maintenance) and unverified senders
-        if (ticketType === 'Unverified' || !clientId) {
+        // Skip auto-reply if disabled via env (AUTOREPLY=false), or for vendor-raised tickets / unverified senders
+        if (!isAutoReplyEnabled()) {
+            logger.info(`🎟️ [TICKET] 🛑 Skipped Auto-Reply for Ticket ${ticket.ticketId} (Disabled via AUTOREPLY env)`);
+        } else if (ticketType === 'Unverified' || !clientId) {
             logger.info(`🎟️ [TICKET] 🛑 Skipped Auto-Reply for Ticket ${ticket.ticketId} (Unverified sender)`);
         } else if (ticketType !== 'Vendor') {
             try {
@@ -1016,7 +1032,8 @@ const createTicketFromEmail = async (emailData) => {
                 `;
 
                 logger.info(`🎟️ [TICKET] 🤖 Sending Auto-Reply to ${from} for Ticket ${ticket.ticketId}`);
-                await emailSender.sendEmail({
+                const sendFn = emailSender.sendAutoReplyEmail || emailSender.sendEmail;
+                await sendFn({
                     to: [from],
                     subject: autoReplySubject,
                     text: autoReplyText,
@@ -1040,5 +1057,6 @@ const createTicketFromEmail = async (emailData) => {
 };
 
 module.exports = {
-    createTicketFromEmail
+    createTicketFromEmail,
+    isAutoReplyEnabled
 };

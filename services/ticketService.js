@@ -38,7 +38,8 @@ const {
 
 // 4. Ticket Creation & Ingestion Engine from Incoming Emails
 const {
-    createTicketFromEmail
+    createTicketFromEmail,
+    isAutoReplyEnabled
 } = require('./ticket/ticketIngestionService');
 
 // 5. Ticket CRUD, Updates, UI Reply & Lifecycle Management
@@ -55,6 +56,7 @@ const {
 module.exports = {
     // Ingestion & Threading
     createTicketFromEmail,
+    isAutoReplyEnabled,
     findExistingTicketForReply,
     appendClientReplyToTicket,
     appendVendorReplyToTicket,

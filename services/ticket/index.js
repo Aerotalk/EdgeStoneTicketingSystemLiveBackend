@@ -16,7 +16,7 @@ const {
     appendAgentReplyFromOutlook
 } = require('./ticketReplyHandler');
 
-const { createTicketFromEmail } = require('./ticketIngestionService');
+const { createTicketFromEmail, isAutoReplyEnabled } = require('./ticketIngestionService');
 
 const {
     generateTicketId,
@@ -29,6 +29,7 @@ const {
 
 module.exports = {
     createTicketFromEmail,
+    isAutoReplyEnabled,
     getTickets,
     updateTicket,
     replyToTicket,
