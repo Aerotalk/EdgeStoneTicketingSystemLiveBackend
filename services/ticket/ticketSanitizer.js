@@ -179,10 +179,41 @@ const extractMaintenanceMetadata = (subject, body) => {
     return { crqId, maintDate };
 };
 
+/**
+ * Determines whether an email address belongs to an EdgeStone internal agent, officer, or system address.
+ * Matches @edgestone.in domain, MAIL_USER / SENDER_EMAIL, or records in Agent/User tables.
+ */
+const isInternalAgentEmail = async (email) => {
+    if (!email) return false;
+    const clean = String(email).trim().toLowerCase();
+    if (clean.endsWith('@edgestone.in')) return true;
+    const ownEmail = (process.env.SENDER_EMAIL || process.env.MAIL_USER || '').toLowerCase();
+    if (ownEmail && clean === ownEmail) return true;
+    try {
+        const prisma = require('../../models/index');
+        const agent = await prisma.agent.findFirst({
+            where: {
+                OR: [
+                    { email: { equals: clean, mode: 'insensitive' } },
+                    { emails: { has: clean } }
+                ]
+            }
+        });
+        if (agent) return true;
+        const user = await prisma.user.findFirst({
+            where: { email: { equals: clean, mode: 'insensitive' } }
+        });
+        if (user) return true;
+    } catch (_) {}
+    return false;
+};
+
 module.exports = {
     stripHtml,
     stripQuotedReply,
     GENERIC_PUBLIC_DOMAINS,
     isEmailMatchingClientDomain,
-    extractMaintenanceMetadata
+    extractMaintenanceMetadata,
+    isInternalAgentEmail
 };
+

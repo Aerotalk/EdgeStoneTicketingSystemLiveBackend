@@ -21,10 +21,17 @@ const checkCircuitCompatibility = (ticketCircuitId, detectedCircuit, ticketSubje
         return true;
     }
 
+    // Base circuit normalization (stripping temp / original / new prefixes)
+    const normBase = (id) => String(id || '').replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim().toUpperCase();
+    if (cleanTgt && normBase(cleanTgt) && (normBase(cleanTgt) === normBase(custCkt) || normBase(cleanTgt) === normBase(suppCkt))) {
+        return true;
+    }
+
     // If circuit has vendor circuits, check if any supplier circuit matches
     if (detectedCircuit.isMultiVendor && Array.isArray(detectedCircuit.vendorCircuits)) {
         const hasMatch = detectedCircuit.vendorCircuits.some(vc =>
-            (vc.supplierCircuitId || '').toUpperCase().trim() === cleanTgt
+            (vc.supplierCircuitId || '').toUpperCase().trim() === cleanTgt ||
+            (normBase(vc.supplierCircuitId) && normBase(vc.supplierCircuitId) === normBase(cleanTgt))
         );
         if (hasMatch) return true;
     }
@@ -71,18 +78,38 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         return regex.test(text);
     };
 
+    const extractTokens = (id) => {
+        if (!id) return [];
+        const raw = String(id).trim();
+        const tokens = [raw];
+        const stripped = raw.replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
+        if (stripped && stripped !== raw && stripped.length > 2) {
+            tokens.push(stripped);
+        }
+        const numMatch = raw.match(/\b\d{6,}\b/);
+        if (numMatch && !tokens.includes(numMatch[0])) {
+            tokens.push(numMatch[0]);
+        }
+        return tokens;
+    };
+
     let detectedCircuit = null;
     for (const c of allCircuits) {
-        if (c.customerCircuitId && matchesCircuitToken(textToScan, c.customerCircuitId)) {
+        const checkId = (id) => {
+            const tokens = extractTokens(id);
+            return tokens.some(tok => matchesCircuitToken(textToScan, tok));
+        };
+
+        if (c.customerCircuitId && checkId(c.customerCircuitId)) {
             detectedCircuit = c;
             break;
         }
-        if (c.supplierCircuitId && matchesCircuitToken(textToScan, c.supplierCircuitId)) {
+        if (c.supplierCircuitId && checkId(c.supplierCircuitId)) {
             detectedCircuit = c;
             break;
         }
         if (c.isMultiVendor && Array.isArray(c.vendorCircuits)) {
-            const vcMatch = c.vendorCircuits.find(vc => vc.supplierCircuitId && matchesCircuitToken(textToScan, vc.supplierCircuitId));
+            const vcMatch = c.vendorCircuits.find(vc => vc.supplierCircuitId && checkId(vc.supplierCircuitId));
             if (vcMatch) {
                 detectedCircuit = c;
                 break;
@@ -294,6 +321,18 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 );
                 if (match) {
                     logger.info(`🎟️ [TICKET] 🧵 Reply matched via subject + verified sender (${from}): "${stripped}" → Ticket ${match.ticketId}`);
+                }
+            }
+
+            // Fallback for internal agents: If an EdgeStone agent is emailing regarding an active circuit,
+            // route into the ongoing active ticket for that circuit
+            if (!match && from && from.toLowerCase().includes('edgestone.in') && detectedCircuit) {
+                match = allTickets.find(t =>
+                    isCircuitCompatible(t.circuitId, t.ticketId) &&
+                    ['Open', 'In Progress', 'Maintenance'].includes(t.status)
+                );
+                if (match) {
+                    logger.info(`🎟️ [TICKET] 🧵 Agent email from ${from} matched active ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
                 }
             }
 

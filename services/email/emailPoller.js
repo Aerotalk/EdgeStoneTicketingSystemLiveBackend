@@ -3,6 +3,7 @@
 const logger = require('../../utils/logger');
 const { getGraphAccessToken, isGraphIdProcessed, markGraphIdProcessed } = require('./graphClient');
 const { fetchMessageAttachments } = require('./emailAttachmentService');
+const { isInternalAgentEmail } = require('../ticket/ticketSanitizer');
 
 let isPolling = false;
 let graphPollInterval = null;
@@ -261,7 +262,8 @@ const fetchNewGraphEmails = async () => {
                     continue;
                 }
 
-                const isOwnEmail = ownEmail && fromAddr.toLowerCase() === ownEmail;
+                const isAgentSender = await isInternalAgentEmail(fromAddr);
+                const isOwnEmail = (ownEmail && fromAddr.toLowerCase() === ownEmail) || isAgentSender;
                 const isSystemBounce = fromAddr.toLowerCase().includes('postmaster') ||
                     fromAddr.toLowerCase().includes('mailer-daemon') ||
                     /^(?:undeliverable|delivery\s*status\s*notification|mail\s*delivery\s*failed)/i.test(msg.subject || '');
@@ -275,9 +277,100 @@ const fetchNewGraphEmails = async () => {
                 const inReplyToHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'in-reply-to')?.value || null;
                 const referencesHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'references')?.value || null;
 
-                // If ownEmail sends a message into Inbox (e.g. self-CC or loopback):
+                // If internal agent or own mailbox sends a message into Inbox (e.g. self-CC or loopback):
                 if (isOwnEmail) {
-                    const existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, msg.subject, msg.body?.content, fromAddr);
+                    let existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, msg.subject, msg.body?.content, fromAddr);
+
+                    // Fallback: If not matched by headers/subject, check if this agent email references an active maintenance or circuit ticket
+                    if (!existingTicket) {
+                        try {
+                            const prisma = require('../../models/index');
+                            const textScan = `${msg.subject || ''} \n ${msg.body?.content || ''}`.toUpperCase();
+
+                            // 1. Check if agent email is regarding an active Maintenance ticket
+                            const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(textScan);
+                            if (isMaintContext) {
+                                const allActiveMaintTickets = await prisma.ticket.findMany({
+                                    where: { 
+                                        OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
+                                        status: { notIn: ['Closed', 'Resolved', 'Spam'] }
+                                    },
+                                    include: { replies: { select: { text: true, subject: true } } },
+                                    orderBy: { createdAt: 'desc' }
+                                });
+                                const outboundMeta = ticketService.extractMaintenanceMetadata(msg.subject, msg.body?.content);
+
+                                for (const amt of allActiveMaintTickets) {
+                                    if (amt.circuitId && textScan.includes(amt.circuitId.toUpperCase())) {
+                                        const hasCompletion = (amt.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
+                                        if (hasCompletion) continue; // Skip completed maintenance
+
+                                        const amtMeta = ticketService.extractMaintenanceMetadata(amt.header, (amt.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
+                                        if (outboundMeta.crqId && amtMeta.crqId && outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase()) {
+                                            continue; // Different CRQ, do not link to old ticket!
+                                        }
+                                        if (outboundMeta.maintDate && amtMeta.maintDate && outboundMeta.maintDate !== amtMeta.maintDate) {
+                                            continue; // Different scheduled date window, do not link to old ticket!
+                                        }
+
+                                        existingTicket = amt;
+                                        logger.info(`[EMAIL] 📤 Linked incoming agent maintenance email from ${fromAddr} to active Maintenance Ticket ${amt.ticketId} for circuit ${amt.circuitId}`);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // 2. Check if agent email references an active normal/incident ticket on circuit
+                            if (!existingTicket) {
+                                const circuits = await prisma.circuit.findMany({
+                                    select: { id: true, customerCircuitId: true, supplierCircuitId: true, isMultiVendor: true, vendorCircuits: true }
+                                });
+                                const matchesCircuitToken = (txt, targetId) => {
+                                    if (!txt || !targetId) return false;
+                                    const escaped = String(targetId).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                    const regex = new RegExp(`(?:^|[^a-zA-Z0-9_-])${escaped}(?:$|[^a-zA-Z0-9_-])`, 'i');
+                                    return regex.test(txt);
+                                };
+
+                                for (const c of circuits) {
+                                    const hasCkt = (c.customerCircuitId && matchesCircuitToken(textScan, c.customerCircuitId)) ||
+                                                   (c.supplierCircuitId && matchesCircuitToken(textScan, c.supplierCircuitId)) ||
+                                                   (c.isMultiVendor && Array.isArray(c.vendorCircuits) && c.vendorCircuits.some(vc => vc.supplierCircuitId && matchesCircuitToken(textScan, vc.supplierCircuitId)));
+                                    if (hasCkt) {
+                                        const normBase = (id) => String(id || '').replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
+                                        const baseCust = normBase(c.customerCircuitId);
+
+                                        const activeTicket = await prisma.ticket.findFirst({
+                                            where: {
+                                                OR: [
+                                                    { circuitId: c.customerCircuitId },
+                                                    { circuitId: c.supplierCircuitId },
+                                                    { circuitId: c.id },
+                                                    ...(baseCust ? [
+                                                        { circuitId: baseCust },
+                                                        { circuitId: `temp-${baseCust}` },
+                                                        { circuitId: `original-${baseCust}` }
+                                                    ] : [])
+                                                ],
+                                                status: { notIn: ['Closed', 'Resolved', 'Spam'] }
+                                            },
+                                            orderBy: { createdAt: 'desc' },
+                                            include: { client: true, vendor: true }
+                                        });
+
+                                        if (activeTicket) {
+                                            existingTicket = activeTicket;
+                                            logger.info(`[EMAIL] 📤 Linked incoming agent email from ${fromAddr} to active Ticket ${activeTicket.ticketId} on circuit ${c.customerCircuitId || c.supplierCircuitId}`);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (cErr) {
+                            logger.error(`Error finding circuit ticket for agent email: ${cErr.message}`);
+                        }
+                    }
+
                     if (existingTicket && !isGraphIdProcessed(msg.id)) {
                         markGraphIdProcessed(msg.id);
                         if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
@@ -296,7 +389,10 @@ const fetchNewGraphEmails = async () => {
                             messageId: messageId,
                             attachments
                         });
+                    } else if (!existingTicket) {
+                        logger.info(`[EMAIL] ℹ️ Ignored unlinked email from EdgeStone agent (${fromAddr}): Agents cannot create new tickets.`);
                     }
+
                     await markEmailAsRead(msg.id, accessToken);
                     continue;
                 }

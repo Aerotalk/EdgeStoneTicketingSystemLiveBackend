@@ -10,10 +10,11 @@ const {
     stripQuotedReply,
     GENERIC_PUBLIC_DOMAINS,
     isEmailMatchingClientDomain,
-    extractMaintenanceMetadata
+    extractMaintenanceMetadata,
+    isInternalAgentEmail
 } = require('./ticketSanitizer');
 const { findExistingTicketForReply } = require('./ticketThreadingService');
-const { appendClientReplyToTicket, appendVendorReplyToTicket } = require('./ticketReplyHandler');
+const { appendClientReplyToTicket, appendVendorReplyToTicket, appendAgentReplyFromOutlook } = require('./ticketReplyHandler');
 const { generateTicketId } = require('./ticketManagementService');
 const emailSender = require('../email/emailSender');
 const { isAutoReplyEnabled } = require('../../utils/emailConfig');
@@ -46,9 +47,17 @@ const createTicketFromEmail = async (emailData) => {
             }
         }
 
+        // Check if sender is an EdgeStone internal agent
+        const isAgent = await isInternalAgentEmail(from);
+
         // 0. Check if this email is a reply to an existing ticket
         let existingTicket = await findExistingTicketForReply(inReplyTo, references, subject, body, from);
         if (existingTicket) {
+            if (isAgent) {
+                logger.info(`🎟️ [TICKET] 👤 Routing email from EdgeStone agent (${from}) as Agent Reply into Ticket ${existingTicket.ticketId}`);
+                return await appendAgentReplyFromOutlook(existingTicket, emailData);
+            }
+
             if (existingTicket.clientId && !existingTicket.client) {
                 try {
                     existingTicket.client = await prisma.client.findUnique({ where: { id: existingTicket.clientId } });
@@ -341,6 +350,12 @@ const createTicketFromEmail = async (emailData) => {
             } else {
                 return await appendClientReplyToTicket(existingTicket, emailData);
             }
+        }
+
+        // --- STRICT AGENT GUARD: EdgeStone internal agents/staff (@edgestone.in) NEVER create new tickets! ---
+        if (isAgent) {
+            logger.warn(`🛑 [TICKET] Blocked ticket creation: Sender ${from} is an EdgeStone internal agent and email was not matched to an existing ticket. Agent emails cannot create tickets.`);
+            return null;
         }
 
         // 1. Identify Potential Senders
