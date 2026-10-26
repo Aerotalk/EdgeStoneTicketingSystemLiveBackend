@@ -153,6 +153,12 @@ const sendAutoReply = async (req, res, next) => {
         const agentName = req.user ? req.user.name : 'Agent';
         const agentEmail = req.user ? req.user.email : 'support@edgestone.in';
 
+        if (typeof ticketService.isAutoReplyEnabled === 'function' && !ticketService.isAutoReplyEnabled()) {
+            return res.status(400).json({
+                message: 'Auto-reply is disabled via environment configuration (AUTOREPLY=false)'
+            });
+        }
+
         logger.info(`🎟️ [TICKET] 🤖 Agent ${agentName} manually triggering auto-reply for ticket ${id} to ${toEmails}`);
 
         const ticket = await ticketService.sendManualAutoReply(id, toEmails, agentName, agentEmail);

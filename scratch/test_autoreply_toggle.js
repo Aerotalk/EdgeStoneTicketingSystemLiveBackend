@@ -13,9 +13,18 @@ const prisma = require('../models/index');
 async function testAutoReplyEnvEvaluation() {
     console.log('\n--- 1. Testing isAutoReplyEnabled() evaluation ---');
     
-    // Explicit false
+    // Explicit false and spaces
     process.env.AUTOREPLY = 'false';
     assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='false' should evaluate to false");
+
+    process.env.AUTOREPLY = ' false';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY=' false' should evaluate to false");
+
+    process.env.AUTOREPLY = 'false ';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='false ' should evaluate to false");
+
+    process.env.AUTOREPLY = ' false ';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY=' false ' should evaluate to false");
     
     process.env.AUTOREPLY = '0';
     assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='0' should evaluate to false");
@@ -23,12 +32,36 @@ async function testAutoReplyEnvEvaluation() {
     process.env.AUTOREPLY = 'off';
     assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='off' should evaluate to false");
 
+    process.env.AUTOREPLY = 'no';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='no' should evaluate to false");
+
+    process.env.AUTOREPLY = 'disabled';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='disabled' should evaluate to false");
+
     process.env.AUTOREPLY = '"false"';
     assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='\"false\"' should evaluate to false");
+
+    process.env.AUTOREPLY = ' "false" ';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY=' \"false\" ' should evaluate to false");
+
+    process.env.AUTOREPLY = "'false'";
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY=\"'false'\" should evaluate to false");
+
+    process.env.AUTOREPLY = " 'false' ";
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY=\" 'false' \" should evaluate to false");
+
+    process.env.AUTOREPLY = 'False';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='False' should evaluate to false");
+
+    process.env.AUTOREPLY = 'FALSE';
+    assert.strictEqual(isAutoReplyEnabled(), false, "AUTOREPLY='FALSE' should evaluate to false");
 
     // Explicit true
     process.env.AUTOREPLY = 'true';
     assert.strictEqual(isAutoReplyEnabled(), true, "AUTOREPLY='true' should evaluate to true");
+
+    process.env.AUTOREPLY = ' true ';
+    assert.strictEqual(isAutoReplyEnabled(), true, "AUTOREPLY=' true ' should evaluate to true");
 
     process.env.AUTOREPLY = '1';
     assert.strictEqual(isAutoReplyEnabled(), true, "AUTOREPLY='1' should evaluate to true");
@@ -40,7 +73,46 @@ async function testAutoReplyEnvEvaluation() {
     delete process.env.AUTO_REPLY_ENABLED;
     assert.strictEqual(isAutoReplyEnabled(), true, "Unset AUTOREPLY should default to true");
 
-    console.log('✅ isAutoReplyEnabled() behaves correctly for all values');
+    console.log('✅ isAutoReplyEnabled() behaves correctly for all values (including spaces and quotes)');
+}
+
+async function testEmailSenderAutoReplyGuard() {
+    console.log('\n--- 1b. Testing emailSender.sendAutoReplyEmail built-in guard ---');
+    
+    // When AUTOREPLY='false'
+    process.env.AUTOREPLY = 'false';
+    const resultDisabled = await emailSender.sendAutoReplyEmail({
+        to: ['client@example.com'],
+        subject: 'Auto-Reply Test',
+        text: 'Hello'
+    });
+    assert.strictEqual(resultDisabled.skipped, true, 'sendAutoReplyEmail must return skipped: true when AUTOREPLY=false');
+    console.log('✅ emailSender.sendAutoReplyEmail natively blocks transmission when AUTOREPLY=false');
+
+    // When AUTOREPLY=' false' (with leading space)
+    process.env.AUTOREPLY = ' false';
+    const resultDisabledSpace = await emailSender.sendAutoReplyEmail({
+        to: ['client@example.com'],
+        subject: 'Auto-Reply Test Space',
+        text: 'Hello'
+    });
+    assert.strictEqual(resultDisabledSpace.skipped, true, 'sendAutoReplyEmail must return skipped: true when AUTOREPLY= false');
+    console.log('✅ emailSender.sendAutoReplyEmail natively blocks transmission when AUTOREPLY= false (leading space)');
+}
+
+async function testManualAutoReplyGuard() {
+    console.log('\n--- 1c. Testing sendManualAutoReply guard ---');
+    
+    process.env.AUTOREPLY = 'false';
+    let threw = false;
+    try {
+        await ticketService.sendManualAutoReply('fake-id', ['client@example.com']);
+    } catch (err) {
+        threw = true;
+        assert(err.message.includes('AUTOREPLY=false'), 'Error message mentions AUTOREPLY=false');
+    }
+    assert.strictEqual(threw, true, 'sendManualAutoReply must reject when AUTOREPLY=false');
+    console.log('✅ sendManualAutoReply correctly rejected when AUTOREPLY=false');
 }
 
 async function testTicketGenerationAutoReplySuppression() {
@@ -209,9 +281,11 @@ async function testAgentRepliesUninhibited() {
 async function run() {
     try {
         await testAutoReplyEnvEvaluation();
+        await testEmailSenderAutoReplyGuard();
+        await testManualAutoReplyGuard();
         await testTicketGenerationAutoReplySuppression();
         await testAgentRepliesUninhibited();
-        console.log('\n🎉 ALL TESTS PASSED: AUTOREPLY env variable toggle works perfectly and does not affect agent replies!');
+        console.log('\n🎉 ALL TESTS PASSED: AUTOREPLY env variable toggle works perfectly across all layers and does not affect agent replies!');
         process.exit(0);
     } catch (err) {
         console.error('\n❌ TEST FAILED:', err);

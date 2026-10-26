@@ -5,6 +5,7 @@ const TicketModel = require('../../models/ticket');
 const ActivityLogModel = require('../../models/activityLog');
 const logger = require('../../utils/logger');
 const emailSender = require('../email/emailSender');
+const { isAutoReplyEnabled } = require('../../utils/emailConfig');
 
 /**
  * Generates the next sequential Ticket ID (e.g. #1025 or #V1025).
@@ -411,6 +412,11 @@ const updateTicket = async (ticketId, updates, agentName) => {
  */
 const sendManualAutoReply = async (ticketId, toEmails, agentName = 'System', agentEmail = 'support@edgestone.in') => {
     try {
+        if (!isAutoReplyEnabled()) {
+            logger.warn(`🎟️ [TICKET] 🛑 Skipped manual auto-reply for Ticket ${ticketId}: Auto-reply is disabled via environment configuration (AUTOREPLY=false)`);
+            throw new Error('Auto-reply is disabled via environment configuration (AUTOREPLY=false)');
+        }
+
         const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
         if (!ticket) throw new Error('Ticket not found');
         
@@ -419,7 +425,8 @@ const sendManualAutoReply = async (ticketId, toEmails, agentName = 'System', age
 
         logger.info(`🎟️ [TICKET] 🤖 Sending manual auto-reply to ${targetEmails.join(', ')} for Ticket ${ticket.ticketId}...`);
         
-        await emailSender.sendEmail({
+        const sendFn = emailSender.sendAutoReplyEmail || emailSender.sendEmail;
+        await sendFn({
             to: targetEmails,
             subject: `Re: [${ticket.ticketId}] ${ticket.header}`,
             html: `

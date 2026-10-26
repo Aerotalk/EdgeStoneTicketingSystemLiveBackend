@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const logger = require('../../utils/logger');
+const { isAutoReplyEnabled } = require('../../utils/emailConfig');
 const { getGraphAccessToken, markGraphIdProcessed } = require('./graphClient');
 const { MAX_EMAIL_ATTACHMENT_SIZE } = require('./emailAttachmentService');
 
@@ -536,6 +537,11 @@ const sendAgentReplyEmail = async (options) => {
 };
 
 const sendAutoReplyEmail = async (options) => {
+    if (!isAutoReplyEnabled()) {
+        const toEmails = Array.isArray(options.to) ? options.to.join(', ') : options.to;
+        logger.info(`[EMAIL] 🛑 Skipped Auto-Reply to ${toEmails}: AUTOREPLY is disabled via environment configuration (AUTOREPLY=false)`);
+        return { messageId: null, accepted: [], rejected: [], response: 'Skipped: AUTOREPLY is disabled', skipped: true };
+    }
     const toEmails = Array.isArray(options.to) ? options.to.join(', ') : options.to;
     logger.info(`[EMAIL] 🤖 Sending Auto-Reply to ${toEmails} for Subject: ${options.subject}`);
     return sendViaGraph(options);
@@ -545,5 +551,6 @@ module.exports = {
     sendEmail,
     sendAgentReplyEmail,
     sendAutoReplyEmail,
-    sendViaGraph
+    sendViaGraph,
+    isAutoReplyEnabled
 };

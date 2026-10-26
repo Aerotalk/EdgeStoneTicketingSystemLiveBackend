@@ -27,7 +27,8 @@ const {
     sendEmail,
     sendAgentReplyEmail,
     sendAutoReplyEmail,
-    sendViaGraph
+    sendViaGraph,
+    isAutoReplyEnabled
 } = require('./email/emailSender');
 
 // 3. Attachment Downloading & File Storage
@@ -52,6 +53,7 @@ module.exports = {
     sendAgentReplyEmail,
     sendAutoReplyEmail,
     sendViaGraph,
+    isAutoReplyEnabled,
 
     // Poller & Lifecycle
     startImapListener,

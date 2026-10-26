@@ -1,7 +1,7 @@
 'use strict';
 
 const { getGraphAccessToken } = require('./graphClient');
-const { sendEmail, sendAgentReplyEmail, sendAutoReplyEmail, sendViaGraph } = require('./emailSender');
+const { sendEmail, sendAgentReplyEmail, sendAutoReplyEmail, sendViaGraph, isAutoReplyEnabled } = require('./emailSender');
 const { fetchMessageAttachments, MAX_EMAIL_ATTACHMENT_SIZE } = require('./emailAttachmentService');
 const {
     fetchNewGraphEmails,
@@ -16,6 +16,7 @@ module.exports = {
     sendAgentReplyEmail,
     sendAutoReplyEmail,
     sendViaGraph,
+    isAutoReplyEnabled,
     startImapListener,
     fetchNewGraphEmails,
     syncSentItemsEmails,
