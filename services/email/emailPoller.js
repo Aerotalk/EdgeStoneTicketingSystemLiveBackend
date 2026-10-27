@@ -21,6 +21,8 @@ const markEmailAsRead = async (messageId, accessToken) => {
     });
 };
 
+const { FRESH_TICKET_MIN_DATE: MIN_LIVE_DATE } = require('../ticket/smartTicketSorter'); // 28th Oct 2026 00:00 IST cutoff
+
 const syncSentItemsEmails = async (accessToken, userEmail) => {
     try {
         const ticketService = require('../ticketService');
@@ -34,6 +36,14 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
         for (const msg of messages) {
             const messageId = msg.internetMessageId || msg.id;
             if (isGraphIdProcessed(msg.id) || (msg.internetMessageId && isGraphIdProcessed(msg.internetMessageId))) {
+                continue;
+            }
+
+            // Discard stale sent messages from before 28th Oct (minimizes live deployment window)
+            const sentDate = msg.sentDateTime ? new Date(msg.sentDateTime) : null;
+            if (sentDate && sentDate < MIN_LIVE_DATE) {
+                markGraphIdProcessed(msg.id);
+                if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                 continue;
             }
 
@@ -59,12 +69,14 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
                 try {
                     const prisma = require('../../models/index');
                     const textScan = `${subject || ''} ${msg.body?.content || ''}`.toUpperCase();
+                    const isIncidentContext = /(?:flap|flapping|down|outage|rfo|issue|fault|alarm|los|degraded|packet\s*loss)/i.test(`${subject || ''} ${msg.body?.content || ''}`);
                     const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(`${subject || ''} ${msg.body?.content || ''}`);
-                    if (isMaintContext) {
+                    if (isMaintContext && !isIncidentContext) {
                         const allActiveMaintTickets = await prisma.ticket.findMany({
                             where: { 
                                 OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
-                                status: { notIn: ['Closed', 'Resolved'] }
+                                status: { notIn: ['Closed', 'Resolved'] },
+                                createdAt: { gte: MIN_LIVE_DATE }
                             },
                             include: { replies: { select: { text: true, subject: true } } },
                             orderBy: { createdAt: 'desc' }
@@ -257,6 +269,16 @@ const fetchNewGraphEmails = async () => {
                 const fromAddr = msg.from?.emailAddress?.address;
                 const fromName = msg.from?.emailAddress?.name || fromAddr;
 
+                // Discard stale incoming emails from before 28th Oct (minimizes live deployment window)
+                const msgDate = msg.receivedDateTime ? new Date(msg.receivedDateTime) : null;
+                if (msgDate && msgDate < MIN_LIVE_DATE) {
+                    logger.info(`[EMAIL] ⏭️ Discarding stale inbox email from before 28th Oct: "${msg.subject}" (${msgDate.toISOString()})`);
+                    await markEmailAsRead(msg.id, accessToken);
+                    markGraphIdProcessed(msg.id);
+                    if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                    continue;
+                }
+
                 if (!fromAddr) {
                     await markEmailAsRead(msg.id, accessToken);
                     continue;
@@ -288,12 +310,14 @@ const fetchNewGraphEmails = async () => {
                             const textScan = `${msg.subject || ''} \n ${msg.body?.content || ''}`.toUpperCase();
 
                             // 1. Check if agent email is regarding an active Maintenance ticket
+                            const isIncidentContext = /(?:flap|flapping|down|outage|rfo|issue|fault|alarm|los|degraded|packet\s*loss)/i.test(textScan);
                             const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(textScan);
-                            if (isMaintContext) {
+                            if (isMaintContext && !isIncidentContext) {
                                 const allActiveMaintTickets = await prisma.ticket.findMany({
                                     where: { 
                                         OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
-                                        status: { notIn: ['Closed', 'Resolved', 'Spam'] }
+                                        status: { notIn: ['Closed', 'Resolved', 'Spam'] },
+                                        createdAt: { gte: MIN_LIVE_DATE }
                                     },
                                     include: { replies: { select: { text: true, subject: true } } },
                                     orderBy: { createdAt: 'desc' }
@@ -352,7 +376,8 @@ const fetchNewGraphEmails = async () => {
                                                         { circuitId: `original-${baseCust}` }
                                                     ] : [])
                                                 ],
-                                                status: { notIn: ['Closed', 'Resolved', 'Spam'] }
+                                                status: { notIn: ['Closed', 'Resolved', 'Spam'] },
+                                                createdAt: { gte: MIN_LIVE_DATE }
                                             },
                                             orderBy: { createdAt: 'desc' },
                                             include: { client: true, vendor: true }

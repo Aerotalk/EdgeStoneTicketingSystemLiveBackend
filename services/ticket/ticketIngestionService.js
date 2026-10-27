@@ -19,6 +19,10 @@ const { generateTicketId } = require('./ticketManagementService');
 const emailSender = require('../email/emailSender');
 const { isAutoReplyEnabled } = require('../../utils/emailConfig');
 
+// Root-email detection, cutoff, classification and reply barriers live in the Smart Ticket Sorter.
+const SmartSorter = require('./smartTicketSorter');
+const { isRootEmail } = SmartSorter;
+
 /**
  * Ingestion and classification pipeline for incoming emails.
  * Handles threading checks, sender identification, circuit discovery,
@@ -50,8 +54,17 @@ const createTicketFromEmail = async (emailData) => {
         // Check if sender is an EdgeStone internal agent
         const isAgent = await isInternalAgentEmail(from);
 
-        // 0. Check if this email is a reply to an existing ticket
-        let existingTicket = await findExistingTicketForReply(inReplyTo, references, subject, body, from);
+        // Smart Ticket Sorter: First-Time Root Email vs Thread Reply Evaluation
+        // A genuine root email regarding a circuit must be treated as a fresh ticket, NEVER routed to replies!
+        const isRoot = isRootEmail(emailData);
+        let existingTicket = null;
+
+        if (!isRoot || isAgent) {
+            existingTicket = await findExistingTicketForReply(inReplyTo, references, subject, body, from);
+        } else {
+            logger.info(`🎟️ [SMART SORTER] 🌟 First-time root email detected: "${subject}" from ${from}. Bypassing reply threading to ensure new ticket creation.`);
+        }
+
         if (existingTicket) {
             if (isAgent) {
                 logger.info(`🎟️ [TICKET] 👤 Routing email from EdgeStone agent (${from}) as Agent Reply into Ticket ${existingTicket.ticketId}`);
@@ -101,30 +114,7 @@ const createTicketFromEmail = async (emailData) => {
                     finalVendorId = prioritizedVendor ? prioritizedVendor.id : (matchedVendors[0]?.id || null);
                 }
 
-                // ── SMART VENDOR ACTIVE TICKET DISAMBIGUATION ──
-                if (matchedVendors.length > 0 && existingTicket.circuitId) {
-                    try {
-                        const newerActiveTicket = await prisma.ticket.findFirst({
-                            where: {
-                                circuitId: existingTicket.circuitId,
-                                id: { not: existingTicket.id },
-                                createdAt: { gt: existingTicket.createdAt },
-                                OR: [
-                                    { isMaintenance: true },
-                                    { status: { in: ['Maintenance', 'Open', 'In Progress'] } }
-                                ]
-                            },
-                            orderBy: { createdAt: 'desc' }
-                        });
-
-                        if (newerActiveTicket) {
-                            logger.info(`🎟️ [TICKET] 🔀 Disambiguated vendor reply: Redirected from older Ticket ${existingTicket.ticketId} to newer active Ticket ${newerActiveTicket.ticketId} on circuit ${existingTicket.circuitId}`);
-                            existingTicket = newerActiveTicket;
-                        }
-                    } catch (disErr) {
-                        logger.error(`Error in vendor ticket disambiguation: ${disErr.message}`);
-                    }
-                }
+                // Thread Integrity: Reply stays with the strictly matched ticket. Explicit thread reverse-matching governs ticket destination.
             }
 
             // If the matched parent reply was in the vendor thread, force vendor routing
@@ -572,7 +562,11 @@ const createTicketFromEmail = async (emailData) => {
             }
 
             if (matchResult) {
-                circuitId = matchResult.circuit.customerCircuitId;
+                if (matchResult.isSupplier && matchResult.matchedId) {
+                    circuitId = matchResult.matchedId;
+                } else {
+                    circuitId = matchResult.circuit.customerCircuitId || matchResult.matchedId;
+                }
                 circuitUUID = matchResult.circuit.id;
                 foundLocation = matchResult.location;
                 if (matchResult.isSupplier) {
@@ -713,78 +707,13 @@ const createTicketFromEmail = async (emailData) => {
             }
         }
 
-        // ── SMART CLIENT ACTIVE MAINTENANCE INTERCEPTOR ──
-        if (ticketType === 'Client' && circuitId) {
-            try {
-                const circuitKeys = [circuitId];
-                if (detectedCircuitRecord) {
-                    if (detectedCircuitRecord.customerCircuitId) circuitKeys.push(detectedCircuitRecord.customerCircuitId);
-                    if (detectedCircuitRecord.supplierCircuitId) circuitKeys.push(detectedCircuitRecord.supplierCircuitId);
-                    if (detectedCircuitRecord.id) circuitKeys.push(detectedCircuitRecord.id);
-                }
-
-                const activeMaintenanceTicket = await prisma.ticket.findFirst({
-                    where: {
-                        circuitId: { in: Array.from(new Set(circuitKeys)) },
-                        OR: [
-                            { isMaintenance: true },
-                            { status: 'Maintenance' }
-                        ],
-                        status: { notIn: ['Closed', 'Resolved'] }
-                    },
-                    include: { replies: { select: { text: true, subject: true } } },
-                    orderBy: { createdAt: 'desc' }
-                });
-
-                if (activeMaintenanceTicket) {
-                    const subjectAndBody = `${subject || ''} ${body || ''}`;
-                    const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|downtime|activity|window|approved|noted|acknowledged|proceed|reschedule/i.test(subjectAndBody);
-                    const isReplyPattern = /^(?:re|fwd|fw):\s*/i.test(subject || '');
-
-                    const hasCompletion = (activeMaintenanceTicket.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
-
-                    const incomingMeta = extractMaintenanceMetadata(subject, body);
-                    const existingMeta = extractMaintenanceMetadata(activeMaintenanceTicket.header, (activeMaintenanceTicket.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
-
-                    const isDifferentCrq = incomingMeta.crqId && existingMeta.crqId && incomingMeta.crqId.toUpperCase() !== existingMeta.crqId.toUpperCase();
-                    const isDifferentDate = incomingMeta.maintDate && existingMeta.maintDate && incomingMeta.maintDate !== existingMeta.maintDate;
-
-                    if ((isMaintContext || isReplyPattern) && !hasCompletion && !isDifferentCrq && !isDifferentDate) {
-                        logger.info(`🎟️ [TICKET] 🔀 Smart Client Maintenance Interceptor: Redirecting client email from ${from} into active Maintenance Ticket ${activeMaintenanceTicket.ticketId} on circuit ${circuitId} (Prevented duplicate ticket creation).`);
-
-                        if (!activeMaintenanceTicket.clientId && detectedCircuitRecord?.clientId) {
-                            try {
-                                await prisma.ticket.update({
-                                    where: { id: activeMaintenanceTicket.id },
-                                    data: { clientId: detectedCircuitRecord.clientId }
-                                });
-                                activeMaintenanceTicket.clientId = detectedCircuitRecord.clientId;
-                            } catch (_) {}
-                        }
-
-                        const replyResult = await appendClientReplyToTicket(activeMaintenanceTicket, emailData);
-
-                        try {
-                            const notificationService = require('../notificationService');
-                            await notificationService.sendNotification({
-                                type: 'client_reply',
-                                title: `Client Maintenance Reply (${activeMaintenanceTicket.ticketId})`,
-                                message: `${fromName || from} replied to Maintenance Ticket ${activeMaintenanceTicket.ticketId}`,
-                                ticketId: activeMaintenanceTicket.ticketId,
-                                sender: 'client'
-                            });
-                        } catch (_) {}
-
-                        return replyResult;
-                    }
-                }
-            } catch (interceptErr) {
-                logger.error(`Error in Smart Client Maintenance Interceptor: ${interceptErr.message}`);
-            }
-        }
+        // ── CLIENT EMAILS STRICTLY ISOLATED FROM MAINTENANCE TICKETS ──
+        // Maintenance tickets are vendor notifications where client sections are empty.
+        // Client emails must NEVER merge into Maintenance tickets. They always create dedicated incident tickets.
 
         // ── SMART VENDOR ACTIVE TICKET DEDUPLICATION & THREADING INTERCEPTOR ──
-        if (ticketType === 'Vendor' && circuitId) {
+        // Only intercepts non-root emails (automated vendor updates or replies) to avoid swallowing first-time root maintenance notices
+        if (!isRoot && ticketType === 'Vendor' && circuitId) {
             try {
                 const circuitKeys = [circuitId];
                 if (detectedCircuitRecord) {
@@ -792,15 +721,16 @@ const createTicketFromEmail = async (emailData) => {
                     if (detectedCircuitRecord.supplierCircuitId) circuitKeys.push(detectedCircuitRecord.supplierCircuitId);
                     if (detectedCircuitRecord.id) circuitKeys.push(detectedCircuitRecord.id);
                 }
+
+                // Operational Recency Cutoff: Strictly consider tickets from 27th or 28th October onwards (discard past tickets)
+                const MIN_OPERATIONAL_DATE = new Date('2026-10-27T00:00:00.000Z');
 
                 const activeVendorTicket = await prisma.ticket.findFirst({
                     where: {
                         circuitId: { in: Array.from(new Set(circuitKeys)) },
-                        OR: [
-                            { status: { in: ['Open', 'In Progress', 'Maintenance'] } },
-                            { isMaintenance: true }
-                        ],
-                        status: { notIn: ['Closed', 'Resolved'] }
+                        isMaintenance: false, // Strict: Never merge incident vendor emails into Maintenance tickets!
+                        status: { in: ['Open', 'In Progress'] },
+                        createdAt: { gte: MIN_OPERATIONAL_DATE }
                     },
                     include: { replies: { select: { text: true, subject: true } } },
                     orderBy: { createdAt: 'desc' }
@@ -858,6 +788,12 @@ const createTicketFromEmail = async (emailData) => {
 
             const emailReceivedDate = date ? new Date(date) : new Date();
 
+            // Smart Ticket Sorter: strict 28th Oct 2026 cutoff for NEW tickets
+            if (SmartSorter.isBeforeCutoff(emailReceivedDate)) {
+                logger.info(`🚫 [SORTER:28-OCT CUTOFF] Discarding fresh ticket for email before ${SmartSorter.FRESH_TICKET_MIN_DATE.toISOString()}: "${subject}" (${emailReceivedDate.toISOString()}).`);
+                return null;
+            }
+
             const incomingTos = (Array.isArray(emailData.to) ? emailData.to : []).filter(e => {
                 const clean = e && e.toLowerCase().trim();
                 return clean && !clean.includes('edgestone.in') && clean !== from.toLowerCase();
@@ -887,9 +823,15 @@ const createTicketFromEmail = async (emailData) => {
                 });
             }
 
-            const isMaintenanceNotification = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce|crq/i.test(`${subject || ''} ${body || ''}`);
-            const initialStatus = isMaintenanceNotification ? 'Maintenance' : 'Open';
-            const initialIsMaintenance = isMaintenanceNotification;
+            // Smart Ticket Sorter: classify by ticket ORIGIN (vendor-originated + maintenance signal)
+            const origin = SmartSorter.classifyOrigin({
+                ticketType,
+                isVendorOrigin: potentialVendorIds && potentialVendorIds.length > 0,
+                subject,
+                body
+            });
+            const initialStatus = origin.status;
+            const initialIsMaintenance = origin.isMaintenance;
             const isVendorTicket = (ticketType === 'Vendor' || ticketId.startsWith('#V'));
 
             try {
