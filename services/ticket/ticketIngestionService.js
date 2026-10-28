@@ -348,6 +348,12 @@ const createTicketFromEmail = async (emailData) => {
             return null;
         }
 
+        // --- STRICT ROOT EMAIL GUARD: Non-root emails (replies, forwards, RE: threads) MUST NEVER CREATE NEW TICKETS! ---
+        if (!isRoot) {
+            logger.warn(`🛑 [SMART SORTER] Blocked ticket creation: Email "${subject}" from ${from} is a reply (non-root email with RE:/In-Reply-To) and does not match any existing ticket. Discarding to prevent duplicate/orphaned tickets.`);
+            return null;
+        }
+
         // 1. Identify Potential Senders
         let potentialClientIds = [];
         let potentialVendorIds = [];

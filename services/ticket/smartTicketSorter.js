@@ -23,8 +23,8 @@ const logger = require('../../utils/logger');
 // ─── 1. TIME BOUNDARIES ─────────────────────────────────────────────────────
 // New tickets / polled mail are only accepted from 28 Oct 2026 00:00 IST.
 const FRESH_TICKET_MIN_DATE = new Date('2026-10-28T00:00:00+05:30');
-// Existing tickets created from 27 Oct are still allowed to receive replies.
-const MIN_OPERATIONAL_DATE = new Date('2026-10-27T00:00:00.000Z');
+// Existing tickets created from 26 Oct (including Airtel #V1030, #V1031) are allowed to receive replies.
+const MIN_OPERATIONAL_DATE = new Date('2026-10-26T00:00:00.000Z');
 
 const isBeforeCutoff = (date, cutoff = FRESH_TICKET_MIN_DATE) => {
     const d = date ? new Date(date) : new Date();
@@ -82,8 +82,29 @@ const isMaintenanceBarrierVeto = (candidate, { subject, body } = {}) => {
     if (!candidate) return false;
     const isMaint = candidate.isMaintenance || candidate.status === 'Maintenance';
     if (!isMaint) return false;
-    if (hasIncidentSignal(subject, body) || !hasMaintenanceSignal(subject, body)) {
-        logger.warn(`🚫 [SORTER:MAINTENANCE BARRIER] Blocked "${subject}" from Maintenance Ticket ${candidate.ticketId}.`);
+
+    // Direct thread continuation check: If this reply matches the ticket's subject or header, do NOT veto!
+    const sub = (subject || '').toLowerCase().trim();
+    const candHeader = (candidate.header || '').toLowerCase().trim();
+    const normSub = sub.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
+    const normHeader = candHeader.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
+    if (normSub && normHeader && (normSub === normHeader || normSub.includes(normHeader) || normHeader.includes(normSub))) {
+        return false; // Direct thread continuation for this maintenance ticket
+    }
+
+    // Check CRQ/Docket/Reference continuity on this maintenance ticket
+    const fullText = `${subject || ''} ${body || ''}`;
+    const crqMatch = fullText.match(/\b(CRQ[:\s“"'-]*\d{6,}|(?:UMW|RPO)\s*Reference\s*number\s*[A-Za-z0-9\\/_-]+|SR\d{6,}|INC\d{6,})\b/i);
+    if (crqMatch && crqMatch[1]) {
+        const numPart = crqMatch[1].match(/\d{6,}/)?.[0] || crqMatch[1];
+        if (candHeader.toLowerCase().includes(numPart.toLowerCase())) {
+            return false; // Same CRQ/docket/reference on this maintenance ticket
+        }
+    }
+
+    // Strictly veto if an actual incident alarm/client complaint is trying to hijack a maintenance ticket
+    if (STRICT_INCIDENT_REGEX.test(textOf(subject, body))) {
+        logger.warn(`🚫 [SORTER:MAINTENANCE BARRIER] Blocked incident mail "${subject}" from Maintenance Ticket ${candidate.ticketId}.`);
         return true;
     }
     return false;
@@ -102,7 +123,7 @@ const isClientSupportBarrierVeto = (candidate, { subject, body } = {}) => {
     return false;
 };
 
-/** Candidate must be inside the operational window. */
+/** Candidate must be inside the operational window (created on or after 26 Oct 2026). */
 const isWithinActiveWindow = (candidate) => {
     if (!candidate) return false;
     if (!candidate.createdAt) return true;

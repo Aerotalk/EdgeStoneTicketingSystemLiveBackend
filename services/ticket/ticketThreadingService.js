@@ -223,6 +223,33 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
+    // 0.6 Strategy A.3: Maintenance CRQ / Docket / Reference match on Maintenance tickets (e.g. CRQ: 1100494638, CRQ000007185776, UMW/RPO Reference, SR...)
+    if (subject || body) {
+        const crqMatch = textToScan.match(/\b(CRQ[:\s“"'-]*\d{6,}[A-Za-z0-9_-]*|(?:UMW|RPO)\s*Reference\s*number\s*([A-Za-z0-9\\/_-]+)|SR\d{6,}|INC\d{6,})\b/i);
+        if (crqMatch && crqMatch[1]) {
+            const rawCrq = crqMatch[1].trim();
+            const numPart = rawCrq.match(/\d{6,}/)?.[0] || crqMatch[2] || rawCrq;
+            if (numPart && numPart.length >= 4) {
+                const matchingMaintTicket = await prisma.ticket.findFirst({
+                    where: {
+                        status: { notIn: ['Spam', 'Closed', 'Resolved'] },
+                        OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
+                        OR: [
+                            { header: { contains: numPart, mode: 'insensitive' } },
+                            { replies: { some: { subject: { contains: numPart, mode: 'insensitive' } } } }
+                        ]
+                    },
+                    include: { client: true, vendor: true },
+                    orderBy: { createdAt: 'asc' } // Root ticket first!
+                });
+                if (matchingMaintTicket && isValidReplyCandidate(matchingMaintTicket, matchingMaintTicket.ticketId)) {
+                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via Maintenance CRQ/Ref: "${numPart}" → Root Ticket ${matchingMaintTicket.ticketId}`);
+                    return matchingMaintTicket;
+                }
+            }
+        }
+    }
+
     // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit isolation guard)
     if (inReplyTo) {
         const cleanId = inReplyTo.trim();
@@ -280,18 +307,17 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             const targetNormalized = normalizeSubject(stripped);
             const detectedCircuitId = detectedCircuit ? (detectedCircuit.customerCircuitId || detectedCircuit.id) : null;
 
-            // Recency Window: Discard stale past conversations from earlier days/weeks (strictly 27th/28th Oct window)
+            // Active tickets query: fetch all active ongoing tickets so active maintenance tickets from 26 Oct (like #V1031, #V1030) receive replies
             const allTickets = await prisma.ticket.findMany({ 
                 where: {
-                    status: { notIn: ['Spam', 'Closed', 'Resolved'] },
-                    createdAt: { gte: MIN_OPERATIONAL_DATE }
+                    status: { notIn: ['Spam', 'Closed', 'Resolved'] }
                 },
                 include: { 
                     client: true, 
                     vendor: true,
                     replies: { select: { to: true, cc: true, author: true } }
                 },
-                orderBy: { createdAt: 'desc' }
+                orderBy: { createdAt: 'asc' } // Root ticket first!
             });
 
 
