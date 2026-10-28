@@ -21,7 +21,7 @@ const markEmailAsRead = async (messageId, accessToken) => {
     });
 };
 
-const { FRESH_TICKET_MIN_DATE: MIN_LIVE_DATE } = require('../ticket/smartTicketSorter'); // 28th Oct 2026 00:00 IST cutoff
+const { FRESH_TICKET_MIN_DATE: MIN_LIVE_DATE, MIN_OPERATIONAL_DATE } = require('../ticket/smartTicketSorter'); // 28th Oct 2026 00:00 IST cutoff
 
 const syncSentItemsEmails = async (accessToken, userEmail) => {
     try {
@@ -76,7 +76,7 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
                             where: { 
                                 OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
                                 status: { notIn: ['Closed', 'Resolved'] },
-                                createdAt: { gte: MIN_LIVE_DATE }
+                                createdAt: { gte: MIN_OPERATIONAL_DATE }
                             },
                             include: { replies: { select: { text: true, subject: true } } },
                             orderBy: { createdAt: 'desc' }
@@ -317,7 +317,7 @@ const fetchNewGraphEmails = async () => {
                                     where: { 
                                         OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
                                         status: { notIn: ['Closed', 'Resolved', 'Spam'] },
-                                        createdAt: { gte: MIN_LIVE_DATE }
+                                        createdAt: { gte: MIN_OPERATIONAL_DATE }
                                     },
                                     include: { replies: { select: { text: true, subject: true } } },
                                     orderBy: { createdAt: 'desc' }
@@ -377,7 +377,7 @@ const fetchNewGraphEmails = async () => {
                                                     ] : [])
                                                 ],
                                                 status: { notIn: ['Closed', 'Resolved', 'Spam'] },
-                                                createdAt: { gte: MIN_LIVE_DATE }
+                                                createdAt: { gte: MIN_OPERATIONAL_DATE }
                                             },
                                             orderBy: { createdAt: 'desc' },
                                             include: { client: true, vendor: true }
