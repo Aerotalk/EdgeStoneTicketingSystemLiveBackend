@@ -30,9 +30,10 @@ const getVendorEmailsForTicket = async (ticketId, vendorId = null) => {
         const circuit = await prisma.circuit.findFirst({
             where: {
                 OR: [
-                    { customerCircuitId: ticket.circuitId },
-                    { supplierCircuitId: ticket.circuitId },
-                    { id: ticket.circuitId }
+                    { customerCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } },
+                    { supplierCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } },
+                    { id: ticket.circuitId },
+                    { vendorCircuits: { some: { supplierCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } } } }
                 ]
             },
             include: { vendor: true, vendorCircuits: { include: { vendor: true } } }

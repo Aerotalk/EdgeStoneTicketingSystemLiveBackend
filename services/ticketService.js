@@ -19,6 +19,8 @@
 const {
     stripHtml,
     stripQuotedReply,
+    normalizeCircuitId,
+    extractHistoricalIncidentDate,
     extractMaintenanceMetadata,
     isEmailMatchingClientDomain,
     GENERIC_PUBLIC_DOMAINS
@@ -73,6 +75,8 @@ module.exports = {
     // Parsing & Sanitization Utilities
     stripHtml,
     stripQuotedReply,
+    normalizeCircuitId,
+    extractHistoricalIncidentDate,
     extractMaintenanceMetadata,
     isEmailMatchingClientDomain,
     GENERIC_PUBLIC_DOMAINS

@@ -95,8 +95,8 @@ const stripQuotedReply = (text) => {
     let idx = text.search(/From:\s.*?\nSent:\s/i);
     if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
-    // 2. Generic "Original Message" separator
-    idx = text.search(/-+\s*Original Message\s*-+/i);
+    // 2. Generic "Original Message" separator (English & Chinese/Vendor)
+    idx = text.search(/-+\s*(?:Original Message|原始邮件)\s*-+/i);
     if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
     // 3. Gmail Style "On [date], [name] wrote:"
@@ -150,33 +150,207 @@ const isEmailMatchingClientDomain = (email, client) => {
     return clientCorporateDomains.includes(senderDomain);
 };
 
+const MONTH_MAP = {
+    JAN: '01', JANUARY: '01',
+    FEB: '02', FEBRUARY: '02',
+    MAR: '03', MARCH: '03',
+    APR: '04', APRIL: '04',
+    MAY: '05',
+    JUN: '06', JUNE: '06',
+    JUL: '07', JULY: '07',
+    AUG: '08', AUGUST: '08',
+    SEP: '09', SEPT: '09', SEPTEMBER: '09',
+    OCT: '10', OCTOBER: '10',
+    NOV: '11', NOVEMBER: '11',
+    DEC: '12', DECEMBER: '12'
+};
+
 /**
- * Extracts CRQ / Change ID and Maintenance Scheduled Date from text.
- * Used for reliable deduplication so new maintenance activities never merge with past/unrelated tickets.
+ * Normalizes a date string (DD/MM/YYYY, DD-MMM-YYYY, YYYY-MM-DD) into canonical YYYY-MM-DD format
+ * so maintenance dates across vendor and EdgeStone formats can be compared reliably.
  */
-const extractMaintenanceMetadata = (subject, body) => {
-    const text = `${subject || ''} \n ${body || ''}`;
-    
-    // 1. Extract CRQ / Change ID (e.g. CRQ: "1100493081", Change ID 1100493081, CRQ00000123)
-    let crqId = null;
-    const crqMatch = text.match(/(?:CRQ|Change(?:\s*Request)?(?:\s*ID|\s*No|\s*Number)?|Activity\s*ID)[\s:"]*([A-Za-z0-9_-]{5,})/i);
-    if (crqMatch) {
-        crqId = crqMatch[1].trim();
+const normalizeDateToken = (rawDate) => {
+    if (!rawDate) return null;
+    const clean = String(rawDate).trim().toUpperCase();
+
+    // 1. YYYY-MM-DD or YYYY/MM/DD
+    let m = clean.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+    if (m) {
+        return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
     }
 
-    // 2. Extract Maintenance Scheduled Date / Window (e.g. 31-OCT-2026, 24-OCT-2026, 2026-10-31)
-    let maintDate = null;
-    const dateMatch1 = text.match(/(?:scheduled\s*date|activity\s*date|maintenance\s*date|window(?:\s*start)?)[\s:"]*([0-9]{1,2}[-/.][A-Za-z0-9]+[-/.][0-9]{2,4})/i);
-    if (dateMatch1) {
-        maintDate = dateMatch1[1].trim().toUpperCase();
-    } else {
-        const dateMatch2 = text.match(/\b\d{1,2}-(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{4}\b/i);
-        if (dateMatch2) {
-            maintDate = dateMatch2[0].trim().toUpperCase();
+    // 2. DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+    m = clean.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
+    if (m) {
+        const day = m[1].padStart(2, '0');
+        const month = m[2].padStart(2, '0');
+        const year = m[3].length === 2 ? `20${m[3]}` : m[3];
+        if (Number(month) >= 1 && Number(month) <= 12 && Number(day) >= 1 && Number(day) <= 31) {
+            return `${year}-${month}-${day}`;
         }
     }
 
+    // 3. DD-MMM-YYYY or DD MMM YYYY or DD/MMM/YYYY (also supports ordinals like 21ST OCTOBER, 2026 or 29TH OCT'2026)
+    m = clean.replace(/(\d{1,2})(?:ST|ND|RD|TH)\b/g, '$1').match(/^(\d{1,2})[-/\s.,']+([A-Z]{3,9})[-/\s.,']+(\d{2,4})$/);
+    if (m && MONTH_MAP[m[2]]) {
+        const day = m[1].padStart(2, '0');
+        const month = MONTH_MAP[m[2]];
+        const year = m[3].length === 2 ? `20${m[3]}` : m[3];
+        return `${year}-${month}-${day}`;
+    }
+
+    return clean;
+};
+
+/**
+ * Normalizes a circuit identifier by stripping lifecycle prefixes (temp/original/old/new),
+ * collapsing whitespace and hyphen separators, and uppercasing for consistent comparison.
+ */
+const normalizeCircuitId = (rawId) => {
+    if (!rawId) return '';
+    return String(rawId)
+        .replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '')
+        .trim()
+        .replace(/[\s_-]+/g, '-')
+        .toUpperCase();
+};
+
+/**
+ * Extracts an explicit historical or reported incident date (YYYY-MM-DD) from subject/body
+ * (e.g., "Link down issue on 21st October, 2026" or "Reported incident (date/time ) :- Wed 21-10-2026").
+ */
+const extractHistoricalIncidentDate = (subject, body) => {
+    const cleanSubject = stripHtml(subject || '');
+    const cleanBody = stripQuotedReply(stripHtml(body || '')) || stripHtml(body || '');
+    const combined = `${cleanSubject} \n ${cleanBody}`;
+
+    // 1. Subject/Body phrasing: "issue on 21st October, 2026" / "reported issue on 29th Oct'2026"
+    const phraseMatch = combined.match(/(?:issue|outage|flap(?:ped|ping)?|down|incident)\s+(?:reported\s+)?(?:issue\s+)?on\s+(\d{1,2}(?:st|nd|rd|th)?[\s,/'-]+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,/'-]+\d{2,4}|\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4})/i);
+    if (phraseMatch && phraseMatch[1]) {
+        const norm = normalizeDateToken(phraseMatch[1]);
+        if (norm && /^\d{4}-\d{2}-\d{2}$/.test(norm)) return norm;
+    }
+
+    // 2. Structured table/body field: "Reported incident (date/time ) :- Wed 21-10-2026"
+    const labeledMatch = combined.match(/(?:reported\s+incident(?:\s*\([^)]*\))?|incident\s+date(?:\s*&\s*time)?|outage\s+date(?:\s*&\s*time)?)[\s:=-]*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*[\s,.-]+)?(\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}(?:st|nd|rd|th)?[\s,/'-]+[a-z]{3,9}[\s,/'-]+\d{2,4})/i);
+    if (labeledMatch && labeledMatch[1]) {
+        const norm = normalizeDateToken(labeledMatch[1]);
+        if (norm && /^\d{4}-\d{2}-\d{2}$/.test(norm)) return norm;
+    }
+
+    return null;
+};
+
+/**
+ * Extracts CRQ / Change ID / UMW / RPO Reference and Maintenance Scheduled Date from text.
+ * Used for reliable deduplication so new maintenance activities never merge with past/unrelated tickets.
+ */
+const extractMaintenanceMetadata = (subject, body) => {
+    const cleanSubject = stripHtml(subject || '');
+    const cleanBodyFull = stripHtml(body || '');
+    const cleanBodyTop = stripQuotedReply(cleanBodyFull) || cleanBodyFull;
+
+    const scanForCrq = (txt) => {
+        if (!txt) return null;
+        // 1a. PCCW UMW / RPO Reference Number (e.g. U4584\26F, R7023\26E, U4582\26F)
+        const umwMatch = txt.match(/(?:UMW|RPO)\s*Reference(?:\s*Number|\s*No)?[\s:"]*([A-Za-z0-9\\/_-]{4,})/i);
+        if (umwMatch && /\d/.test(umwMatch[1])) {
+            return umwMatch[1].trim().toUpperCase();
+        }
+        // 1b. Standard CRQ / Change ID / Activity ID / Ticket Reference Number
+        const crqRegex = /(?:CRQ|Change(?:\s*Request)?(?:\s*ID|\s*No|\s*Number)?|Activity\s*ID|Ticket\s*Reference(?:\s*Number|\s*No)?)[\s:#"'-]*([A-Za-z0-9\\/_-]{4,})/gi;
+        let match;
+        while ((match = crqRegex.exec(txt)) !== null) {
+            const candidate = match[1].trim();
+            if (/\d/.test(candidate) && !/^(?:NUMBER|NO|ID|REF|REFERENCE|NULL|NONE)$/i.test(candidate)) {
+                return candidate.toUpperCase();
+            }
+        }
+        return null;
+    };
+
+    const scanForMaintDate = (subTxt, bodyTxt) => {
+        const combined = `${subTxt || ''} \n ${bodyTxt || ''}`;
+
+        // 2a. EdgeStone Subject Format: "Maintenance Activity | <Circuit> | DD/MM/YYYY"
+        const pipeSubMatch = (subTxt || '').match(/maint(?:en|ain)[ae]nce\s*activity\s*\|\s*[^|]+\|\s*([0-9]{1,2}[-/.][A-Za-z0-9]+[-/.][0-9]{2,4})/i);
+        if (pipeSubMatch) {
+            return normalizeDateToken(pipeSubMatch[1]);
+        }
+
+        // 2b. Labeled Date Time / Scheduled Date / Activity Date / Maintenance Date / Window
+        const labeledMatch = combined.match(/(?:date\s*(?:&\s*)?time|scheduled\s*date|activity\s*date|maintenance\s*date|start\s*date(?:\s*&\s*time)?|window(?:\s*start)?)[\s:"]*([0-9]{1,2}[-/.][0-9]{1,2}[-/.][0-9]{2,4}|[0-9]{1,2}[-/\s.][A-Za-z]{3,9}[-/\s.][0-9]{2,4}|[0-9]{4}[-/.][0-9]{1,2}[-/.][0-9]{1,2})/i);
+        if (labeledMatch) {
+            return normalizeDateToken(labeledMatch[1]);
+        }
+
+        // 2c. Date range window e.g. "27/10/2026 12:00:00 to 01/11/2026 23:59:00 GMT"
+        const rangeMatch = combined.match(/\b(\d{1,2}\/\d{1,2}\/\d{4})\s+\d{1,2}:\d{2}(?::\d{2})?\s+to\s+\d{1,2}\/\d{1,2}\/\d{4}\b/i);
+        if (rangeMatch) {
+            return normalizeDateToken(rangeMatch[1]);
+        }
+
+        // 2d. Standalone DD-MMM-YYYY (e.g. 30-OCT-2026)
+        const dmyMatch = combined.match(/\b(\d{1,2}-(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{4})\b/i);
+        if (dmyMatch) {
+            return normalizeDateToken(dmyMatch[1]);
+        }
+
+        return null;
+    };
+
+    const crqId = scanForCrq(`${cleanSubject} \n ${cleanBodyTop}`) || scanForCrq(cleanBodyFull);
+    const maintDate = scanForMaintDate(cleanSubject, cleanBodyTop) || scanForMaintDate(cleanSubject, cleanBodyFull);
+
     return { crqId, maintDate };
+};
+
+/**
+ * Extracts searchable circuit tokens from a raw circuit ID or supplier PO string.
+ * Splits compound supplier circuit strings (e.g., "SR247976: MSL(PCG)-SNG(PCG) EP8201 S0049516"
+ * or "SR247976 SR258964") into individual alphanumeric identifiers ("SR247976", "EP8201", "S0049516").
+ */
+const extractTokensFromCircuitId = (id) => {
+    if (!id) return [];
+    const raw = String(id).trim();
+    if (!raw) return [];
+    const tokens = [raw];
+
+    const stripped = raw.replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
+    if (stripped && stripped !== raw && stripped.length > 2) {
+        tokens.push(stripped);
+    }
+
+    // Generate whitespace/hyphen normalized variants for multi-part circuit IDs (e.g. "G773 276" <-> "G773-276")
+    if (stripped.length >= 5 && /[A-Za-z]/.test(stripped) && /\d/.test(stripped) && /[\s-]/.test(stripped)) {
+        const hyphenated = stripped.replace(/\s+/g, '-');
+        const spaced = stripped.replace(/-+/g, ' ');
+        if (hyphenated && !tokens.includes(hyphenated)) tokens.push(hyphenated);
+        if (spaced && !tokens.includes(spaced)) tokens.push(spaced);
+    }
+
+    // Split compound strings on whitespace, colons, commas, semicolons, or pipes
+    const parts = stripped.split(/[\s,:;|]+/).map(p => p.trim()).filter(Boolean);
+    for (const part of parts) {
+        if (
+            part.length >= 5 &&
+            /\d/.test(part) &&
+            !/^(?:202\d|\d+(?:G|M|K)?(?:BPS|GE|B|E)|STM\d+)$/i.test(part) &&
+            !tokens.includes(part)
+        ) {
+            tokens.push(part);
+        }
+    }
+
+    // Also extract standalone 6+ digit numeric sequences
+    const numMatches = stripped.match(/\b\d{6,}\b/g) || [];
+    for (const nm of numMatches) {
+        if (!tokens.includes(nm)) {
+            tokens.push(nm);
+        }
+    }
+
+    return tokens;
 };
 
 /**
@@ -213,7 +387,11 @@ module.exports = {
     stripQuotedReply,
     GENERIC_PUBLIC_DOMAINS,
     isEmailMatchingClientDomain,
+    normalizeDateToken,
+    normalizeCircuitId,
+    extractHistoricalIncidentDate,
     extractMaintenanceMetadata,
+    extractTokensFromCircuitId,
     isInternalAgentEmail
 };
 

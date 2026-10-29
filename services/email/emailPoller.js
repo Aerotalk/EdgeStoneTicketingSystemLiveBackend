@@ -3,7 +3,8 @@
 const logger = require('../../utils/logger');
 const { getGraphAccessToken, isGraphIdProcessed, markGraphIdProcessed } = require('./graphClient');
 const { fetchMessageAttachments } = require('./emailAttachmentService');
-const { isInternalAgentEmail } = require('../ticket/ticketSanitizer');
+const { isInternalAgentEmail, extractTokensFromCircuitId } = require('../ticket/ticketSanitizer');
+const SmartSorter = require('../ticket/smartTicketSorter');
 
 let isPolling = false;
 let graphPollInterval = null;
@@ -64,18 +65,21 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
 
             // Check if this sent message matches an existing ticket
             let existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, subject, msg.body?.content, fromAddr);
-            if (!existingTicket) {
+            const isFormalMaint = SmartSorter.isFormalMaintenanceNotice(subject, msg.body?.content);
+            const isMaintContext = isFormalMaint || SmartSorter.hasMaintenanceSignal(subject, msg.body?.content);
+            const isIncidentContext = SmartSorter.hasStrictIncidentSignal(subject, msg.body?.content);
+            const isRebateOrCommercial = SmartSorter.isSlaRebateOrCommercialEmail(subject, msg.body?.content);
+
+            if (!existingTicket && !isRebateOrCommercial) {
                 // Check if this outbound email from agent was sent regarding an active maintenance circuit
                 try {
                     const prisma = require('../../models/index');
                     const textScan = `${subject || ''} ${msg.body?.content || ''}`.toUpperCase();
-                    const isIncidentContext = /(?:flap|flapping|down|outage|rfo|issue|fault|alarm|los|degraded|packet\s*loss)/i.test(`${subject || ''} ${msg.body?.content || ''}`);
-                    const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(`${subject || ''} ${msg.body?.content || ''}`);
                     if (isMaintContext && !isIncidentContext) {
                         const allActiveMaintTickets = await prisma.ticket.findMany({
                             where: { 
                                 OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
-                                status: { notIn: ['Closed', 'Resolved'] },
+                                status: { notIn: ['Closed', 'Resolved', 'Spam'] },
                                 createdAt: { gte: MIN_OPERATIONAL_DATE }
                             },
                             include: { replies: { select: { text: true, subject: true } } },
@@ -88,12 +92,16 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
                                 const hasCompletion = (amt.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
                                 if (hasCompletion) continue; // Skip completed maintenance
 
-                                const amtMeta = ticketService.extractMaintenanceMetadata(amt.header, (amt.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
-                                if (outboundMeta.crqId && amtMeta.crqId && outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase()) {
-                                    continue; // Different CRQ, do not link to old ticket!
+                                if (SmartSorter.hasMaintenanceScheduleConflict(amt, { subject, body: msg.body?.content })) {
+                                    continue;
                                 }
-                                if (outboundMeta.maintDate && amtMeta.maintDate && outboundMeta.maintDate !== amtMeta.maintDate) {
-                                    continue; // Different scheduled date window, do not link to old ticket!
+
+                                const amtMeta = SmartSorter.extractCandidateMaintenanceMeta(amt);
+                                if (outboundMeta.crqId && (!amtMeta.crqId || outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase())) {
+                                    continue; // Different or missing CRQ, do not link to old ticket!
+                                }
+                                if (outboundMeta.maintDate && (!amtMeta.maintDate || outboundMeta.maintDate !== amtMeta.maintDate)) {
+                                    continue; // Different or missing scheduled date window, do not link to old ticket!
                                 }
 
                                 existingTicket = amt;
@@ -106,6 +114,29 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
             }
 
             if (!existingTicket) {
+                if (isFormalMaint) {
+                    const attachments = await fetchMessageAttachments(msg.id, msg.hasAttachments, accessToken, userEmail);
+                    const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+                    const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+                    markGraphIdProcessed(msg.id);
+                    if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                    logger.info(`[EMAIL] 🆕 Creating new Maintenance Ticket from outbound agent maintenance advisory: "${subject}"`);
+                    await ticketService.createTicketFromEmail({
+                        from: fromAddr,
+                        fromName: fromName,
+                        to: toRecips,
+                        cc: ccRecips,
+                        subject: subject,
+                        body: msg.body?.content || '',
+                        html: msg.body?.contentType === 'html' ? msg.body?.content : null,
+                        date: msg.sentDateTime ? new Date(msg.sentDateTime) : new Date(),
+                        messageId: messageId,
+                        inReplyTo: inReplyToHeader,
+                        references: referencesHeader,
+                        attachments
+                    });
+                    continue;
+                }
                 markGraphIdProcessed(msg.id);
                 if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                 continue;
@@ -302,16 +333,18 @@ const fetchNewGraphEmails = async () => {
                 // If internal agent or own mailbox sends a message into Inbox (e.g. self-CC or loopback):
                 if (isOwnEmail) {
                     let existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, msg.subject, msg.body?.content, fromAddr);
+                    const isFormalMaint = SmartSorter.isFormalMaintenanceNotice(msg.subject, msg.body?.content);
+                    const isMaintContext = isFormalMaint || SmartSorter.hasMaintenanceSignal(msg.subject, msg.body?.content);
+                    const isIncidentContext = SmartSorter.hasStrictIncidentSignal(msg.subject, msg.body?.content);
+                    const isRebateOrCommercial = SmartSorter.isSlaRebateOrCommercialEmail(msg.subject, msg.body?.content);
 
                     // Fallback: If not matched by headers/subject, check if this agent email references an active maintenance or circuit ticket
-                    if (!existingTicket) {
+                    if (!existingTicket && !isRebateOrCommercial) {
                         try {
                             const prisma = require('../../models/index');
                             const textScan = `${msg.subject || ''} \n ${msg.body?.content || ''}`.toUpperCase();
 
                             // 1. Check if agent email is regarding an active Maintenance ticket
-                            const isIncidentContext = /(?:flap|flapping|down|outage|rfo|issue|fault|alarm|los|degraded|packet\s*loss)/i.test(textScan);
-                            const isMaintContext = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[ae]nce/i.test(textScan);
                             if (isMaintContext && !isIncidentContext) {
                                 const allActiveMaintTickets = await prisma.ticket.findMany({
                                     where: { 
@@ -329,12 +362,16 @@ const fetchNewGraphEmails = async () => {
                                         const hasCompletion = (amt.replies || []).some(r => /(?:successfully\s*completed|activity\s*completed|maintenance\s*completed)/i.test(r.text || ''));
                                         if (hasCompletion) continue; // Skip completed maintenance
 
-                                        const amtMeta = ticketService.extractMaintenanceMetadata(amt.header, (amt.replies || []).map(r => `${r.subject || ''} ${r.text || ''}`).join(' '));
-                                        if (outboundMeta.crqId && amtMeta.crqId && outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase()) {
-                                            continue; // Different CRQ, do not link to old ticket!
+                                        if (SmartSorter.hasMaintenanceScheduleConflict(amt, { subject: msg.subject, body: msg.body?.content })) {
+                                            continue;
                                         }
-                                        if (outboundMeta.maintDate && amtMeta.maintDate && outboundMeta.maintDate !== amtMeta.maintDate) {
-                                            continue; // Different scheduled date window, do not link to old ticket!
+
+                                        const amtMeta = SmartSorter.extractCandidateMaintenanceMeta(amt);
+                                        if (outboundMeta.crqId && (!amtMeta.crqId || outboundMeta.crqId.toUpperCase() !== amtMeta.crqId.toUpperCase())) {
+                                            continue; // Different or missing CRQ, do not link to old ticket!
+                                        }
+                                        if (outboundMeta.maintDate && (!amtMeta.maintDate || outboundMeta.maintDate !== amtMeta.maintDate)) {
+                                            continue; // Different or missing scheduled date window, do not link to old ticket!
                                         }
 
                                         existingTicket = amt;
@@ -345,9 +382,15 @@ const fetchNewGraphEmails = async () => {
                             }
 
                             // 2. Check if agent email references an active normal/incident ticket on circuit
-                            if (!existingTicket) {
+                            // NEVER dump a formal Maintenance Activity notification or SLA Rebate request into a normal incident ticket!
+                            const isReplyOrIncidentEscalation =
+                                isIncidentContext ||
+                                SmartSorter.hasIncidentSignal(msg.subject, msg.body?.content) ||
+                                !SmartSorter.isRootEmail({ inReplyTo: inReplyToHeader, references: referencesHeader, subject: msg.subject, body: msg.body?.content });
+
+                            if (!existingTicket && !isMaintContext && isReplyOrIncidentEscalation) {
                                 const circuits = await prisma.circuit.findMany({
-                                    select: { id: true, customerCircuitId: true, supplierCircuitId: true, isMultiVendor: true, vendorCircuits: true }
+                                    select: { id: true, customerCircuitId: true, supplierCircuitId: true, supplierPoNumber: true, isMultiVendor: true, vendorCircuits: true }
                                 });
                                 const matchesCircuitToken = (txt, targetId) => {
                                     if (!txt || !targetId) return false;
@@ -357,12 +400,17 @@ const fetchNewGraphEmails = async () => {
                                 };
 
                                 for (const c of circuits) {
-                                    const hasCkt = (c.customerCircuitId && matchesCircuitToken(textScan, c.customerCircuitId)) ||
-                                                   (c.supplierCircuitId && matchesCircuitToken(textScan, c.supplierCircuitId)) ||
-                                                   (c.isMultiVendor && Array.isArray(c.vendorCircuits) && c.vendorCircuits.some(vc => vc.supplierCircuitId && matchesCircuitToken(textScan, vc.supplierCircuitId)));
+                                    const checkField = (field) => extractTokensFromCircuitId(field).some(tok => matchesCircuitToken(textScan, tok));
+                                    const hasCkt = (c.customerCircuitId && checkField(c.customerCircuitId)) ||
+                                                   (c.supplierCircuitId && checkField(c.supplierCircuitId)) ||
+                                                   (c.supplierPoNumber && checkField(c.supplierPoNumber)) ||
+                                                   (c.isMultiVendor && Array.isArray(c.vendorCircuits) && c.vendorCircuits.some(vc => vc.supplierCircuitId && checkField(vc.supplierCircuitId)));
                                     if (hasCkt) {
                                         const normBase = (id) => String(id || '').replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
                                         const baseCust = normBase(c.customerCircuitId);
+                                        const vcCircuitFilters = (c.isMultiVendor && Array.isArray(c.vendorCircuits))
+                                            ? c.vendorCircuits.map(vc => vc.supplierCircuitId).filter(Boolean).map(sid => ({ circuitId: sid }))
+                                            : [];
 
                                         const activeTicket = await prisma.ticket.findFirst({
                                             where: {
@@ -370,6 +418,7 @@ const fetchNewGraphEmails = async () => {
                                                     { circuitId: c.customerCircuitId },
                                                     { circuitId: c.supplierCircuitId },
                                                     { circuitId: c.id },
+                                                    ...vcCircuitFilters,
                                                     ...(baseCust ? [
                                                         { circuitId: baseCust },
                                                         { circuitId: `temp-${baseCust}` },
@@ -379,11 +428,11 @@ const fetchNewGraphEmails = async () => {
                                                 status: { notIn: ['Closed', 'Resolved', 'Spam'] },
                                                 createdAt: { gte: MIN_OPERATIONAL_DATE }
                                             },
-                                            orderBy: { createdAt: 'desc' },
-                                            include: { client: true, vendor: true }
+                                            orderBy: { createdAt: 'asc' },
+                                            include: { client: true, vendor: true, replies: { select: { text: true, subject: true } } }
                                         });
 
-                                        if (activeTicket) {
+                                        if (activeTicket && SmartSorter.isValidReplyCandidate(activeTicket, { subject: msg.subject, body: msg.body?.content })) {
                                             existingTicket = activeTicket;
                                             logger.info(`[EMAIL] 📤 Linked incoming agent email from ${fromAddr} to active Ticket ${activeTicket.ticketId} on circuit ${c.customerCircuitId || c.supplierCircuitId}`);
                                             break;
@@ -412,6 +461,27 @@ const fetchNewGraphEmails = async () => {
                             html: msg.body?.contentType === 'html' ? msg.body?.content : null,
                             date: msg.receivedDateTime ? new Date(msg.receivedDateTime) : new Date(),
                             messageId: messageId,
+                            attachments
+                        });
+                    } else if (!existingTicket && isFormalMaint && !isGraphIdProcessed(msg.id)) {
+                        markGraphIdProcessed(msg.id);
+                        if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                        const attachments = await fetchMessageAttachments(msg.id, msg.hasAttachments, accessToken, userEmail);
+                        const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+                        const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+                        logger.info(`[EMAIL] 🆕 Creating new Maintenance Ticket from agent maintenance advisory: "${msg.subject}"`);
+                        await ticketService.createTicketFromEmail({
+                            from: fromAddr,
+                            fromName: fromName,
+                            to: toRecips,
+                            cc: ccRecips,
+                            subject: msg.subject || '(No Subject)',
+                            body: msg.body?.content || '',
+                            html: msg.body?.contentType === 'html' ? msg.body?.content : null,
+                            date: msg.receivedDateTime ? new Date(msg.receivedDateTime) : new Date(),
+                            messageId: messageId,
+                            inReplyTo: inReplyToHeader,
+                            references: referencesHeader,
                             attachments
                         });
                     } else if (!existingTicket) {

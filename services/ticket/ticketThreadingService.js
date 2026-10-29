@@ -4,6 +4,7 @@ const prisma = require('../../models/index');
 const TicketModel = require('../../models/ticket');
 const logger = require('../../utils/logger');
 const SmartSorter = require('./smartTicketSorter');
+const { stripHtml, normalizeCircuitId, extractMaintenanceMetadata, extractTokensFromCircuitId } = require('./ticketSanitizer');
 
 /**
  * Top-level circuit compatibility check (P6 Circuit-First Veto Rule).
@@ -13,27 +14,49 @@ const SmartSorter = require('./smartTicketSorter');
 const checkCircuitCompatibility = (ticketCircuitId, detectedCircuit, ticketSubjectId = null) => {
     if (!detectedCircuit) return true; // No registered circuit found in text, cannot veto
     const cleanTgt = (ticketCircuitId || '').toUpperCase().trim();
+    const normTgt = normalizeCircuitId(ticketCircuitId);
     const custCkt = (detectedCircuit.customerCircuitId || '').toUpperCase().trim();
     const suppCkt = (detectedCircuit.supplierCircuitId || '').toUpperCase().trim();
+    const poCkt = (detectedCircuit.supplierPoNumber || '').toUpperCase().trim();
     const idCkt = (detectedCircuit.id || '').toUpperCase().trim();
 
-    // Check if ticket circuit matches detected circuit
-    if (cleanTgt === custCkt || cleanTgt === suppCkt || cleanTgt === idCkt) {
+    // Check if ticket circuit matches detected circuit directly
+    if (cleanTgt && (cleanTgt === custCkt || cleanTgt === suppCkt || cleanTgt === poCkt || cleanTgt === idCkt)) {
         return true;
     }
 
-    // Base circuit normalization (stripping temp / original / new prefixes)
-    const normBase = (id) => String(id || '').replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim().toUpperCase();
-    if (cleanTgt && normBase(cleanTgt) && (normBase(cleanTgt) === normBase(custCkt) || normBase(cleanTgt) === normBase(suppCkt))) {
+    // Normalized circuit comparison (stripping temp / original / new prefixes and normalizing whitespace/hyphens)
+    if (normTgt && (
+        normTgt === normalizeCircuitId(custCkt) ||
+        normTgt === normalizeCircuitId(suppCkt) ||
+        normTgt === normalizeCircuitId(poCkt)
+    )) {
         return true;
+    }
+
+    // Check against all extracted component tokens of customerCircuitId, supplierCircuitId, supplierPoNumber
+    if (cleanTgt) {
+        const allDetectedTokens = [
+            ...extractTokensFromCircuitId(detectedCircuit.customerCircuitId),
+            ...extractTokensFromCircuitId(detectedCircuit.supplierCircuitId),
+            ...extractTokensFromCircuitId(detectedCircuit.supplierPoNumber)
+        ].map(t => t.toUpperCase().trim());
+        const allNormTokens = allDetectedTokens.map(t => normalizeCircuitId(t));
+        if (allDetectedTokens.includes(cleanTgt) || (normTgt && allNormTokens.includes(normTgt))) {
+            return true;
+        }
     }
 
     // If circuit has vendor circuits, check if any supplier circuit matches
     if (detectedCircuit.isMultiVendor && Array.isArray(detectedCircuit.vendorCircuits)) {
-        const hasMatch = detectedCircuit.vendorCircuits.some(vc =>
-            (vc.supplierCircuitId || '').toUpperCase().trim() === cleanTgt ||
-            (normBase(vc.supplierCircuitId) && normBase(vc.supplierCircuitId) === normBase(cleanTgt))
-        );
+        const hasMatch = detectedCircuit.vendorCircuits.some(vc => {
+            const vcTokens = extractTokensFromCircuitId(vc.supplierCircuitId).map(t => t.toUpperCase().trim());
+            const vcNormTokens = vcTokens.map(t => normalizeCircuitId(t));
+            return (vc.supplierCircuitId || '').toUpperCase().trim() === cleanTgt ||
+                (normTgt && normalizeCircuitId(vc.supplierCircuitId) === normTgt) ||
+                vcTokens.includes(cleanTgt) ||
+                (normTgt && vcNormTokens.includes(normTgt));
+        });
         if (hasMatch) return true;
     }
 
@@ -68,14 +91,24 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             id: true,
             customerCircuitId: true,
             supplierCircuitId: true,
+            supplierPoNumber: true,
             clientId: true,
             vendorId: true,
             isMultiVendor: true,
-            vendorCircuits: { select: { supplierCircuitId: true, vendorId: true } }
+            vendorCircuits: {
+                select: {
+                    id: true,
+                    supplierCircuitId: true,
+                    supplierPoNumber: true,
+                    vendorId: true,
+                    vendor: { select: { id: true, name: true, emails: true } }
+                }
+            }
         }
     });
 
-    const textToScan = `${subject || ''} \n ${body || ''}`;
+    const cleanBody = stripHtml(body || '');
+    const textToScan = `${subject || ''} \n ${cleanBody} \n ${body || ''}`;
 
     // Token boundary matcher to avoid partial substring collisions
     const matchesCircuitToken = (text, targetId) => {
@@ -85,25 +118,10 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         return regex.test(text);
     };
 
-    const extractTokens = (id) => {
-        if (!id) return [];
-        const raw = String(id).trim();
-        const tokens = [raw];
-        const stripped = raw.replace(/^(?:original|temp|temporary|old|new)[\s-_:]+/i, '').trim();
-        if (stripped && stripped !== raw && stripped.length > 2) {
-            tokens.push(stripped);
-        }
-        const numMatch = raw.match(/\b\d{6,}\b/);
-        if (numMatch && !tokens.includes(numMatch[0])) {
-            tokens.push(numMatch[0]);
-        }
-        return tokens;
-    };
-
     let detectedCircuit = null;
     for (const c of allCircuits) {
         const checkId = (id) => {
-            const tokens = extractTokens(id);
+            const tokens = extractTokensFromCircuitId(id);
             return tokens.some(tok => matchesCircuitToken(textToScan, tok));
         };
 
@@ -112,6 +130,10 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             break;
         }
         if (c.supplierCircuitId && checkId(c.supplierCircuitId)) {
+            detectedCircuit = c;
+            break;
+        }
+        if (c.supplierPoNumber && checkId(c.supplierPoNumber)) {
             detectedCircuit = c;
             break;
         }
@@ -128,13 +150,9 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
     const isCircuitCompatible = (ticketCircuitId, ticketSubjectId = null) =>
         checkCircuitCompatibility(ticketCircuitId, detectedCircuit, ticketSubjectId);
 
-    // All barrier rules (maintenance / client-support / recency) live in the Smart Ticket Sorter.
+    // All barrier rules (maintenance / client-support / recency / schedule isolation) live in the Smart Ticket Sorter.
     const MIN_OPERATIONAL_DATE = SmartSorter.MIN_OPERATIONAL_DATE;
     const sorterCtx = { subject, body, isCircuitCompatible };
-
-    const isMaintenanceBarrierVeto = (candidateTicket) => SmartSorter.isMaintenanceBarrierVeto(candidateTicket, sorterCtx);
-    const isClientSupportBarrierVeto = (candidateTicket) => SmartSorter.isClientSupportBarrierVeto(candidateTicket, sorterCtx);
-    const isTicketWithinActiveWindow = (candidateTicket) => SmartSorter.isWithinActiveWindow(candidateTicket);
 
     // Unified Double-Checking Validator: Ensures thread integrity and eliminates wrong routing of replies
     const isValidReplyCandidate = (candidateTicket, ticketSubjectId = null) =>
@@ -142,6 +160,12 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             ...sorterCtx,
             isCircuitCompatible: (circuitId, label) => isCircuitCompatible(circuitId, ticketSubjectId || label)
         });
+
+    const candidateInclude = {
+        client: true,
+        vendor: true,
+        replies: { select: { id: true, subject: true, text: true, to: true, cc: true, author: true, category: true, type: true } }
+    };
 
     // 0. Strategy A: Subject regex extraction (Most Reliable)
     // Supports [#1234], [1234], [#V1234], [V1234], [#1234-V], [1234-V], [#TEST-MV-1234], and Chinese brackets 【#1234】
@@ -161,7 +185,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                         { ticketId: { equals: alternateId, mode: 'insensitive' } }
                     ]
                 },
-                include: { client: true, vendor: true }
+                include: candidateInclude
             });
 
             // Enforce circuit compatibility check on Strategy A (Fixes P6), Recency Window, Maintenance Barrier, and Client Support Barrier
@@ -202,20 +226,44 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             const rawDocket = docketMatch[1].trim();
             const hasDigits = /\d{4,}/.test(rawDocket);
             if (hasDigits) {
-                const matchingDocketTicket = await prisma.ticket.findFirst({
+                const matchingDocketCandidates = await prisma.ticket.findMany({
                     where: {
                         status: { notIn: ['Spam'] },
-                        isMaintenance: false, // Strict: Never match maintenance tickets for incident trouble ticket dockets!
-                        createdAt: { gte: MIN_OPERATIONAL_DATE }, // Discard past tickets
+                        createdAt: { gte: MIN_OPERATIONAL_DATE },
                         OR: [
                             { header: { contains: rawDocket, mode: 'insensitive' } },
-                            { replies: { some: { text: { contains: rawDocket, mode: 'insensitive' } } } }
+                            { replies: { some: { OR: [
+                                { subject: { contains: rawDocket, mode: 'insensitive' } },
+                                { text: { contains: rawDocket, mode: 'insensitive' } }
+                            ] } } }
                         ]
                     },
-                    include: { client: true, vendor: true },
-                    orderBy: { createdAt: 'desc' }
+                    include: candidateInclude,
+                    orderBy: { createdAt: 'asc' }
                 });
-                if (matchingDocketTicket && isValidReplyCandidate(matchingDocketTicket, matchingDocketTicket.ticketId)) {
+                let matchingDocketTicket = matchingDocketCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
+                if (
+                    matchingDocketTicket &&
+                    matchingDocketTicket.ticketType === 'Vendor' &&
+                    !SmartSorter.isFormalMaintenanceNotice(matchingDocketTicket.header || '', '') &&
+                    detectedCircuit
+                ) {
+                    const rootClientCandidates = await prisma.ticket.findMany({
+                        where: {
+                            ticketType: 'Client',
+                            status: { notIn: ['Spam', 'Closed', 'Resolved'] },
+                            createdAt: { gte: MIN_OPERATIONAL_DATE, lte: matchingDocketTicket.createdAt }
+                        },
+                        include: candidateInclude,
+                        orderBy: { createdAt: 'asc' }
+                    });
+                    const parentClientTicket = rootClientCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
+                    if (parentClientTicket) {
+                        logger.info(`🎟️ [TICKET] 🔀 Promoted Vendor TT Docket match "${rawDocket}" from split Vendor Ticket ${matchingDocketTicket.ticketId} to root Client Incident Ticket ${parentClientTicket.ticketId}`);
+                        matchingDocketTicket = parentClientTicket;
+                    }
+                }
+                if (matchingDocketTicket) {
                     logger.info(`🎟️ [TICKET] 🧵 Reply matched via Vendor TT Docket: "${rawDocket}" → Ticket ${matchingDocketTicket.ticketId}`);
                     return matchingDocketTicket;
                 }
@@ -223,34 +271,36 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
-    // 0.6 Strategy A.3: Maintenance CRQ / Docket / Reference match on Maintenance tickets (e.g. CRQ: 1100494638, CRQ000007185776, UMW/RPO Reference, SR...)
+    // 0.6 Strategy A.3: Maintenance CRQ / UMW / RPO / Reference match (e.g. CRQ: 1100494638, U4584\26F, R7023\26E, INC000011680956)
     if (subject || body) {
-        const crqMatch = textToScan.match(/\b(CRQ[:\s“"'-]*\d{6,}[A-Za-z0-9_-]*|(?:UMW|RPO)\s*Reference\s*number\s*([A-Za-z0-9\\/_-]+)|SR\d{6,}|INC\d{6,})\b/i);
-        if (crqMatch && crqMatch[1]) {
-            const rawCrq = crqMatch[1].trim();
-            const numPart = rawCrq.match(/\d{6,}/)?.[0] || crqMatch[2] || rawCrq;
-            if (numPart && numPart.length >= 4) {
-                const matchingMaintTicket = await prisma.ticket.findFirst({
-                    where: {
-                        status: { notIn: ['Spam', 'Closed', 'Resolved'] },
-                        OR: [ { isMaintenance: true }, { status: 'Maintenance' } ],
-                        OR: [
-                            { header: { contains: numPart, mode: 'insensitive' } },
-                            { replies: { some: { subject: { contains: numPart, mode: 'insensitive' } } } }
-                        ]
-                    },
-                    include: { client: true, vendor: true },
-                    orderBy: { createdAt: 'asc' } // Root ticket first!
-                });
-                if (matchingMaintTicket && isValidReplyCandidate(matchingMaintTicket, matchingMaintTicket.ticketId)) {
-                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via Maintenance CRQ/Ref: "${numPart}" → Root Ticket ${matchingMaintTicket.ticketId}`);
-                    return matchingMaintTicket;
-                }
+        const meta = extractMaintenanceMetadata(subject, body);
+        const crqMatch = textToScan.match(/\b(CRQ[:\s“"'-]*\d{6,}[A-Za-z0-9_-]*|(?:UMW|RPO)\s*Reference(?:\s*Number|\s*No)?[\s:"]*([A-Za-z0-9\\/_-]+)|INC\d{6,})\b/i);
+        const searchRef = meta.crqId || (crqMatch && (crqMatch[2] || crqMatch[1]?.match(/\d{6,}/)?.[0] || crqMatch[1]?.trim()));
+        if (searchRef && searchRef.length >= 4) {
+            const maintCandidates = await prisma.ticket.findMany({
+                where: {
+                    status: { notIn: ['Spam', 'Closed', 'Resolved'] },
+                    createdAt: { gte: MIN_OPERATIONAL_DATE },
+                    OR: [
+                        { header: { contains: searchRef, mode: 'insensitive' } },
+                        { replies: { some: { OR: [
+                            { subject: { contains: searchRef, mode: 'insensitive' } },
+                            { text: { contains: searchRef, mode: 'insensitive' } }
+                        ] } } }
+                    ]
+                },
+                include: candidateInclude,
+                orderBy: { createdAt: 'asc' } // Root ticket first!
+            });
+            const matchingMaintTicket = maintCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
+            if (matchingMaintTicket) {
+                logger.info(`🎟️ [TICKET] 🧵 Reply matched via Maintenance CRQ/Ref: "${searchRef}" → Ticket ${matchingMaintTicket.ticketId}`);
+                return matchingMaintTicket;
             }
         }
     }
 
-    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit isolation guard)
+    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit & schedule isolation guard)
     if (inReplyTo) {
         const cleanId = inReplyTo.trim();
         const ticket = await TicketModel.findTicketByMessageId(cleanId);
@@ -259,16 +309,19 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             return ticket;
         }
 
-        // 1.5. Strategy B.2: In-Reply-To matches an Agent Reply Message-ID (with circuit isolation guard)
+        // 1.5. Strategy B.2: In-Reply-To matches an Agent/Vendor/Client Reply Message-ID (with circuit & schedule isolation guard)
         const reply = await TicketModel.findReplyByMessageId(cleanId);
-        if (reply && reply.ticket && isValidReplyCandidate(reply.ticket, reply.ticket.ticketId)) {
-            logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Agent Reply): ${cleanId} → Ticket ${reply.ticket.ticketId}`);
-            reply.ticket._matchedReply = reply;
-            return reply.ticket;
+        if (reply && reply.ticket) {
+            const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
+            if (isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
+                logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Reply): ${cleanId} → Ticket ${fullTicket.ticketId}`);
+                fullTicket._matchedReply = reply;
+                return fullTicket;
+            }
         }
     }
 
-    // 2. References: space/comma-separated chain of parent Message-IDs (with circuit isolation guard)
+    // 2. References: space/comma-separated chain of parent Message-IDs (with circuit & schedule isolation guard)
     if (references) {
         const refIds = (Array.isArray(references) ? references : references.split(/[\s,]+/))
             .map(r => r.trim())
@@ -280,26 +333,32 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 return ticket;
             }
             const reply = await TicketModel.findReplyByMessageId(refId);
-            if (reply && reply.ticket && isValidReplyCandidate(reply.ticket, reply.ticket.ticketId)) {
-                logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Reply): ${refId} → Ticket ${reply.ticket.ticketId}`);
-                reply.ticket._matchedReply = reply;
-                return reply.ticket;
+            if (reply && reply.ticket) {
+                const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
+                if (isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
+                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Reply): ${refId} → Ticket ${fullTicket.ticketId}`);
+                    fullTicket._matchedReply = reply;
+                    return fullTicket;
+                }
             }
         }
     }
 
-    // 3. Subject fallback: "Re: <original subject>" or Chinese "RE：<original subject>"
-    // STRICT ISOLATION: Must verify Circuit ID and Sender to prevent cross-client hijacking!
+    // 3. Subject & Circuit Continuation Fallback
+    // STRICT ISOLATION: Must verify Circuit ID, Sender, Business Process, and Maintenance Date/CRQ compatibility!
     if (subject) {
-        const isReplyPattern = /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i.test(subject);
+        const isReplyPattern =
+            /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i.test(subject) ||
+            !SmartSorter.isRootEmail({ inReplyTo, references, subject, body });
         const stripped = subject.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
-        
-        if (stripped && isReplyPattern) {
+
+        if (stripped && (isReplyPattern || detectedCircuit)) {
             const normalizeSubject = (str) => {
                 if (!str) return '';
                 return str
                     .replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '')
                     .replace(/(?:\[|【)#?[A-Za-z0-9_-]+?(?:-V)?(?:\]|】)\s*/gi, '')
+                    .replace(/\s+/g, ' ')
                     .trim()
                     .toLowerCase();
             };
@@ -307,30 +366,54 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             const targetNormalized = normalizeSubject(stripped);
             const detectedCircuitId = detectedCircuit ? (detectedCircuit.customerCircuitId || detectedCircuit.id) : null;
 
-            // Active tickets query: fetch all active ongoing tickets so active maintenance tickets from 26 Oct (like #V1031, #V1030) receive replies
-            const allTickets = await prisma.ticket.findMany({ 
+            const allTickets = await prisma.ticket.findMany({
                 where: {
                     status: { notIn: ['Spam', 'Closed', 'Resolved'] }
                 },
-                include: { 
-                    client: true, 
-                    vendor: true,
-                    replies: { select: { to: true, cc: true, author: true } }
-                },
+                include: candidateInclude,
                 orderBy: { createdAt: 'asc' } // Root ticket first!
             });
 
-
             // Helper to check if sender is authorized for this ticket
             const isAuthorizedSender = (t, sender) => {
-                if (!sender) return true; // If no sender provided, fallback to circuit/subject matching
+                if (!sender) return true;
                 const cleanSender = sender.toLowerCase().trim();
-                if (cleanSender.includes('edgestone.in')) return true; // Agent/system is always authorized
+                if (cleanSender.includes('edgestone.in')) return true;
                 if (t.email && t.email.toLowerCase() === cleanSender) return true;
                 if (Array.isArray(t.cc) && t.cc.some(c => c.toLowerCase() === cleanSender)) return true;
                 if (t.client && Array.isArray(t.client.emails) && t.client.emails.some(e => e.toLowerCase() === cleanSender)) return true;
                 if (t.vendor && Array.isArray(t.vendor.emails) && t.vendor.emails.some(e => e.toLowerCase() === cleanSender)) return true;
-                
+
+                // Check multi-vendor circuit vendor contacts & corporate domains
+                if (detectedCircuit && Array.isArray(detectedCircuit.vendorCircuits)) {
+                    for (const vc of detectedCircuit.vendorCircuits) {
+                        if (vc.vendor && Array.isArray(vc.vendor.emails)) {
+                            if (vc.vendor.emails.some(e => e.toLowerCase() === cleanSender)) return true;
+                        }
+                    }
+                }
+
+                // Check if sender belongs to the detected circuit's client or vendor (even if ticket.vendorId wasn't populated yet)
+                if (cleanSender.includes('@')) {
+                    const senderDomain = cleanSender.split('@')[1];
+                    const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+                    if (!genericDomains.includes(senderDomain)) {
+                        if (t.client && Array.isArray(t.client.emails) && t.client.emails.some(e => e.toLowerCase().endsWith('@' + senderDomain))) {
+                            return true;
+                        }
+                        if (t.vendor && Array.isArray(t.vendor.emails) && t.vendor.emails.some(e => e.toLowerCase().endsWith('@' + senderDomain))) {
+                            return true;
+                        }
+                        if (detectedCircuit && Array.isArray(detectedCircuit.vendorCircuits)) {
+                            for (const vc of detectedCircuit.vendorCircuits) {
+                                if (vc.vendor && Array.isArray(vc.vendor.emails) && vc.vendor.emails.some(e => e.toLowerCase().endsWith('@' + senderDomain))) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Check if sender was added as a recipient or author in any prior replies on this ticket
                 if (Array.isArray(t.replies)) {
                     const isParticipantInReplies = t.replies.some(r => {
@@ -342,35 +425,59 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                     if (isParticipantInReplies) return true;
                 }
 
-                // Check corporate domain match with client
-                if (t.client && Array.isArray(t.client.emails) && cleanSender.includes('@')) {
-                    const senderDomain = cleanSender.split('@')[1];
-                    const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
-                    if (!genericDomains.includes(senderDomain)) {
-                        if (t.client.emails.some(e => e.toLowerCase().endsWith('@' + senderDomain))) {
-                            return true;
-                        }
+                return false;
+            };
+
+            const isSubjectThreadMatch = (candNorm, incomingNorm) => {
+                if (!candNorm || !incomingNorm) return false;
+                if (candNorm === incomingNorm) return true;
+                // Handle vendor ticketing systems that append their docket/reference to the end of our subject
+                // (e.g. "... 29th Oct'2026 YJ2026102900253 2610290101111180" or "... | Neutrality.One #213877")
+                const minLen = Math.min(candNorm.length, incomingNorm.length);
+                if (minLen >= 18 && (incomingNorm.startsWith(candNorm) || candNorm.startsWith(incomingNorm))) {
+                    return true;
+                }
+                return false;
+            };
+
+            const subjectMatchesTicketOrReply = (t) => {
+                if (isSubjectThreadMatch(normalizeSubject(t.header), targetNormalized)) return true;
+                if (Array.isArray(t.replies)) {
+                    const matchedRep = t.replies.find(r => r.subject && isSubjectThreadMatch(normalizeSubject(r.subject), targetNormalized));
+                    if (matchedRep) {
+                        t._matchedReply = matchedRep;
+                        return true;
                     }
+                }
+                return false;
+            };
+
+            const isEligibleActiveIncidentTicket = (t) => {
+                if (!t.circuitId || !isValidReplyCandidate(t, t.ticketId)) return false;
+                if (!t.isMaintenance && ['Open', 'In Progress'].includes(t.status)) return true;
+                // Handle Client incident tickets that were historically mis-tagged with status='Maintenance'
+                if (t.ticketType === 'Client' && t.isSlaActive && SmartSorter.hasStrictIncidentSignal(t.header || '', '') && !['Closed', 'Resolved', 'Spam'].includes(t.status)) {
+                    return true;
                 }
                 return false;
             };
 
             let match = null;
             if (detectedCircuit) {
-                // If a circuit was detected, ONLY match tickets on THAT specific circuit!
+                // 3a. Subject match (exact or vendor-suffix prefix match) on ticket header or prior reply subject for this circuit
                 match = allTickets.find(t =>
                     isValidReplyCandidate(t, t.ticketId) &&
-                    normalizeSubject(t.header) === targetNormalized &&
+                    subjectMatchesTicketOrReply(t) &&
                     isAuthorizedSender(t, from)
                 );
                 if (match) {
                     logger.info(`🎟️ [TICKET] 🧵 Reply matched via subject + Circuit ID "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
                 }
-            } else if (from) {
-                // If no circuit in reply, match subject ONLY if sender is verified on this ticket
+            } else if (from && isReplyPattern) {
+                // 3b. No circuit in reply: match subject ONLY if sender is verified on this ticket
                 match = allTickets.find(t =>
                     isValidReplyCandidate(t, t.ticketId) &&
-                    normalizeSubject(t.header) === targetNormalized &&
+                    subjectMatchesTicketOrReply(t) &&
                     isAuthorizedSender(t, from)
                 );
                 if (match) {
@@ -378,23 +485,52 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 }
             }
 
-            // Fallback for internal agents: If an EdgeStone agent is emailing regarding an active circuit,
-            // route into the ongoing active INCIDENT ticket for that circuit (NEVER Maintenance tickets!)
-            if (!match && from && from.toLowerCase().includes('edgestone.in') && detectedCircuit) {
-                match = allTickets.find(t =>
-                    !t.isMaintenance &&
-                    t.status !== 'Maintenance' &&
-                    ['Open', 'In Progress'].includes(t.status) &&
-                    t.circuitId &&
-                    isValidReplyCandidate(t, t.ticketId)
-                );
-                if (match) {
-                    logger.info(`🎟️ [TICKET] 🧵 Agent email from ${from} matched active ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
+            // 3c. Strategy D: Circuit Continuation Match
+            // If this is a continuation email on a detected circuit (or an EdgeStone agent incident/escalation email for that circuit)
+            // and passes all schedule/CRQ/maintenance/client-support/business-process barriers, route to the matching active ticket on that circuit.
+            if (!match && detectedCircuit && (isReplyPattern || (from && from.toLowerCase().includes('edgestone.in')))) {
+                const incomingMeta = extractMaintenanceMetadata(subject, body);
+                const isIncomingMaint = SmartSorter.isFormalMaintenanceNotice(subject, body) || SmartSorter.hasMaintenanceSignal(subject, body);
+                const isIncomingRebate = SmartSorter.isSlaRebateOrCommercialEmail(subject, body);
+
+                // First priority: match a ticket on this circuit with the exact same CRQ/UMW/RPO or scheduled maintenance date
+                if (!isIncomingRebate && (incomingMeta.crqId || incomingMeta.maintDate)) {
+                    match = allTickets.find(t => {
+                        if (!t.circuitId || !isValidReplyCandidate(t, t.ticketId)) return false;
+                        const candMeta = SmartSorter.extractCandidateMaintenanceMeta(t);
+                        const sameCrq = incomingMeta.crqId && candMeta.crqId && incomingMeta.crqId.toUpperCase() === candMeta.crqId.toUpperCase();
+                        const sameDate = incomingMeta.maintDate && candMeta.maintDate && incomingMeta.maintDate === candMeta.maintDate;
+                        return sameCrq || sameDate;
+                    });
+                    if (match) {
+                        logger.info(`🎟️ [TICKET] 🧵 Continuation matched via Circuit "${detectedCircuitId}" + Maintenance Schedule/Ref (${incomingMeta.crqId || incomingMeta.maintDate}) → Ticket ${match.ticketId}`);
+                    }
+                }
+
+                // Second priority: non-root continuation on active circuit ticket (when not a conflicting maintenance notice or SLA rebate)
+                if (!match && isReplyPattern && !SmartSorter.isFormalMaintenanceNotice(subject, body) && !isIncomingRebate) {
+                    match = allTickets.find(t => isEligibleActiveIncidentTicket(t));
+                    if (match) {
+                        logger.info(`🎟️ [TICKET] 🧵 Continuation email from ${from} matched active ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
+                    }
+                }
+
+                // Third priority: internal agent email regarding active incident ticket
+                // Must have incident context (e.g. escalating link flap/down to vendor) and NEVER match SLA rebate/commercial or maintenance notices!
+                if (!match && from && from.toLowerCase().includes('edgestone.in') && !isIncomingMaint && !isIncomingRebate && SmartSorter.hasIncidentSignal(subject, body)) {
+                    match = allTickets.find(t => isEligibleActiveIncidentTicket(t));
+                    if (match) {
+                        logger.info(`🎟️ [TICKET] 🧵 Agent email from ${from} matched active ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
+                    }
                 }
             }
 
             if (match) {
-                return await TicketModel.findTicketById(match.id);
+                const fullTicket = await TicketModel.findTicketById(match.id);
+                if (fullTicket && match._matchedReply) {
+                    fullTicket._matchedReply = match._matchedReply;
+                }
+                return fullTicket;
             }
         }
     }

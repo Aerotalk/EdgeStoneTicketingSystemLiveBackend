@@ -1,0 +1,1664 @@
+{
+  "exportedAt": "2026-10-29T09:37:43.853Z",
+  "ticket1047": {
+    "id": "226fad3c-f707-483e-bd22-67bed9a28e53",
+    "ticketId": "#1047",
+    "header": "#41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+    "email": "Cfm.L2@airtel.com",
+    "status": "Maintenance",
+    "priority": "Medium",
+    "circuitId": "BA/SG1-DX1-FR5/ESPL-013",
+    "messageId": "<PN2PPF10F160173CC661D53CE034AE52007AA6F2@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+    "date": "28 Oct 2026",
+    "receivedAt": "2026-10-28T22:31:03.000Z",
+    "receivedTime": "22:31",
+    "clientId": "ca767ba6-0b15-4dac-83c1-89acdbf5f400",
+    "vendorId": null,
+    "ticketType": "Client",
+    "assignedUserId": null,
+    "createdAt": "2026-10-28T22:31:05.923Z",
+    "updatedAt": "2026-10-29T00:48:42.403Z",
+    "isSlaActive": true,
+    "isMaintenance": true,
+    "cc": [
+      "deval@edgestone.in",
+      "kaushik@edgestone.in"
+    ],
+    "replies": [
+      {
+        "id": "fec41a10-04b8-4c16-a1a7-e27bcfad5790",
+        "text": "Dear Team, \n\nKindly raise a TT for the link flapped issue and share your observations at the earliest.\n\nCurrent Status: The physical interface and line protocol are currently operational (up/up); however, repeated BFD session drops have been recorded between our router and neighbor 198.141.253.161.\n\nTechnical Findings:\n\nBundle-Ether153 Interface State Transitions: 217Multiple BFD session interruptions observed on Bundle-Ether153Failure Reason consistently reported as:Control timer expiredRecent Event Samples:\n\nOct 28 18:03:26 UTC\nBFD SESSION_STATE_DOWN\nNeighbor: 198.141.253.161\nInterface: Bundle-Ether153\nReason: Control timer expired\n \nOct 28 18:04:00 UTC\nBFD SESSION_STATE_UP\nNeighbor: 198.141.253.161\nInterface: Bundle-Ether153\nAdditional similar occurrences were recorded on:\n\nOct 27 02:19 UTCOct 27 03:19 UTCOct 27 11:27 UTCOct 27 16:05 UTCOct 28 07:31 UTCOct 28 07:58 UTCOct 28 18:03 UTCAlthough the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.\n\nRequested Actions:\n\nReview the circuit end-to-end for errors, drops, congestion, or transport instability.Verify the health of all carrier-managed equipment involved in the service delivery.Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.Confirm whether any anomalies were detected during the reported timestamps.Provide an action plan and ETA for corrective measures if an issue is identified.Provide a detailed RFO for the observed flaps.\n\nCKT ID :BA/SG1-DX1-FR5/ESPL-013\n\nRegards,\nVaibhav Namdeo\nGSMC Operations\nBharti Airtel\n*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "22:31",
+        "date": "28 Oct 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in",
+          "deval@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "#41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN2PPF10F160173CC661D53CE034AE52007AA6F2@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T22:31:05.923Z"
+      },
+      {
+        "id": "b9371838-910a-4dd4-ba5f-22161fa094c9",
+        "text": "Hi Team,\n \nThis is acknowledged. \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "04:24",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "support@edgestone.in",
+          "deval@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN1P287MB37425BF5B5D6832A0E4EE01BDC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T22:54:11.101Z"
+      },
+      {
+        "id": "7b8a58be-7119-4521-8270-c97fc8512dd0",
+        "text": "Hi Team,\n \nKindly raise a TT for the link flapped issue and share your observations at the earliest.\n \nCurrent Status: The physical interface and line protocol are currently operational (up/up); however, repeated BFD session drops have been recorded between our router and neighbor 198.141.253.161.\nTechnical Findings:\nBundle-Ether153 Interface State Transitions: 217Multiple BFD session interruptions observed on Bundle-Ether153Failure Reason consistently reported as:Control timer expiredRecent Event Samples:\nOct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153Additional similar occurrences were recorded on:\nOct 27 02:19 UTCOct 27 03:19 UTCOct 27 11:27 UTCOct 27 16:05 UTCOct 28 07:31 UTCOct 28 07:58 UTCOct 28 18:03 UTCAlthough the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.\nRequested Actions:\nReview the circuit end-to-end for errors, drops, congestion, or transport instability.Verify the health of all carrier-managed equipment involved in the service delivery.Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.Confirm whether any anomalies were detected during the reported timestamps.Provide an action plan and ETA for corrective measures if an issue is identified.Provide a detailed RFO for the observed flaps. \n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "04:28",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "CKT ID :- NEU-EDGS-1092 || 29th Oct'2026",
+        "messageId": "<PN1P287MB3742E707F4A68E7CED02625FDC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T22:58:11.076Z"
+      },
+      {
+        "id": "eedcc33e-b3bd-4ec7-8363-703aacfa7bb5",
+        "text": "Hi Team,\n\nKindly raise a TT for the link flapped issue and share your observations at the earliest.\n \nCurrent Status: The physical interface and line protocol are currently operational (up/up); however, repeated BFD session drops have been recorded between our router and neighbor 198.141.253.161.\nTechnical Findings:\nBundle-Ether153 Interface State Transitions: 217Multiple BFD session interruptions observed on Bundle-Ether153Failure Reason consistently reported as:Control timer expiredRecent Event Samples:\nOct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153Additional similar occurrences were recorded on:\nOct 27 02:19 UTCOct 27 03:19 UTCOct 27 11:27 UTCOct 27 16:05 UTCOct 28 07:31 UTCOct 28 07:58 UTCOct 28 18:03 UTCAlthough the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.\nRequested Actions:\nReview the circuit end-to-end for errors, drops, congestion, or transport instability.Verify the health of all carrier-managed equipment involved in the service delivery.Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.Confirm whether any anomalies were detected during the reported timestamps.Provide an action plan and ETA for corrective measures if an issue is identified.Provide a detailed RFO for the observed flaps. \n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "04:30",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026",
+        "messageId": "<PN1P287MB37424DBAD106758C9823BEE0DC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T23:00:36.186Z"
+      },
+      {
+        "id": "b8b621d3-1fda-4a2e-b503-201621e2f7c0",
+        "text": "Hi Team,\n \nPlease find the TT number :- 2610290101111180.\n\nWe are checking the our provider and will update you soon. \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "04:35",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN1P287MB37421D025A648B484A8003E0DC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T23:05:36.349Z"
+      },
+      {
+        "id": "7c862956-eae0-47b2-913f-9a0cfc4469f3",
+        "text": "Hi Team,\n \nPlease acknowledge the receipt of email below and provide us the ticket for link flapped issue as soon as possible. \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "04:37",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026",
+        "messageId": "<PN1P287MB3742A12DF7C97C137F959CFBDC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T23:07:31.436Z"
+      },
+      {
+        "id": "8fb8e69f-e95b-4bca-9e8f-f13b58f444cc",
+        "text": "Hi @Neutrality NOC Team,\n \n Please acknowledge the receipt of the email below and provide us the ticket for link flapped issue as soon as possible. \n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "05:01",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026",
+        "messageId": "<PN1P287MB3742E14E50224D0D494D9FBADC6F2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-28T23:31:26.646Z"
+      },
+      {
+        "id": "7e80934d-9562-462e-be05-a7f765a924e4",
+        "text": "Hi NOC Team,\n \nPlease share your initial findings/observation for reported link flapped issue and update for requested actions as soon as possible.\n\nWe would appreciate your support and look forward to your response on this matter.\n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "05:38",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026 | Neutrality.One #213877",
+        "messageId": "<PN1P287MB3742F034BC77443CF83B5FE8DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T00:08:12.102Z"
+      },
+      {
+        "id": "0bb18dd8-ff91-4d48-ad66-9c161fd50893",
+        "text": "Hi Team,\n\nWe are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.\n\nWe sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.\n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "05:53",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN1P287MB3742852C1533B83D8A31FB2EDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T00:23:47.096Z"
+      },
+      {
+        "id": "36777928-bcc7-454a-b738-824eb8ba922e",
+        "text": "Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM583478\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@EdgeStone Support</a><br/>Kindly share findings on this issue. <br/>We are waiting. <br/><br/><br/><p><a name=\"x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>AKASH<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p><br/><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 5:53 AM<br/><b>To:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped   <table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Team,</p><p><br/>We are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt; <br/><b>Sent:</b> 29 October 2026 04:36<br/><b>To:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>Please find the TT number :- 2610290101111180.<br/><br/>We are checking the our provider and will update you soon. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:24<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>This is acknowledged. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:01<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;<br/><b>Subject:</b> #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear Team, </p><p> </p><p>Kindly raise a TT for the link flapped issue and share your observations at the earliest.</p><p> </p><p><b>Current Status:</b> The physical interface and line protocol are currently operational (<b>up/up</b>); however, repeated BFD session drops have been recorded between our router and neighbor <b>198.141.253.161</b>.</p><p><b>Technical Findings:</b></p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Bundle-Ether153 Interface State Transitions: <b>217</b></li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Multiple BFD session interruptions observed on <b>Bundle-Ether153</b></li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Failure Reason consistently reported as:</li><ul type=\"circle\" style=\"margin-top:0cm\"><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\"><b>Control timer expired</b></li></ul></ul><p><b>Recent Event Samples:</b></p>Oct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153<p>Additional similar occurrences were recorded on:</p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 02:19 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 03:19 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 11:27 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 16:05 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:31 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:58 UTC</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 18:03 UTC</li></ul><p>Although the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.</p><p><b>Requested Actions:</b></p><ol start=\"1\" type=\"1\" style=\"margin-top:0cm\"><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Review the circuit end-to-end for errors, drops, congestion, or transport instability.</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Verify the health of all carrier-managed equipment involved in the service delivery.</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Confirm whether any anomalies were detected during the reported timestamps.</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide an action plan and ETA for corrective measures if an issue is identified.</li><li class=\"x_MsoNormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide a detailed <b>RFO</b> for the observed flaps.</li></ol><p> </p><p> </p><p>CKT ID :BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p> </p><p> </p><p> </p><p>Regards,</p><p>Vaibhav Namdeo</p><p>GSMC Operations</p><p>Bharti Airtel</p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "24:48",
+        "date": "29 Oct 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "kaushik@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN2PPF10F1601731736FC55D67DB75AF054AA6E2@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T00:48:42.385Z"
+      },
+      {
+        "id": "5baada24-f2ae-4fb7-8959-f156031e0aea",
+        "text": "<p>Hi Akash and CFM L2 Team,</p><p> </p><p>We are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd<br/>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841</p><p> </p><p>Mobile : +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt; <br/><b>Sent:</b> 29 October 2026 06:18<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi <a id=\"OWAAM583478\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a></p><p> </p><p>Kindly share findings on this issue. </p><p> </p><p>We are waiting. </p><p> </p><p> </p><p> </p><p><a name=\"x__MailAutoSig\"><b>Thanks &amp; Regards,</b></a><br/>AKASH<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/><a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a></p><p></p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 5:53 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Team,</p><p><br/>We are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:36<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>Please find the TT number :- 2610290101111180.<br/><br/>We are checking the our provider and will update you soon. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:24<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>This is acknowledged. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:01<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;<br/><b>Subject:</b> #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear Team, </p><p> </p><p>Kindly raise a TT for the link flapped issue and share your observations at the earliest.</p><p> </p><p><b>Current Status:</b> The physical interface and line protocol are currently operational (<b>up/up</b>); however, repeated BFD session drops have been recorded between our router and neighbor <b>198.141.253.161</b>.</p><p><b>Technical Findings:</b></p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Bundle-Ether153 Interface State Transitions: <b>217</b></li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Multiple BFD session interruptions observed on <b>Bundle-Ether153</b></li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Failure Reason consistently reported as:</li></ul><ul type=\"disc\" style=\"margin-top:0cm\"><ul type=\"circle\" style=\"margin-top:0cm\"><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\"><b>Control timer expired</b></li></ul></ul><p><b>Recent Event Samples:</b></p>Oct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153<p>Additional similar occurrences were recorded on:</p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 02:19 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 03:19 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 11:27 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 16:05 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:31 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:58 UTC</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 18:03 UTC</li></ul><p>Although the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.</p><p><b>Requested Actions:</b></p><ol start=\"1\" type=\"1\" style=\"margin-top:0cm\"><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Review the circuit end-to-end for errors, drops, congestion, or transport instability.</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Verify the health of all carrier-managed equipment involved in the service delivery.</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Confirm whether any anomalies were detected during the reported timestamps.</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide an action plan and ETA for corrective measures if an issue is identified.</li><li class=\"xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide a detailed <b>RFO</b> for the observed flaps.</li></ol><p> </p><p> </p><p>CKT ID :BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p> </p><p> </p><p> </p><p>Regards,</p><p>Vaibhav Namdeo</p><p>GSMC Operations</p><p>Bharti Airtel</p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "06:21",
+        "date": "29 Oct 2026",
+        "author": "Pamit Thakur",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "kaushik@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<MA5P287MB4966F3DAF7FB2F32A0AF8908D26E2@MA5P287MB4966.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T00:51:37.329Z"
+      },
+      {
+        "id": "f9373014-3534-4b8d-836e-bbee3471ac20",
+        "text": "Dear <a href=\"mailto:pamit@edgestone.in\" id=\"OWAAM139006\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@Pamit Thakur</a>,<br/>Share any progressive update on the ongoing isssue.<br/>Regards,Sumit kumar<b>From:</b> Pamit Thakur &lt;pamit@edgestone.in&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 6:21 AM<br/><b>To:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped   <table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Akash and CFM L2 Team,</p><p> </p><p>We are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd<br/>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841</p><p> </p><p>Mobile : +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt; <br/><b>Sent:</b> 29 October 2026 06:18<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi <a id=\"OWAAM583478\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a></p><p> </p><p>Kindly share findings on this issue. </p><p> </p><p>We are waiting. </p><p> </p><p> </p><p> </p><p><a name=\"x_x__MailAutoSig\"><b>Thanks &amp; Regards,</b></a><br/>AKASH<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/><a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a></p><p></p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 5:53 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Team,</p><p><br/>We are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:36<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>Please find the TT number :- 2610290101111180.<br/><br/>We are checking the our provider and will update you soon. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:24<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>This is acknowledged. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" originalsrc=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:01<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;<br/><b>Subject:</b> #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear Team, </p><p> </p><p>Kindly raise a TT for the link flapped issue and share your observations at the earliest.</p><p> </p><p><b>Current Status:</b> The physical interface and line protocol are currently operational (<b>up/up</b>); however, repeated BFD session drops have been recorded between our router and neighbor <b>198.141.253.161</b>.</p><p><b>Technical Findings:</b></p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Bundle-Ether153 Interface State Transitions: <b>217</b></li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Multiple BFD session interruptions observed on <b>Bundle-Ether153</b></li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Failure Reason consistently reported as:</li></ul><ul type=\"disc\" style=\"margin-top:0cm\"><ul type=\"circle\" style=\"margin-top:0cm\"><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\"><b>Control timer expired</b></li></ul></ul><p><b>Recent Event Samples:</b></p>Oct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153<p>Additional similar occurrences were recorded on:</p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 02:19 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 03:19 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 11:27 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 16:05 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:31 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:58 UTC</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 18:03 UTC</li></ul><p>Although the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.</p><p><b>Requested Actions:</b></p><ol start=\"1\" type=\"1\" style=\"margin-top:0cm\"><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Review the circuit end-to-end for errors, drops, congestion, or transport instability.</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Verify the health of all carrier-managed equipment involved in the service delivery.</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Confirm whether any anomalies were detected during the reported timestamps.</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide an action plan and ETA for corrective measures if an issue is identified.</li><li class=\"x_xmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide a detailed <b>RFO</b> for the observed flaps.</li></ol><p> </p><p> </p><p>CKT ID :BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p> </p><p> </p><p> </p><p>Regards,</p><p>Vaibhav Namdeo</p><p>GSMC Operations</p><p>Bharti Airtel</p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "01:08",
+        "date": "29 Oct 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "pamit@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "kaushik@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN2PPF10F160173E42172D7108F7964AD62AA6E2@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T01:08:57.701Z"
+      },
+      {
+        "id": "2d331184-add8-4430-8f02-0865fad90b30",
+        "text": "<p>Hi Akash and CFM L2 Team,</p><p> </p><p> As discuss with Akash on call from CFM L2 team at this contact 7042023528,  we have infomed to him there are multiple segments in this link and we are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt; <br/><b>Sent:</b> 29 October 2026 06:39<br/><b>To:</b> Pamit Thakur &lt;pamit@edgestone.in&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear <a id=\"OWAAM139006\" href=\"mailto:pamit@edgestone.in\">@Pamit Thakur</a>,</p><p> </p><p>Share any progressive update on the ongoing isssue.</p><p> </p><p>Regards,</p><p>Sumit kumar</p><p><b>From:</b> Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 6:21 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Akash and CFM L2 Team,</p><p> </p><p>We are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd<br/>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841</p><p> </p><p>Mobile : +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 06:18<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi <a id=\"OWAAM583478\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a></p><p> </p><p>Kindly share findings on this issue. </p><p> </p><p>We are waiting. </p><p> </p><p> </p><p> </p><p><a name=\"x_x__MailAutoSig\"><b>Thanks &amp; Regards,</b></a><br/>AKASH<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/><a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a></p><p></p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 5:53 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Team,</p><p><br/>We are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:36<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>Please find the TT number :- 2610290101111180.<br/><br/>We are checking the our provider and will update you soon. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:24<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>This is acknowledged. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:01<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;<br/><b>Subject:</b> #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear Team, </p><p> </p><p>Kindly raise a TT for the link flapped issue and share your observations at the earliest.</p><p> </p><p><b>Current Status:</b> The physical interface and line protocol are currently operational (<b>up/up</b>); however, repeated BFD session drops have been recorded between our router and neighbor <b>198.141.253.161</b>.</p><p><b>Technical Findings:</b></p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Bundle-Ether153 Interface State Transitions: <b>217</b></li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Multiple BFD session interruptions observed on <b>Bundle-Ether153</b></li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Failure Reason consistently reported as:</li></ul><ul type=\"disc\" style=\"margin-top:0cm\"><ul type=\"circle\" style=\"margin-top:0cm\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\"><b>Control timer expired</b></li></ul></ul><p><b>Recent Event Samples:</b></p>Oct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153<p>Additional similar occurrences were recorded on:</p><ul type=\"disc\" style=\"margin-top:0cm\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 02:19 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 03:19 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 11:27 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 16:05 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:31 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:58 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 18:03 UTC</li></ul><p>Although the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.</p><p><b>Requested Actions:</b></p><ol start=\"1\" type=\"1\" style=\"margin-top:0cm\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Review the circuit end-to-end for errors, drops, congestion, or transport instability.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Verify the health of all carrier-managed equipment involved in the service delivery.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Confirm whether any anomalies were detected during the reported timestamps.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide an action plan and ETA for corrective measures if an issue is identified.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide a detailed <b>RFO</b> for the observed flaps.</li></ol><p> </p><p> </p><p>CKT ID :BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p> </p><p> </p><p> </p><p>Regards,</p><p>Vaibhav Namdeo</p><p>GSMC Operations</p><p>Bharti Airtel</p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "06:49",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "kaushik@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN1P287MB3742530771574CE7C89D9826DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T01:19:12.997Z"
+      },
+      {
+        "id": "81cedbc2-c6a6-4b54-9a13-5f5153cabad5",
+        "text": "Hi NOC Team,\n \nOur customer is continuously pushing to us and and asking for update. Hence, we are requesting with you to please expedite the case and share your initial findings/observation for reported link flapped issue and update for requested actions as soon as possible. \n\nWe would appreciate your support and look forward to your prompt response on this matter.\n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "06:58",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026 | Neutrality.One #213877",
+        "messageId": "<PN1P287MB37427DBF900FA76AC6D23C5BDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T01:28:08.020Z"
+      },
+      {
+        "id": "c9f614eb-5d2d-42b1-827f-594be4307e34",
+        "text": "<p>Hi Team,</p><p> </p><p>Please find RFO from BBG segment partner for 27th Oct2026.</p><p> </p><p>The link between Kulim and Selama (KM–SA) experienced intermittent flapping due to an issue within the partner Network. During the reported period, a BBG Segment Q OLOS alarm was observed on Link 1, resulting in switching hits.</p><p> </p><p>We are chasing our partner for RFO of  28th oct . Once receive from them we will share with you</p><p> </p><p> </p><p>-</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 6:49 AM<br/><b>To:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Akash and CFM L2 Team,</p><p> </p><p> As discuss with Akash on call from CFM L2 team at this contact 7042023528,  we have infomed to him there are multiple segments in this link and we are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 06:39<br/><b>To:</b> Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear <a id=\"OWAAM139006\" href=\"mailto:pamit@edgestone.in\">@Pamit Thakur</a>,</p><p> </p><p>Share any progressive update on the ongoing isssue.</p><p> </p><p>Regards,</p><p>Sumit kumar</p><p><b>From:</b> Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 6:21 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Akash and CFM L2 Team,</p><p> </p><p>We are continuously following up with our provider team for reported link flapped issue and will update you as soon as possible, we will receive any update from our providers.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd<br/>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841</p><p> </p><p>Mobile : +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 06:18<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;<br/><b>Subject:</b> Re: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi <a id=\"OWAAM583478\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a></p><p> </p><p>Kindly share findings on this issue. </p><p> </p><p>We are waiting. </p><p> </p><p> </p><p> </p><p><a name=\"x_x__MailAutoSig\"><b>Thanks &amp; Regards,</b></a><br/>AKASH<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/><a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a></p><p></p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Sent:</b> Thursday, October 29, 2026 5:53 AM<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped  </p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Team,</p><p><br/>We are following up with our provider team for reported link flapped issue and will update you as soon as we will receive any news from them.<br/><br/>We sincerely apologize for the inconvenience caused to you. Thank you for your understanding and patience.</p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:36<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>Please find the TT number :- 2610290101111180.<br/><br/>We are checking the our provider and will update you soon. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:24<br/><b>To:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Hi Team,</p><p> </p><p>This is acknowledged. </p><p> </p><p>Warm regards,</p><p>Pamit Thakur</p><p>Assistant Executive, Support and Operations</p><p></p><p>Edgestone Singapore Pte Ltd</p><p>#08-01, Orchard Plaza</p><p>150, Orchard Plaza,</p><p>Singapore-238841</p><p> </p><p>Mobile: +91 9781922606</p><p>Email : <a href=\"mailto:pamit@edgestone.in\" target=\"_blank\">pamit@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Cfm L2 &lt;<a href=\"mailto:Cfm.L2@airtel.com\">Cfm.L2@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 04:01<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;<a href=\"mailto:a_SANSKAR.RAJ@airtel.com\">a_SANSKAR.RAJ@airtel.com</a>&gt;; YASH ANJANA &lt;<a href=\"mailto:a_YASH.ANJANA@airtel.com\">a_YASH.ANJANA@airtel.com</a>&gt;<br/><b>Subject:</b> #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped </p><p> </p><p>Dear Team, </p><p> </p><p>Kindly raise a TT for the link flapped issue and share your observations at the earliest.</p><p> </p><p><b>Current Status:</b> The physical interface and line protocol are currently operational (<b>up/up</b>); however, repeated BFD session drops have been recorded between our router and neighbor <b>198.141.253.161</b>.</p><p><b>Technical Findings:</b></p><ul type=\"disc\" style=\"margin-top:0in\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Bundle-Ether153 Interface State Transitions: <b>217</b></li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Multiple BFD session interruptions observed on <b>Bundle-Ether153</b></li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Failure Reason consistently reported as:</li></ul><ul type=\"disc\" style=\"margin-top:0in\"><ul type=\"circle\" style=\"margin-top:0in\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\"><b>Control timer expired</b></li></ul></ul><p><b>Recent Event Samples:</b></p>Oct 28 18:03:26 UTCBFD SESSION_STATE_DOWNNeighbor: 198.141.253.161Interface: Bundle-Ether153Reason: Control timer expired Oct 28 18:04:00 UTCBFD SESSION_STATE_UPNeighbor: 198.141.253.161Interface: Bundle-Ether153<p>Additional similar occurrences were recorded on:</p><ul type=\"disc\" style=\"margin-top:0in\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 02:19 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 03:19 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 11:27 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 27 16:05 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:31 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 07:58 UTC</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Oct 28 18:03 UTC</li></ul><p>Although the circuit is currently passing traffic, the recurring BFD interruptions indicate intermittent instability across the path.</p><p><b>Requested Actions:</b></p><ol start=\"1\" type=\"1\" style=\"margin-top:0in\"><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Review the circuit end-to-end for errors, drops, congestion, or transport instability.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Verify the health of all carrier-managed equipment involved in the service delivery.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Check for any maintenance activities, fiber issues, routing changes, or transport alarms that could be causing BFD timer expirations.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Confirm whether any anomalies were detected during the reported timestamps.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide an action plan and ETA for corrective measures if an issue is identified.</li><li class=\"xxmsonormal\" style=\"color:black; line-height:15.0pt; background:white\">Provide a detailed <b>RFO</b> for the observed flaps.</li></ol><p> </p><p> </p><p>CKT ID :BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p> </p><p> </p><p> </p><p>Regards,</p><p>Vaibhav Namdeo</p><p>GSMC Operations</p><p>Bharti Airtel</p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "07:14",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "deval@edgestone.in",
+          "kaushik@edgestone.in",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: #41523193 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Link Flapped ",
+        "messageId": "<PN1P287MB37424B566A5462D7C2EDC742DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T01:44:58.065Z"
+      },
+      {
+        "id": "23f38889-c411-41d6-ba87-2b2d8b2034a4",
+        "text": "Hello Team,\n \nCould you please share an update on the initial findings/observations?\n \nBest regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "10:13",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026 | Neutrality.One #213877",
+        "messageId": "<PN1P287MB374253DBC892FEE7E805EC02DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T04:43:20.056Z"
+      },
+      {
+        "id": "d0018a6e-9301-4b5a-8c40-1b9178a74f24",
+        "text": "Dear Irfan Sir,\n \nGreetings of the day! I hope you are doing well.\n \nThis is to inform you that we had reported the downlink issue on Wed 21-10-2026 14:04 PM (IST) and received mentioned below incident for it from your team. We kindly request you to provide us the applicable SLA rebate information at the earliest possible convenience. ( Please refer the attached emails )\n \nMentioned below Circuit detail and Incident:\n \nCKT ID:- NEU-EDGS-1092\nReported incident (date/time ) :- Wed 21-10-2026 14:04 PM (IST)\nReported Incident number :- 213547\n \nWe will appreciate your support and look forward to your prompt response regarding this matter.\n \n \n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "11:30",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "i.samuel@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in",
+          "finance@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "SLA rebate request || CKT :- NEU-EDGS-1092 || Link down issue on 21st October, 2026 || Neutrality Ticket :- 213547",
+        "messageId": "<PN1P287MB3742C108E020AD85892B17FEDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793253607081-694498178-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml",
+            "size": 556393,
+            "filename": "email-1793253607081-694498178-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml",
+            "mimeType": "message/rfc822",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793253607081-694498178-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml/download?name=RE%3A%20CKT%20ID%20%3ANEU-EDGS-1092%20%7C%7C%20Link%20Flapping%20%7C%7C%2021%20OCT%202026%20%7C%7C%20Neutrality.One%23213537.eml",
+            "originalName": "RE: CKT ID :NEU-EDGS-1092 || Link Flapping || 21 OCT 2026 || Neutrality.One#213537.eml"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793253607372-71415087-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml",
+            "size": 1194543,
+            "filename": "email-1793253607372-71415087-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml",
+            "mimeType": "message/rfc822",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793253607372-71415087-RE__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213537.eml/download?name=RE%3A%20CKT%20ID%20%3ANEU-EDGS-1092%20%7C%7C%20Link%20Flapping%20%7C%7C%2021%20OCT%202026%20%7C%7C%20Neutrality.One%23213537.eml",
+            "originalName": "RE: CKT ID :NEU-EDGS-1092 || Link Flapping || 21 OCT 2026 || Neutrality.One#213537.eml"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793253607595-20753700-Re__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213547.eml",
+            "size": 847535,
+            "filename": "email-1793253607595-20753700-Re__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213547.eml",
+            "mimeType": "message/rfc822",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793253607595-20753700-Re__CKT_ID__NEU-EDGS-1092____Link_Flapping____21_OCT_2026____Neutrality.One_213547.eml/download?name=Re%3A%20CKT%20ID%20%3ANEU-EDGS-1092%20%7C%7C%20Link%20Flapping%20%7C%7C%2021%20OCT%202026%20%7C%7C%20Neutrality.One%23213547.eml",
+            "originalName": "Re: CKT ID :NEU-EDGS-1092 || Link Flapping || 21 OCT 2026 || Neutrality.One#213547.eml"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793253607597-69967392-image001.png",
+            "size": 22308,
+            "filename": "email-1793253607597-69967392-image001.png",
+            "mimeType": "image/png",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793253607597-69967392-image001.png/download?name=image001.png",
+            "originalName": "image001.png"
+          }
+        ],
+        "createdAt": "2026-10-29T06:00:07.631Z"
+      },
+      {
+        "id": "fb439456-62da-4591-b760-c0afa2f5afc2",
+        "text": "Hi team,\n\nAny update on RFO?\n\nBest Regards, \n\nMinal More \nAssistant Manager Support \n\n \n\nEdgestone Singapore Pte Ltd \n#08-01, Orchard Plaza \n150, Orchard Plaza, \nSingapore-238841 \nMobile: +91 7020614179 \nEmail :Support@edgestone.in \nWebsite: www.edgestone.in",
+        "time": "13:44",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: CKT ID :- NEU-EDGS-1092 || Link flapped reported issue on 29th Oct'2026 | Neutrality.One #213877",
+        "messageId": "<PN1P287MB37424B00911BF22E7034A07CDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "attachments": [],
+        "createdAt": "2026-10-29T08:14:53.937Z"
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "276096fe-390e-4a00-bc01-9a94f587efcd",
+        "action": "created",
+        "description": "Ticket created from email by Cfm L2",
+        "time": "22:31",
+        "date": "28 Oct 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T22:31:05.923Z"
+      },
+      {
+        "id": "3117ec7d-a67d-4341-b8d0-6e932cd6571e",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "04:24",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T22:54:11.107Z"
+      },
+      {
+        "id": "a37070ca-03d8-4816-ae4a-e1d00065ecc2",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "04:28",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T22:58:11.081Z"
+      },
+      {
+        "id": "6c2b416e-5df8-423f-ac76-1a050f614969",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "04:30",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T23:00:36.191Z"
+      },
+      {
+        "id": "49cdfc1e-25b1-49f5-9386-550e5d756b26",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "04:35",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T23:05:36.354Z"
+      },
+      {
+        "id": "59e04611-c6c4-45a6-9806-bf55dc33d67a",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "04:37",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T23:07:31.442Z"
+      },
+      {
+        "id": "21134bee-fe66-4965-994c-b1029e2bf459",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "05:01",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-28T23:31:26.659Z"
+      },
+      {
+        "id": "5fd77b77-64ec-455b-a89f-1f6ce2e5365a",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "05:38",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T00:08:12.106Z"
+      },
+      {
+        "id": "3dcfbf74-9f63-4148-b70d-6f43892a3d20",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "05:53",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T00:23:47.101Z"
+      },
+      {
+        "id": "ae5b65a4-9c52-43e7-b34a-6b6bf4e8ddf0",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "24:48",
+        "date": "29 Oct 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T00:48:42.393Z"
+      },
+      {
+        "id": "15bd108e-b9db-42cb-a6e5-df15f7f1a700",
+        "action": "replied",
+        "description": "Pamit Thakur replied to the ticket via Outlook email",
+        "time": "06:21",
+        "date": "29 Oct 2026",
+        "author": "Pamit Thakur",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T00:51:37.333Z"
+      },
+      {
+        "id": "4ac57398-ca48-4b9e-9516-9a7ac0c09716",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "01:08",
+        "date": "29 Oct 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T01:08:57.706Z"
+      },
+      {
+        "id": "4e1fda20-2365-4189-bbab-e3120365b304",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "06:49",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T01:19:13.009Z"
+      },
+      {
+        "id": "ffb98d8e-23aa-4588-b25e-dcb50e796604",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "06:58",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T01:28:08.063Z"
+      },
+      {
+        "id": "689a55c4-5815-4f7f-aab2-4e1f06849d6e",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "07:14",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T01:44:58.070Z"
+      },
+      {
+        "id": "b430109e-ced5-4b2c-97a2-526a46779c0d",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "10:13",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T04:43:20.071Z"
+      },
+      {
+        "id": "04b19202-cf03-45d3-a74c-97215eb3716e",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "11:30",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T06:00:07.665Z"
+      },
+      {
+        "id": "9d3034e6-98e9-4627-b80c-5b120dbc4ea8",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "13:44",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "226fad3c-f707-483e-bd22-67bed9a28e53",
+        "createdAt": "2026-10-29T08:14:53.942Z"
+      }
+    ]
+  },
+  "ticketV1048": {
+    "id": "72c358fa-f11f-4fda-9357-4880c350d140",
+    "ticketId": "#V1048",
+    "header": "CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+    "email": "global.noc@chinatelecomglobal.com",
+    "status": "Maintenance",
+    "priority": "Medium",
+    "circuitId": "G773 276",
+    "messageId": "<317506183.4424.1793228615071@ofm-ticket-khbz-asmkq-66b4fb55b4-gnm5x>",
+    "date": "28 Oct 2026",
+    "receivedAt": "2026-10-28T23:03:51.000Z",
+    "receivedTime": "23:03",
+    "clientId": null,
+    "vendorId": "af1ead6f-a9a3-40f3-9207-fd279643f10a",
+    "ticketType": "Vendor",
+    "assignedUserId": null,
+    "createdAt": "2026-10-28T23:03:56.369Z",
+    "updatedAt": "2026-10-28T23:03:56.369Z",
+    "isSlaActive": false,
+    "isMaintenance": true,
+    "cc": [
+      "support@edgestone.in",
+      "nelsonso@chinatelecomglobal.com",
+      "rajeshkj@chinatelecomglobal.com",
+      "uday.sikka@chinatelecomglobal.com"
+    ],
+    "replies": [
+      {
+        "id": "573af881-c224-4d0c-a500-9415a5aedd6f",
+        "text": "Dear Valued Customer,\n\nTo keep you informed, CTG has created a ticket 2610290101111180] for you; you can use this number to track the status with us.\nPlease rest assured that the incident is being investigated by our professionals and we shall update you as soon as we have any further information.\n\nThanks for your patience and apologies for any inconvenience.\n\n--------------------------------------------------\nBest regards,\nDavid \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "23:03",
+        "date": "28 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<317506183.4424.1793228615071@ofm-ticket-khbz-asmkq-66b4fb55b4-gnm5x>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636328-843029160-ATT00001.bin",
+            "size": 22308,
+            "filename": "email-1793228636328-843029160-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636328-843029160-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636329-75179489-ATT00002.bin",
+            "size": 1808,
+            "filename": "email-1793228636329-75179489-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636329-75179489-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636330-71289043-ATT00003.bin",
+            "size": 23279,
+            "filename": "email-1793228636330-71289043-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636330-71289043-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636330-502702416-ATT00004.bin",
+            "size": 973,
+            "filename": "email-1793228636330-502702416-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636330-502702416-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636331-179378956-ATT00005.bin",
+            "size": 811,
+            "filename": "email-1793228636331-179378956-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636331-179378956-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793228636331-809547232-ATT00006.bin",
+            "size": 1172,
+            "filename": "email-1793228636331-809547232-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793228636331-809547232-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          }
+        ],
+        "createdAt": "2026-10-28T23:03:56.369Z"
+      },
+      {
+        "id": "b14ff22c-fa5c-4d0e-82b7-c529b3721d2c",
+        "text": "Hi Team,\n \nPlease share your initial findings/observation for reported link flapped issue and update for requested actions as soon as possible.\n\nWe would appreciate your support and look forward to your response on this matter.\n \n \nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "05:41",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<PN1P287MB3742B0052A42F78712B91F5CDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [],
+        "createdAt": "2026-10-29T00:11:56.990Z"
+      },
+      {
+        "id": "f0a7ff37-0f9e-492c-9824-8f3b83238f33",
+        "text": "Dear Valued Customer,\n\nPlease kindly be informed that the local team is still working on troubleshooting the issue.\n\nWe will follow up this case closely and keep you updated.\n\nThanks for your patience and sorry for any inconvenience caused.\nShould you have any other questions or queries, please do not hesitate to contact us.\n--------------------------------------------------\nBest regards,\nNiki\nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "24:16",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<421872518.4156.1793232968695@ofm-ticket-khbz-asmkq-66b4fb55b4-jgml4>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977118-796935376-ATT00001.bin",
+            "size": 22308,
+            "filename": "email-1793232977118-796935376-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977118-796935376-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977120-929687140-ATT00002.bin",
+            "size": 1808,
+            "filename": "email-1793232977120-929687140-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977120-929687140-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977120-976598484-ATT00003.bin",
+            "size": 811,
+            "filename": "email-1793232977120-976598484-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977120-976598484-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977120-240586539-ATT00004.bin",
+            "size": 23279,
+            "filename": "email-1793232977120-240586539-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977120-240586539-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977121-606044574-ATT00005.bin",
+            "size": 23279,
+            "filename": "email-1793232977121-606044574-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977121-606044574-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977121-252617228-ATT00006.bin",
+            "size": 973,
+            "filename": "email-1793232977121-252617228-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977121-252617228-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977122-987516541-ATT00007.bin",
+            "size": 811,
+            "filename": "email-1793232977122-987516541-ATT00007.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977122-987516541-ATT00007.bin/download?name=ATT00007.bin",
+            "originalName": "ATT00007.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977122-835780074-ATT00008.bin",
+            "size": 1172,
+            "filename": "email-1793232977122-835780074-ATT00008.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977122-835780074-ATT00008.bin/download?name=ATT00008.bin",
+            "originalName": "ATT00008.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977122-597171866-ATT00009.bin",
+            "size": 1172,
+            "filename": "email-1793232977122-597171866-ATT00009.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977122-597171866-ATT00009.bin/download?name=ATT00009.bin",
+            "originalName": "ATT00009.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977123-347736845-ATT00010.bin",
+            "size": 1808,
+            "filename": "email-1793232977123-347736845-ATT00010.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977123-347736845-ATT00010.bin/download?name=ATT00010.bin",
+            "originalName": "ATT00010.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793232977123-288428489-ATT00011.bin",
+            "size": 973,
+            "filename": "email-1793232977123-288428489-ATT00011.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793232977123-288428489-ATT00011.bin/download?name=ATT00011.bin",
+            "originalName": "ATT00011.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T00:16:17.324Z"
+      },
+      {
+        "id": "3d850816-c475-47ce-8213-bc93995327d9",
+        "text": "Hi @global.noc@chinatelecomglobal.comTeam,\n\nOur customer is continuously pushing to us and and asking for update. Hence, we are requesting with you to please expedite the case and share your initial findings/observation for reported link flapped issue and update for requested actions as soon as possible. \nWe would appreciate your support and look forward to your prompt response on this matter.\nWarm regards,\nPamit Thakur\nAssistant Executive, Support and Operations\n\nEdgestone Singapore Pte Ltd\n\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n \nMobile: +91 9781922606\nEmail : pamit@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "06:56",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<PN1P287MB3742F6E36FD674C84141196FDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [],
+        "createdAt": "2026-10-29T01:26:28.148Z"
+      },
+      {
+        "id": "8b225988-cec6-4085-a3ac-61741eda87bd",
+        "text": "Dear Valued Customer,\n\nApologies for keeping you waiting so long.We have once again urged the operator to provide feedback as soon as possible.\nBut unfortunately, we have stil not getting any solid update from our local vendor.We have escalated your issue to provider higher level for expediting the progress.\n\nThanks for your patience and sorry for any inconvenience caused.\nShould you have any other questions or queries, please do not hesitate to contact us.\n--------------------------------------------------\nBest regards,\nNiki \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "01:36",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<1628711644.4567.1793237772651@ofm-ticket-khbz-asmkq-66b4fb55b4-ntk2t>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787908-190760985-ATT00001.bin",
+            "size": 22308,
+            "filename": "email-1793237787908-190760985-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787908-190760985-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787910-600946889-ATT00002.bin",
+            "size": 1808,
+            "filename": "email-1793237787910-600946889-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787910-600946889-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787910-93477457-ATT00003.bin",
+            "size": 811,
+            "filename": "email-1793237787910-93477457-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787910-93477457-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787910-896546772-ATT00004.bin",
+            "size": 23279,
+            "filename": "email-1793237787910-896546772-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787910-896546772-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787911-517396267-ATT00005.bin",
+            "size": 23279,
+            "filename": "email-1793237787911-517396267-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787911-517396267-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787911-539474836-ATT00006.bin",
+            "size": 973,
+            "filename": "email-1793237787911-539474836-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787911-539474836-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787911-152924676-ATT00007.bin",
+            "size": 811,
+            "filename": "email-1793237787911-152924676-ATT00007.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787911-152924676-ATT00007.bin/download?name=ATT00007.bin",
+            "originalName": "ATT00007.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787912-876460350-ATT00008.bin",
+            "size": 1172,
+            "filename": "email-1793237787912-876460350-ATT00008.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787912-876460350-ATT00008.bin/download?name=ATT00008.bin",
+            "originalName": "ATT00008.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787912-275864662-ATT00009.bin",
+            "size": 1172,
+            "filename": "email-1793237787912-275864662-ATT00009.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787912-275864662-ATT00009.bin/download?name=ATT00009.bin",
+            "originalName": "ATT00009.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787912-233578636-ATT00010.bin",
+            "size": 1808,
+            "filename": "email-1793237787912-233578636-ATT00010.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787912-233578636-ATT00010.bin/download?name=ATT00010.bin",
+            "originalName": "ATT00010.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793237787913-647019607-ATT00011.bin",
+            "size": 973,
+            "filename": "email-1793237787913-647019607-ATT00011.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793237787913-647019607-ATT00011.bin/download?name=ATT00011.bin",
+            "originalName": "ATT00011.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T01:36:28.041Z"
+      },
+      {
+        "id": "984a287f-56bf-480d-9adc-85f203dd77d6",
+        "text": "Dear Valued Customer,\n\nWe have once again urged the operator to provide feedback on the progress but there is no feedback now.\nTo speed up the troubleshooting process,we have been escalated your issue to vendor operation management level to speed up troubleshooting and restoration.\n\nThanks for your patience and sorry for any inconvenience caused.\n--------------------------------------------------\nBest regards,\nNiki \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "03:36",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<1737699995.4736.1793244985348@ofm-ticket-khbz-asmkq-66b4fb55b4-6kfht>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793244994194-502812855-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1793244994194-502812855-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793244994194-502812855-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793244994195-331314220-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1793244994195-331314220-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793244994195-331314220-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793244994195-964239852-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1793244994195-964239852-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793244994195-964239852-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793244994195-51450692-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1793244994195-51450692-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793244994195-51450692-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793244994196-514728483-ATT00005.bin",
+            "size": 1172,
+            "filename": "email-1793244994196-514728483-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793244994196-514728483-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T03:36:34.447Z"
+      },
+      {
+        "id": "98393e94-235f-4a2e-a927-a277fb2f233c",
+        "text": "Dear Valued Customer,\n\nOperator feedback：Currently service is running without any issue.\nCould you please help confirm whether it is still interrupted?\n\nThanks for your patience and apologies for any inconvenience.\n--------------------------------------------------\nBest regards,\nNiki \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "04:07",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<1695392785.4763.1793246845967@ofm-ticket-khbz-asmkq-66b4fb55b4-6kfht>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793246854458-170927959-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1793246854458-170927959-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793246854458-170927959-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793246854459-18591723-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1793246854459-18591723-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793246854459-18591723-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793246854459-977563719-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1793246854459-977563719-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793246854459-977563719-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793246854461-2326964-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1793246854461-2326964-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793246854461-2326964-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793246854461-967222578-ATT00005.bin",
+            "size": 1172,
+            "filename": "email-1793246854461-967222578-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793246854461-967222578-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T04:07:34.649Z"
+      },
+      {
+        "id": "e3aaf0b6-a28e-4c9c-949d-78154cc705e1",
+        "text": "Hi team,\n\nCurrently service is up. We rhave raise ticket flapping on 27 and 28 th oct \n\nBest Regards, \n\nMinal More \nAssistant Manager Support \n\n \n\nEdgestone Singapore Pte Ltd \n#08-01, Orchard Plaza \n150, Orchard Plaza, \nSingapore-238841 \nMobile: +91 7020614179 \nEmail :Support@edgestone.in \nWebsite: www.edgestone.in",
+        "time": "09:38",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<PN1P287MB37426CBB6AA7231F6F21B6FFDC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [],
+        "createdAt": "2026-10-29T04:08:54.486Z"
+      },
+      {
+        "id": "f5215418-205d-49d7-9324-ed2c40a35754",
+        "text": "Dear Valued Customer,\n\nNoted.We will ask the operator to recheck the intermittent outage issue, and will update you promptly once there is any progress.\n\nThanks for your patience and apologies for any inconvenience.\n--------------------------------------------------\nBest regards,\nNiki \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "04:14",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<413215261.4277.1793247236816@ofm-ticket-khbz-asmkq-66b4fb55b4-jgml4>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249717-278236471-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1793247249717-278236471-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249717-278236471-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249719-260024780-ATT00002.bin",
+            "size": 811,
+            "filename": "email-1793247249719-260024780-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249719-260024780-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249719-345879598-ATT00003.bin",
+            "size": 23279,
+            "filename": "email-1793247249719-345879598-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249719-345879598-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249720-591116494-ATT00004.bin",
+            "size": 973,
+            "filename": "email-1793247249720-591116494-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249720-591116494-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249720-568909570-ATT00005.bin",
+            "size": 327106,
+            "filename": "email-1793247249720-568909570-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249720-568909570-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249721-386253642-ATT00006.bin",
+            "size": 811,
+            "filename": "email-1793247249721-386253642-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249721-386253642-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249722-969573980-ATT00007.bin",
+            "size": 1172,
+            "filename": "email-1793247249722-969573980-ATT00007.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249722-969573980-ATT00007.bin/download?name=ATT00007.bin",
+            "originalName": "ATT00007.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249722-807418386-ATT00008.bin",
+            "size": 23279,
+            "filename": "email-1793247249722-807418386-ATT00008.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249722-807418386-ATT00008.bin/download?name=ATT00008.bin",
+            "originalName": "ATT00008.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249722-844334475-ATT00009.bin",
+            "size": 1172,
+            "filename": "email-1793247249722-844334475-ATT00009.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249722-844334475-ATT00009.bin/download?name=ATT00009.bin",
+            "originalName": "ATT00009.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249723-422720609-ATT00010.bin",
+            "size": 1808,
+            "filename": "email-1793247249723-422720609-ATT00010.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249723-422720609-ATT00010.bin/download?name=ATT00010.bin",
+            "originalName": "ATT00010.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793247249723-530248904-ATT00011.bin",
+            "size": 973,
+            "filename": "email-1793247249723-530248904-ATT00011.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793247249723-530248904-ATT00011.bin/download?name=ATT00011.bin",
+            "originalName": "ATT00011.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T04:14:10.694Z"
+      },
+      {
+        "id": "afb034a0-79e1-4985-8e36-f8a84a5c450f",
+        "text": "Hello Team,\n \nCould you please share an update on the initial findings/observations?\n \nBest regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "11:32",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<PN1P287MB3742706FA5F4C7A4FC52D3B7DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [],
+        "createdAt": "2026-10-29T06:02:51.844Z"
+      },
+      {
+        "id": "290691a4-4415-42b4-b57d-54003ecc96cf",
+        "text": "Dear Valued Customer,\n\nPlease be kindly informed that our local team is still investigating and we would keep following the progress to update to you.\n\nThanks for your patience and apologies for any inconvenience.\n--------------------------------------------------\nBest regards,\nGloria \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618\n \n\n------------------------------------原始邮件-----------------------------------",
+        "time": "06:15",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "nelsonso@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: CKT ID :- G773 276 || Link flapped reported issue on 29th Oct'2026 YJ2026102900253 2610290101111180",
+        "messageId": "<1800249059.4553.1793254510250@ofm-ticket-khbz-asmkq-66b4fb55b4-gnm5x>",
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526875-202667336-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1793254526875-202667336-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526875-202667336-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526876-805712708-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1793254526876-805712708-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526876-805712708-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526877-150837404-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1793254526877-150837404-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526877-150837404-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526877-845458173-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1793254526877-845458173-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526877-845458173-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526878-249914855-ATT00005.bin",
+            "size": 23279,
+            "filename": "email-1793254526878-249914855-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526878-249914855-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526879-774371997-ATT00006.bin",
+            "size": 811,
+            "filename": "email-1793254526879-774371997-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526879-774371997-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526879-252265897-ATT00007.bin",
+            "size": 1172,
+            "filename": "email-1793254526879-252265897-ATT00007.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526879-252265897-ATT00007.bin/download?name=ATT00007.bin",
+            "originalName": "ATT00007.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526880-887273001-ATT00008.bin",
+            "size": 327106,
+            "filename": "email-1793254526880-887273001-ATT00008.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526880-887273001-ATT00008.bin/download?name=ATT00008.bin",
+            "originalName": "ATT00008.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526881-894911203-ATT00009.bin",
+            "size": 1172,
+            "filename": "email-1793254526881-894911203-ATT00009.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526881-894911203-ATT00009.bin/download?name=ATT00009.bin",
+            "originalName": "ATT00009.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526881-756484601-ATT00010.bin",
+            "size": 1808,
+            "filename": "email-1793254526881-756484601-ATT00010.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526881-756484601-ATT00010.bin/download?name=ATT00010.bin",
+            "originalName": "ATT00010.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793254526881-339326673-ATT00011.bin",
+            "size": 973,
+            "filename": "email-1793254526881-339326673-ATT00011.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793254526881-339326673-ATT00011.bin/download?name=ATT00011.bin",
+            "originalName": "ATT00011.bin"
+          }
+        ],
+        "createdAt": "2026-10-29T06:15:27.062Z"
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "524294cd-33ad-4b27-9dff-a272f3e4b7ad",
+        "action": "created",
+        "description": "Ticket created from email by global.noc@chinatelecomglobal.com",
+        "time": "23:03",
+        "date": "28 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-28T23:03:56.369Z"
+      },
+      {
+        "id": "cae06629-7f6d-4fa4-bf4d-1b2359538552",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "05:41",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T00:11:56.993Z"
+      },
+      {
+        "id": "87a7f50f-5368-49c2-9579-53c4d2aec972",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "24:16",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T00:16:17.336Z"
+      },
+      {
+        "id": "c8a1af67-d5e7-44cc-8a85-ca2e8c97d6d9",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "06:56",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T01:26:28.152Z"
+      },
+      {
+        "id": "ff45234b-393b-426e-9ce8-808496dad7e7",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "01:36",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T01:36:28.055Z"
+      },
+      {
+        "id": "c3b692f5-914a-40f7-9ca6-12cb345ecdf1",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "03:36",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T03:36:34.461Z"
+      },
+      {
+        "id": "cff8ca76-8cfe-4f29-ba3a-953483a42173",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "04:07",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T04:07:34.676Z"
+      },
+      {
+        "id": "13fc6064-6baf-4524-b0f0-8da109cbd939",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "09:38",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T04:08:54.491Z"
+      },
+      {
+        "id": "9f324403-6640-4c80-8608-6e9aa2288e2e",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "04:14",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T04:14:10.706Z"
+      },
+      {
+        "id": "ff264f75-e0b0-458b-a112-44ca9f32dace",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "11:32",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T06:02:51.858Z"
+      },
+      {
+        "id": "83588e31-3c4b-4598-b6cf-c23273fab652",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "06:15",
+        "date": "29 Oct 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "72c358fa-f11f-4fda-9357-4880c350d140",
+        "createdAt": "2026-10-29T06:15:27.077Z"
+      }
+    ]
+  }
+}
