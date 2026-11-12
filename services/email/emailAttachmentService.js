@@ -11,7 +11,10 @@ const fetchMessageAttachments = async (msgId, hasAttachments, accessToken, userE
     const attachments = [];
     try {
         const attachUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${msgId}/attachments`;
-        const attachRes = await fetch(attachUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+        const attachRes = await fetch(attachUrl, {
+            headers: { 'Authorization': `Bearer ${accessToken}` },
+            signal: AbortSignal.timeout(30000)
+        });
         if (attachRes.ok) {
             const attachResult = await attachRes.json();
             
@@ -60,7 +63,10 @@ const fetchMessageAttachments = async (msgId, hasAttachments, accessToken, userE
                     // For item attachments (attached emails), fetch the raw MIME stream (.eml format) via /$value
                     try {
                         const rawAttachUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${msgId}/attachments/${attachment.id}/$value`;
-                        const rawRes = await fetch(rawAttachUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                        const rawRes = await fetch(rawAttachUrl, {
+                            headers: { 'Authorization': `Bearer ${accessToken}` },
+                            signal: AbortSignal.timeout(30000)
+                        });
                         if (rawRes.ok) {
                             const arrayBuffer = await rawRes.arrayBuffer();
                             fileBuffer = Buffer.from(arrayBuffer);
@@ -68,7 +74,10 @@ const fetchMessageAttachments = async (msgId, hasAttachments, accessToken, userE
                         } else {
                             // Fallback: fetch item metadata with expanded body
                             const expandUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${msgId}/attachments/${attachment.id}?$expand=microsoft.graph.itemAttachment/item`;
-                            const expandRes = await fetch(expandUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                            const expandRes = await fetch(expandUrl, {
+                                headers: { 'Authorization': `Bearer ${accessToken}` },
+                                signal: AbortSignal.timeout(30000)
+                            });
                             if (expandRes.ok) {
                                 const expandData = await expandRes.json();
                                 const item = expandData.item || {};
@@ -97,7 +106,10 @@ const fetchMessageAttachments = async (msgId, hasAttachments, accessToken, userE
                         // 2. For large files (> 3MB), fetch the raw binary stream directly from the /$value endpoint:
                         try {
                             const rawAttachUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${msgId}/attachments/${attachment.id}/$value`;
-                            const rawRes = await fetch(rawAttachUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                            const rawRes = await fetch(rawAttachUrl, {
+                                headers: { 'Authorization': `Bearer ${accessToken}` },
+                                signal: AbortSignal.timeout(30000)
+                            });
                             if (rawRes.ok) {
                                 const arrayBuffer = await rawRes.arrayBuffer();
                                 fileBuffer = Buffer.from(arrayBuffer);

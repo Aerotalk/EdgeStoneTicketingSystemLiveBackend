@@ -7,36 +7,121 @@ const { isInternalAgentEmail, extractTokensFromCircuitId } = require('../ticket/
 const SmartSorter = require('../ticket/smartTicketSorter');
 
 let isPolling = false;
+let pollStartedAt = 0;
+const MAX_POLL_DURATION_MS = 90 * 1000; // 90s watchdog to break any hung Graph fetch lock
 let graphPollInterval = null;
 let lastPolledAt = null;
 let lastPollError = null;
 let pollerActive = false;
-
-const markEmailAsRead = async (messageId, accessToken) => {
-    const userEmail = process.env.SENDER_EMAIL || process.env.MAIL_USER;
-    const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageId}`;
-    await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isRead: true })
-    });
-};
+let lastInboxWatermarkIso = null;
+let lastSentWatermarkIso = null;
 
 const { FRESH_TICKET_MIN_DATE: MIN_LIVE_DATE, MIN_OPERATIONAL_DATE } = require('../ticket/smartTicketSorter'); // 28th Oct 2026 00:00 IST cutoff
 
+const ensureWatermarksInitialized = async () => {
+    if (lastInboxWatermarkIso && lastSentWatermarkIso) return;
+    try {
+        const prisma = require('../../models/index');
+        const [latestTicket, latestReply] = await Promise.all([
+            prisma.ticket.findFirst({ orderBy: { createdAt: 'desc' }, select: { createdAt: true } }),
+            prisma.reply.findFirst({ orderBy: { createdAt: 'desc' }, select: { createdAt: true } })
+        ]);
+        const tTime = latestTicket?.createdAt ? latestTicket.createdAt.getTime() : 0;
+        const rTime = latestReply?.createdAt ? latestReply.createdAt.getTime() : 0;
+        const maxTime = Math.max(tTime, rTime, MIN_LIVE_DATE.getTime());
+        // Subtract 2 minutes for safety overlap
+        const safeWatermark = new Date(Math.max(MIN_LIVE_DATE.getTime(), maxTime - 120 * 1000)).toISOString();
+        if (!lastInboxWatermarkIso) lastInboxWatermarkIso = safeWatermark;
+        if (!lastSentWatermarkIso) lastSentWatermarkIso = safeWatermark;
+        logger.info(`[EMAIL] 🧭 Initialized Graph poller watermarks from DB at ${safeWatermark}`);
+    } catch (err) {
+        const fallbackIso = MIN_LIVE_DATE.toISOString();
+        if (!lastInboxWatermarkIso) lastInboxWatermarkIso = fallbackIso;
+        if (!lastSentWatermarkIso) lastSentWatermarkIso = fallbackIso;
+    }
+};
+
+const isMessageIdInDb = async (internetMessageId) => {
+    if (!internetMessageId) return false;
+    try {
+        const prisma = require('../../models/index');
+        const trimmed = String(internetMessageId).trim();
+        const bare = trimmed.replace(/^<+|>+$/g, '').trim();
+        const candidates = Array.from(new Set([trimmed, bare, `<${bare}>`].filter(Boolean)));
+        const [existingReply, existingTicket] = await Promise.all([
+            prisma.reply.findFirst({ where: { messageId: { in: candidates } }, select: { id: true } }),
+            prisma.ticket.findFirst({ where: { messageId: { in: candidates } }, select: { id: true } })
+        ]);
+        return !!(existingReply || existingTicket);
+    } catch (_) {
+        return false;
+    }
+};
+
+const isInternalOnlyRecipientList = (toRecips = [], ccRecips = []) => {
+    const allRecips = [...toRecips, ...ccRecips].map(e => String(e || '').trim().toLowerCase()).filter(Boolean);
+    if (allRecips.length === 0) return false;
+    return allRecips.every(addr => /@edgestone\.(?:in|com)$/i.test(addr));
+};
+
+const isCalendarOrSystemReportSubject = (subject = '', fromAddr = '') => {
+    const cleanSub = String(subject || '').trim();
+    if (/^(?:Accepted|Declined|Tentative|Canceled|Automatic\s+reply):/i.test(cleanSub)) return true;
+    if (/^Message\s+Recall\s+Report\s+for\s+message:/i.test(cleanSub)) return true;
+    if (/office365reports@microsoft\.com/i.test(String(fromAddr || ''))) return true;
+    return false;
+};
+
+const markEmailAsRead = async (messageId, accessToken) => {
+    try {
+        const userEmail = process.env.SENDER_EMAIL || process.env.MAIL_USER;
+        const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageId}`;
+        await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isRead: true }),
+            signal: AbortSignal.timeout(15000)
+        });
+    } catch (_) {}
+};
+
 const syncSentItemsEmails = async (accessToken, userEmail) => {
     try {
+        await ensureWatermarksInitialized();
         const ticketService = require('../ticketService');
-        const sentUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/sentitems/messages?$top=15&$select=id,internetMessageId,subject,from,toRecipients,ccRecipients,body,sentDateTime,internetMessageHeaders,hasAttachments&$orderby=sentDateTime desc`;
-        const sentRes = await fetch(sentUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-        if (!sentRes.ok) return;
+        const selectFields = 'id,internetMessageId,subject,from,toRecipients,ccRecipients,body,sentDateTime,internetMessageHeaders,hasAttachments';
+        const recentSentUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/sentitems/messages?$top=15&$select=${selectFields}&$orderby=sentDateTime desc`;
+        const watermarkSentUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/sentitems/messages?$filter=${encodeURIComponent(`sentDateTime ge ${lastSentWatermarkIso}`)}&$top=100&$select=${selectFields}&$orderby=sentDateTime asc`;
 
-        const sentData = await sentRes.json();
-        const messages = sentData.value || [];
+        const [recentRes, wmRes] = await Promise.all([
+            fetch(recentSentUrl, { headers: { 'Authorization': `Bearer ${accessToken}` }, signal: AbortSignal.timeout(20000) }).catch(() => null),
+            fetch(watermarkSentUrl, { headers: { 'Authorization': `Bearer ${accessToken}` }, signal: AbortSignal.timeout(20000) }).catch(() => null)
+        ]);
+
+        const mergedMap = new Map();
+        for (const res of [wmRes, recentRes]) {
+            if (res && res.ok) {
+                const data = await res.json();
+                for (const m of (data.value || [])) {
+                    if (m && m.id && !mergedMap.has(m.id)) mergedMap.set(m.id, m);
+                }
+            }
+        }
+        const messages = Array.from(mergedMap.values()).sort((a, b) =>
+            new Date(a.sentDateTime || 0).getTime() - new Date(b.sentDateTime || 0).getTime()
+        );
 
         for (const msg of messages) {
             const messageId = msg.internetMessageId || msg.id;
             if (isGraphIdProcessed(msg.id) || (msg.internetMessageId && isGraphIdProcessed(msg.internetMessageId))) {
+                if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
+                continue;
+            }
+
+            if (await isMessageIdInDb(msg.internetMessageId)) {
+                markGraphIdProcessed(msg.id);
+                if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
                 continue;
             }
 
@@ -50,11 +135,20 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
 
             const subject = msg.subject || '';
             const subjectLower = subject.toLowerCase();
+            const toRecipsList = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+            const ccRecipsList = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
 
-            // Ignore system automated notifications (e.g. ticket creation acknowledgment)
-            if (subjectLower.startsWith('ticket received:') || subjectLower.startsWith('ticket created:') || subjectLower.startsWith('new ticket assigned:')) {
+            // Ignore system automated notifications, calendar RSVPs, or internal-only team forwards
+            if (
+                subjectLower.startsWith('ticket received:') ||
+                subjectLower.startsWith('ticket created:') ||
+                subjectLower.startsWith('new ticket assigned:') ||
+                isCalendarOrSystemReportSubject(subject, msg.from?.emailAddress?.address) ||
+                isInternalOnlyRecipientList(toRecipsList, ccRecipsList)
+            ) {
                 markGraphIdProcessed(msg.id);
                 if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
                 continue;
             }
 
@@ -135,10 +229,12 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
                         references: referencesHeader,
                         attachments
                     });
+                    if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
                     continue;
                 }
                 markGraphIdProcessed(msg.id);
                 if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
                 continue;
             }
 
@@ -158,6 +254,7 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
             if (alreadyRecorded) {
                 markGraphIdProcessed(msg.id);
                 if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
                 continue;
             }
 
@@ -183,6 +280,7 @@ const syncSentItemsEmails = async (accessToken, userEmail) => {
 
             markGraphIdProcessed(msg.id);
             if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+            if (msg.sentDateTime && msg.sentDateTime > lastSentWatermarkIso) lastSentWatermarkIso = msg.sentDateTime;
         }
     } catch (sentErr) {
         logger.error(`[EMAIL] Sent Items Sync Error: ${sentErr.message}`);
@@ -280,19 +378,46 @@ const handleSystemBounce = async (msg, accessToken) => {
 };
 
 const fetchNewGraphEmails = async () => {
-    if (isPolling) return;
+    if (isPolling) {
+        if (pollStartedAt && (Date.now() - pollStartedAt) > MAX_POLL_DURATION_MS) {
+            logger.warn(`⚠️ [EMAIL] Poll cycle exceeded ${MAX_POLL_DURATION_MS / 1000}s watchdog; resetting stuck isPolling lock.`);
+            isPolling = false;
+        } else {
+            return;
+        }
+    }
     isPolling = true;
+    pollStartedAt = Date.now();
 
     try {
+        await ensureWatermarksInitialized();
         const ticketService = require('../ticketService');
         const accessToken = await getGraphAccessToken();
         const userEmail = process.env.SENDER_EMAIL || process.env.MAIL_USER;
-        const messagesUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/inbox/messages?$filter=isRead eq false&$top=20&$select=id,internetMessageId,subject,from,toRecipients,ccRecipients,body,receivedDateTime,internetMessageHeaders,hasAttachments`;
+        const selectFields = 'id,internetMessageId,subject,from,toRecipients,ccRecipients,body,receivedDateTime,isRead,internetMessageHeaders,hasAttachments';
+        const unreadUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/inbox/messages?$filter=isRead eq false&$top=25&$select=${selectFields}&$orderby=receivedDateTime asc`;
+        const watermarkUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/mailFolders/inbox/messages?$filter=${encodeURIComponent(`receivedDateTime ge ${lastInboxWatermarkIso}`)}&$top=100&$select=${selectFields}&$orderby=receivedDateTime asc`;
 
-        const response = await fetch(messagesUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-        if (response.ok) {
-            const result = await response.json();
-            const messages = result.value || [];
+        const [unreadRes, wmRes] = await Promise.all([
+            fetch(unreadUrl, { headers: { 'Authorization': `Bearer ${accessToken}` }, signal: AbortSignal.timeout(20000) }).catch(() => null),
+            fetch(watermarkUrl, { headers: { 'Authorization': `Bearer ${accessToken}` }, signal: AbortSignal.timeout(20000) }).catch(() => null)
+        ]);
+
+        const mergedMap = new Map();
+        for (const res of [unreadRes, wmRes]) {
+            if (res && res.ok) {
+                const data = await res.json();
+                for (const m of (data.value || [])) {
+                    if (m && m.id && !mergedMap.has(m.id)) mergedMap.set(m.id, m);
+                }
+            }
+        }
+
+        const messages = Array.from(mergedMap.values()).sort((a, b) =>
+            new Date(a.receivedDateTime || 0).getTime() - new Date(b.receivedDateTime || 0).getTime()
+        );
+
+        if (messages.length > 0) {
             const ownEmail = (process.env.SENDER_EMAIL || process.env.MAIL_USER || '').toLowerCase();
 
             for (const msg of messages) {
@@ -300,18 +425,35 @@ const fetchNewGraphEmails = async () => {
                 const fromAddr = msg.from?.emailAddress?.address;
                 const fromName = msg.from?.emailAddress?.name || fromAddr;
 
+                if (isGraphIdProcessed(msg.id) || (msg.internetMessageId && isGraphIdProcessed(msg.internetMessageId))) {
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
+                    continue;
+                }
+
+                if (await isMessageIdInDb(msg.internetMessageId)) {
+                    markGraphIdProcessed(msg.id);
+                    if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
+                    continue;
+                }
+
                 // Discard stale incoming emails from before 28th Oct (minimizes live deployment window)
                 const msgDate = msg.receivedDateTime ? new Date(msg.receivedDateTime) : null;
                 if (msgDate && msgDate < MIN_LIVE_DATE) {
                     logger.info(`[EMAIL] ⏭️ Discarding stale inbox email from before 28th Oct: "${msg.subject}" (${msgDate.toISOString()})`);
-                    await markEmailAsRead(msg.id, accessToken);
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
                     markGraphIdProcessed(msg.id);
                     if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                     continue;
                 }
 
-                if (!fromAddr) {
-                    await markEmailAsRead(msg.id, accessToken);
+                if (!fromAddr || isCalendarOrSystemReportSubject(msg.subject, fromAddr)) {
+                    markGraphIdProcessed(msg.id);
+                    if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
                     continue;
                 }
 
@@ -322,16 +464,30 @@ const fetchNewGraphEmails = async () => {
                     /^(?:undeliverable|delivery\s*status\s*notification|mail\s*delivery\s*failed)/i.test(msg.subject || '');
 
                 if (isSystemBounce) {
-                    await handleSystemBounce(msg, accessToken);
-                    await markEmailAsRead(msg.id, accessToken);
+                    if (!msg.isRead) {
+                        await handleSystemBounce(msg, accessToken);
+                        await markEmailAsRead(msg.id, accessToken);
+                    }
+                    markGraphIdProcessed(msg.id);
+                    if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
                     continue;
                 }
 
                 const inReplyToHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'in-reply-to')?.value || null;
                 const referencesHeader = msg.internetMessageHeaders?.find(h => h.name?.toLowerCase() === 'references')?.value || null;
+                const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
+                const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
 
                 // If internal agent or own mailbox sends a message into Inbox (e.g. self-CC or loopback):
                 if (isOwnEmail) {
+                    if (isInternalOnlyRecipientList(toRecips, ccRecips)) {
+                        markGraphIdProcessed(msg.id);
+                        if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
+                        if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                        if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
+                        continue;
+                    }
                     let existingTicket = await ticketService.findExistingTicketForReply(inReplyToHeader, referencesHeader, msg.subject, msg.body?.content, fromAddr);
                     const isFormalMaint = SmartSorter.isFormalMaintenanceNotice(msg.subject, msg.body?.content);
                     const isMaintContext = isFormalMaint || SmartSorter.hasMaintenanceSignal(msg.subject, msg.body?.content);
@@ -449,8 +605,6 @@ const fetchNewGraphEmails = async () => {
                         markGraphIdProcessed(msg.id);
                         if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                         const attachments = await fetchMessageAttachments(msg.id, msg.hasAttachments, accessToken, userEmail);
-                        const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
-                        const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
                         await ticketService.appendAgentReplyFromOutlook(existingTicket, {
                             from: fromAddr,
                             fromName: fromName,
@@ -467,8 +621,6 @@ const fetchNewGraphEmails = async () => {
                         markGraphIdProcessed(msg.id);
                         if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                         const attachments = await fetchMessageAttachments(msg.id, msg.hasAttachments, accessToken, userEmail);
-                        const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
-                        const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
                         logger.info(`[EMAIL] 🆕 Creating new Maintenance Ticket from agent maintenance advisory: "${msg.subject}"`);
                         await ticketService.createTicketFromEmail({
                             from: fromAddr,
@@ -485,15 +637,15 @@ const fetchNewGraphEmails = async () => {
                             attachments
                         });
                     } else if (!existingTicket) {
+                        markGraphIdProcessed(msg.id);
+                        if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                         logger.info(`[EMAIL] ℹ️ Ignored unlinked email from EdgeStone agent (${fromAddr}): Agents cannot create new tickets.`);
                     }
 
-                    await markEmailAsRead(msg.id, accessToken);
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
                     continue;
                 }
-
-                const toRecips = msg.toRecipients ? msg.toRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
-                const ccRecips = msg.ccRecipients ? msg.ccRecipients.map(r => r.emailAddress?.address).filter(Boolean) : [];
 
                 const emailData = {
                     from: fromAddr,
@@ -513,14 +665,16 @@ const fetchNewGraphEmails = async () => {
                 emailData.attachments = await fetchMessageAttachments(msg.id, msg.hasAttachments, accessToken, userEmail);
 
                 if (isGraphIdProcessed(msg.id)) {
-                    await markEmailAsRead(msg.id, accessToken);
+                    if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                    if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
                     continue;
                 }
 
                 markGraphIdProcessed(msg.id);
                 if (msg.internetMessageId) markGraphIdProcessed(msg.internetMessageId);
                 await ticketService.createTicketFromEmail(emailData);
-                await markEmailAsRead(msg.id, accessToken);
+                if (!msg.isRead) await markEmailAsRead(msg.id, accessToken);
+                if (msg.receivedDateTime && msg.receivedDateTime > lastInboxWatermarkIso) lastInboxWatermarkIso = msg.receivedDateTime;
             }
         }
 
@@ -534,6 +688,7 @@ const fetchNewGraphEmails = async () => {
         logger.error(`[EMAIL] Fetch Error: ${err.message}`);
     } finally {
         isPolling = false;
+        pollStartedAt = 0;
     }
 };
 

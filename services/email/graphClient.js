@@ -22,7 +22,8 @@ const markGraphIdProcessed = (id) => {
 const getGraphAccessToken = async () => {
     const tenantId = process.env.TENANT_ID;
     const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
+    const rawSecret = process.env.CLIENT_SECRET;
+    const clientSecret = rawSecret ? rawSecret.replace(/\\~/g, '~') : rawSecret;
 
     if (!tenantId || !clientId || !clientSecret) {
         throw new Error('Missing MS Graph API configuration.');
@@ -43,12 +44,13 @@ const getGraphAccessToken = async () => {
     const response = await fetch(tokenUrl, {
         method: 'POST',
         body: tokenData,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        signal: AbortSignal.timeout(15000)
     });
 
     const result = await response.json();
     if (!response.ok) {
-        throw new Error(`Graph Token Error: ${result.error?.message}`);
+        throw new Error(`Graph Token Error: ${result.error_description || result.error?.message || result.error}`);
     }
 
     graphAccessToken = result.access_token;

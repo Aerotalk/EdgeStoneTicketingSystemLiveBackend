@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+PRODID:-//iCal4j v1.0//EN
+VERSION:2.0
+BEGIN:VEVENT
+DTSTAMP:20261111T073227Z
+DTSTART:20261110T220000Z
+DTEND:20261112T020000Z
+SUMMARY:Urgent Maintenance Notification of International Service -UMW Reference number U4835\\26B - INC000011734340
+DESCRIPTION;ENCODING=QUOTED-PRINTABLE:=0D=0ACustomer Name : EDGESTONE SINGAPORE PTE. LTD.                              =0D=0ATo : =0D=0ANOC  =0D=0AFrom : Global Services & Operations Tel : +852-28291567=0D=0ADate : 07/11/2026 03:43:36 GMT (dd/mm/yyyy)=0D=0A=0D=0A=0D=0ADear EDGESTONE SINGAPORE PTE. LTD.,=0D=0A=0D=0A=0D=0APCCW Global wished to advise you that the following network activity that will affect your service. =0D=0A=0D=0A=0D=0AUMW Reference Number : U4835\\26B=0D=0ADate Time : 10/11/2026 22:00:00 to 12/11/2026 02:00:00 GMT (dd/mm/yyyy)=0D=0ADuration : 120 mins=0D=0AService/Circuit Affected : SR256906 /  =0D=0AYour Circuit ID : =0D=0AOutage Description : Ptovider will replace a pre-identified faulty patch cord on the line amplifier of the JUNO equipment in Grover Beach CLS.=0D=0A=0D=0ALocation: Grover Beach CLS, LA Pop=0D=0A=0D=0AImpact:  2 hours outage=0D=0APrimary Window: 10 Nov 2026, 22:00 UTC to 11 Nov 2026, 02:00 UTC=0D=0ABackup Window: 11 Nov 2026, 22:00 UTC to 12 Nov 2026, 02:00 UTC=0D=0A=0D=0APCCW Global apologies for all inconveniences caused.=0D=0A=0D=0AShould you have any question or any enquiries, please do not hesitate to contact us by calling our 24x7 customer service hotline at +852-28291567 / 80028291567 (Toll free number)=0D=0A=0D=0A=0D=0ABest Regards,=0D=0A=0D=0AGlobal Services & Operations =0D=0APCCW Global
+UID:20261111T073231Z-uidGen@fe80:0:0:0:cf:d3ff:fe97:22fd%eth0
+SEQUENCE:0
+X-MAINTNOTE-PROVIDER:PCCW Global
+X-MAINTNOTE-ACCOUNT:EDGESTONE SINGAPORE PTE. LTD.
+X-MAINTNOTE-MAINTENANCE-ID:INC000011734340
+X-MAINTNOTE-OBJECT-ID:.
+X-MAINTNOTE-IMPACT:OUTAGE
+X-MAINTNOTE-STATUS:CONFIRMED
+ORGANIZER:mailto:gsoc-planned-event@pccwglobal.com
+ATTENDEE;ROLE=REQ-PARTICIPANT:mailto:support@edgestone.in
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+END:VCALENDAR
