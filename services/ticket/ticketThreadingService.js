@@ -218,10 +218,73 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
-    // 0.5 Strategy A.2: Vendor Trouble Ticket / Docket Number match (e.g. EN_IM_03092026_170954, CU#2608150173, INC000011658869, TT#123456)
-    // STRICT GUARD: Must require at least 4 digits! NEVER match English words like "TT for", "TT to", "TT is"!
+    // Helper: Extract explicit docket / external ticket token from subject to prevent cross-docket hijacking
+    const DOCKET_REGEX = /\b(Neutrality\.One\s*#\d{4,}|EN_IM_\d+_\d+|CU#\d{4,}|INC\d{5,}|(?:TT|Docket|Ticket|Case|SR)\s*#?[:\s-]*\d{4,}[A-Za-z0-9_-]*)\b/i;
+    const extractNormDocket = (str) => {
+        if (!str) return null;
+        const m = String(str).match(DOCKET_REGEX);
+        return m && m[1] ? m[1].replace(/\s+/g, '').toUpperCase() : null;
+    };
+    const incomingSubjectDocket = extractNormDocket(subject);
+    const hasSubjectDocketConflict = (candidateTicket) => {
+        if (!incomingSubjectDocket || !candidateTicket) return false;
+        const headerDocket = extractNormDocket(candidateTicket.header);
+        if (headerDocket && headerDocket !== incomingSubjectDocket) {
+            return true;
+        }
+        return false;
+    };
+
+    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit, schedule & subject-docket guard)
+    if (inReplyTo) {
+        const cleanId = inReplyTo.trim();
+        const ticket = await TicketModel.findTicketByMessageId(cleanId);
+        if (ticket && !hasSubjectDocketConflict(ticket) && isValidReplyCandidate(ticket, ticket.ticketId)) {
+            logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Ticket): ${cleanId} → Ticket ${ticket.ticketId}`);
+            return ticket;
+        }
+
+        // 1.5. Strategy B.2: In-Reply-To matches an Agent/Vendor/Client Reply Message-ID (with circuit, schedule & subject-docket guard)
+        const reply = await TicketModel.findReplyByMessageId(cleanId);
+        if (reply && reply.ticket) {
+            const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
+            if (!hasSubjectDocketConflict(fullTicket) && isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
+                logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Reply): ${cleanId} → Ticket ${fullTicket.ticketId}`);
+                fullTicket._matchedReply = reply;
+                return fullTicket;
+            }
+        }
+    }
+
+    // 2. References: space/comma-separated chain of parent Message-IDs (with circuit, schedule & subject-docket guard)
+    if (references) {
+        const refIds = (Array.isArray(references) ? references : references.split(/[\s,]+/))
+            .map(r => r.trim())
+            .filter(Boolean);
+        for (const refId of refIds) {
+            const ticket = await TicketModel.findTicketByMessageId(refId);
+            if (ticket && !hasSubjectDocketConflict(ticket) && isValidReplyCandidate(ticket, ticket.ticketId)) {
+                logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Ticket): ${refId} → Ticket ${ticket.ticketId}`);
+                return ticket;
+            }
+            const reply = await TicketModel.findReplyByMessageId(refId);
+            if (reply && reply.ticket) {
+                const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
+                if (!hasSubjectDocketConflict(fullTicket) && isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
+                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Reply): ${refId} → Ticket ${fullTicket.ticketId}`);
+                    fullTicket._matchedReply = reply;
+                    return fullTicket;
+                }
+            }
+        }
+    }
+
+    // 2.5 Strategy A.2: Vendor / External Trouble Ticket / Docket Number match (e.g. Neutrality.One #214664, EN_IM_16112026_373273, CU#2608150173, INC000011658869)
+    // Check subject docket FIRST before body docket so a vendor docket quoted inside a client email body never hijacks a client subject docket!
     if (subject || body) {
-        const docketMatch = textToScan.match(/\b(EN_IM_\d+_\d+|CU#\d{4,}|INC\d{5,}|(?:TT|Docket|Ticket|Case|SR)\s*#?[:\s-]*\d{4,}[A-Za-z0-9_-]*)\b/i);
+        const subjectDocketMatch = (subject || '').match(DOCKET_REGEX);
+        const bodyDocketMatch = textToScan.match(DOCKET_REGEX);
+        const docketMatch = subjectDocketMatch || bodyDocketMatch;
         if (docketMatch && docketMatch[1]) {
             const rawDocket = docketMatch[1].trim();
             const hasDigits = /\d{4,}/.test(rawDocket);
@@ -239,9 +302,19 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                         ]
                     },
                     include: candidateInclude,
-                    orderBy: { createdAt: 'asc' }
+                    orderBy: { createdAt: 'desc' }
                 });
-                let matchingDocketTicket = matchingDocketCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
+                // Prefer Client incident tickets over Vendor tickets, then newest createdAt (desc) first
+                matchingDocketCandidates.sort((a, b) => {
+                    const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
+                    const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
+                    if (aClient !== bClient) return bClient - aClient;
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+
+                let matchingDocketTicket = matchingDocketCandidates.find(t =>
+                    !hasSubjectDocketConflict(t) && isValidReplyCandidate(t, t.ticketId)
+                );
                 if (
                     matchingDocketTicket &&
                     matchingDocketTicket.ticketType === 'Vendor' &&
@@ -255,7 +328,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                             createdAt: { gte: MIN_OPERATIONAL_DATE, lte: matchingDocketTicket.createdAt }
                         },
                         include: candidateInclude,
-                        orderBy: { createdAt: 'asc' }
+                        orderBy: { createdAt: 'desc' }
                     });
                     const parentClientTicket = rootClientCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
                     if (parentClientTicket) {
@@ -271,7 +344,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         }
     }
 
-    // 0.6 Strategy A.3: Maintenance CRQ / UMW / RPO / Reference match (e.g. CRQ: 1100494638, U4584\26F, R7023\26E, INC000011680956)
+    // 2.6 Strategy A.3: Maintenance CRQ / UMW / RPO / Reference match (e.g. CRQ: 1100494638, U4584\26F, R7023\26E, INC000011680956)
     if (subject || body) {
         const meta = extractMaintenanceMetadata(subject, body);
         const crqMatch = textToScan.match(/\b(CRQ[:\s“"'-]*\d{6,}[A-Za-z0-9_-]*|(?:UMW|RPO)\s*Reference(?:\s*Number|\s*No)?[\s:"]*([A-Za-z0-9\\/_-]+)|INC\d{6,})\b/i);
@@ -296,50 +369,6 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             if (matchingMaintTicket) {
                 logger.info(`🎟️ [TICKET] 🧵 Reply matched via Maintenance CRQ/Ref: "${searchRef}" → Ticket ${matchingMaintTicket.ticketId}`);
                 return matchingMaintTicket;
-            }
-        }
-    }
-
-    // 1. Strategy B.1: In-Reply-To matches the Original Ticket Message-ID (with circuit & schedule isolation guard)
-    if (inReplyTo) {
-        const cleanId = inReplyTo.trim();
-        const ticket = await TicketModel.findTicketByMessageId(cleanId);
-        if (ticket && isValidReplyCandidate(ticket, ticket.ticketId)) {
-            logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Ticket): ${cleanId} → Ticket ${ticket.ticketId}`);
-            return ticket;
-        }
-
-        // 1.5. Strategy B.2: In-Reply-To matches an Agent/Vendor/Client Reply Message-ID (with circuit & schedule isolation guard)
-        const reply = await TicketModel.findReplyByMessageId(cleanId);
-        if (reply && reply.ticket) {
-            const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
-            if (isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
-                logger.info(`🎟️ [TICKET] 🧵 Reply matched via In-Reply-To (Reply): ${cleanId} → Ticket ${fullTicket.ticketId}`);
-                fullTicket._matchedReply = reply;
-                return fullTicket;
-            }
-        }
-    }
-
-    // 2. References: space/comma-separated chain of parent Message-IDs (with circuit & schedule isolation guard)
-    if (references) {
-        const refIds = (Array.isArray(references) ? references : references.split(/[\s,]+/))
-            .map(r => r.trim())
-            .filter(Boolean);
-        for (const refId of refIds) {
-            const ticket = await TicketModel.findTicketByMessageId(refId);
-            if (ticket && isValidReplyCandidate(ticket, ticket.ticketId)) {
-                logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Ticket): ${refId} → Ticket ${ticket.ticketId}`);
-                return ticket;
-            }
-            const reply = await TicketModel.findReplyByMessageId(refId);
-            if (reply && reply.ticket) {
-                const fullTicket = await TicketModel.findTicketById(reply.ticket.id) || reply.ticket;
-                if (isValidReplyCandidate(fullTicket, fullTicket.ticketId)) {
-                    logger.info(`🎟️ [TICKET] 🧵 Reply matched via References (Reply): ${refId} → Ticket ${fullTicket.ticketId}`);
-                    fullTicket._matchedReply = reply;
-                    return fullTicket;
-                }
             }
         }
     }
@@ -371,7 +400,14 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                     status: { notIn: ['Spam', 'Closed', 'Resolved'] }
                 },
                 include: candidateInclude,
-                orderBy: { createdAt: 'asc' } // Root ticket first!
+                orderBy: { createdAt: 'desc' }
+            });
+            // Prefer Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+            allTickets.sort((a, b) => {
+                const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
+                const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
+                if (aClient !== bClient) return bClient - aClient;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             });
 
             // Helper to check if sender is authorized for this ticket
@@ -453,7 +489,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
             };
 
             const isEligibleActiveIncidentTicket = (t) => {
-                if (!t.circuitId || !isValidReplyCandidate(t, t.ticketId)) return false;
+                if (!t.circuitId || hasSubjectDocketConflict(t) || !isValidReplyCandidate(t, t.ticketId)) return false;
                 if (!t.isMaintenance && ['Open', 'In Progress'].includes(t.status)) return true;
                 // Handle Client incident tickets that were historically mis-tagged with status='Maintenance'
                 if (t.ticketType === 'Client' && t.isSlaActive && SmartSorter.hasStrictIncidentSignal(t.header || '', '') && !['Closed', 'Resolved', 'Spam'].includes(t.status)) {

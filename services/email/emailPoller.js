@@ -568,7 +568,7 @@ const fetchNewGraphEmails = async () => {
                                             ? c.vendorCircuits.map(vc => vc.supplierCircuitId).filter(Boolean).map(sid => ({ circuitId: sid }))
                                             : [];
 
-                                        const activeTicket = await prisma.ticket.findFirst({
+                                        const activeTickets = await prisma.ticket.findMany({
                                             where: {
                                                 OR: [
                                                     { circuitId: c.customerCircuitId },
@@ -584,11 +584,23 @@ const fetchNewGraphEmails = async () => {
                                                 status: { notIn: ['Closed', 'Resolved', 'Spam'] },
                                                 createdAt: { gte: MIN_OPERATIONAL_DATE }
                                             },
-                                            orderBy: { createdAt: 'asc' },
+                                            orderBy: { createdAt: 'desc' },
                                             include: { client: true, vendor: true, replies: { select: { text: true, subject: true } } }
                                         });
 
-                                        if (activeTicket && SmartSorter.isValidReplyCandidate(activeTicket, { subject: msg.subject, body: msg.body?.content })) {
+                                        // Prefer Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+                                        activeTickets.sort((a, b) => {
+                                            const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
+                                            const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
+                                            if (aClient !== bClient) return bClient - aClient;
+                                            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                                        });
+
+                                        const activeTicket = activeTickets.find(t =>
+                                            SmartSorter.isValidReplyCandidate(t, { subject: msg.subject, body: msg.body?.content })
+                                        );
+
+                                        if (activeTicket) {
                                             existingTicket = activeTicket;
                                             logger.info(`[EMAIL] 📤 Linked incoming agent email from ${fromAddr} to active Ticket ${activeTicket.ticketId} on circuit ${c.customerCircuitId || c.supplierCircuitId}`);
                                             break;

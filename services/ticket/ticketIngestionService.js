@@ -831,7 +831,14 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
                         createdAt: { gte: MIN_OPERATIONAL_DATE }
                     },
                     include: { replies: { select: { text: true, subject: true } } },
-                    orderBy: { createdAt: 'asc' } // Prefer root Client incident ticket first
+                    orderBy: { createdAt: 'desc' }
+                });
+                // Prefer Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+                candidateTickets.sort((a, b) => {
+                    const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
+                    const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
+                    if (aClient !== bClient) return bClient - aClient;
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                 });
 
                 const activeVendorTicket = candidateTickets.find(t => {
