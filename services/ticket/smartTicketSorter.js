@@ -190,11 +190,54 @@ const hasMaintenanceScheduleConflict = (candidate, { subject, body } = {}) => {
     return false;
 };
 
-// ─── 3. ROOT EMAIL DETECTION ────────────────────────────────────────────────
+// ─── 3. ROOT EMAIL & AUTOMATED VENDOR LIFECYCLE DETECTION ───────────────────
+/**
+ * Detects whether an incoming email is an automated vendor resolution / closure notification
+ * (e.g., "Issue Resolved - EN_IM_...", "Ticket Closure Details for INC...", "Completion - ...").
+ * Such notifications represent the closing stage of an existing ticket and must NEVER create a new ticket.
+ */
+const isVendorResolutionOrClosureNotice = (subject = '', body = '') => {
+    const sub = stripHtml(subject || '').trim();
+    if (/^(?:issue\s+resolved|fault\s+resolved|incident\s+resolved|ticket\s+closure\s+details|ticket\s+resolved|ticket\s+closed|case\s+closed|case\s+resolved|(?:completion|cancellation)\s*-\s*(?:urgent\s+maintenance|planned\s+outage))\b/i.test(sub)) {
+        return true;
+    }
+    if (/\b(?:issue\s+resolved\s*-\s*en_im_\d+_\d+|ticket\s+closure\s+details\s+for\s+inc\d+)\b/i.test(sub)) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Detects automated vendor daemon status updates, fault updates, and resolution notices
+ * that omit standard RFC-5322 In-Reply-To/References headers and "Re:" prefixes.
+ */
+const isVendorAutomatedUpdateOrResolution = (subject = '', body = '') => {
+    if (isVendorResolutionOrClosureNotice(subject, body)) return true;
+    const sub = stripHtml(subject || '').trim();
+    if (/^(?:fault\s+update\b|india\s+incident\s+en_im_\d+_\d+\s+has\s+been\s+opened\b)/i.test(sub)) {
+        return true;
+    }
+    if (/\bcrq[:\s“"'-]*\d{6,}.*?[–-]\s*(?:rescheduled|completed|postponed|cancelled|canceled)\b/i.test(sub)) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Detects Out-of-Office / Leave / Vacation auto-responder emails.
+ */
+const isAutoReplyOrOutOfOffice = (subject = '', body = '') => {
+    const sub = stripHtml(subject || '').trim();
+    if (/^(?:out\s+of\s+office|i\s+am\s+on\s+leave|automatic\s+reply|auto\s*reply|autoreply|on\s+annual\s+leave)\b/i.test(sub)) {
+        return true;
+    }
+    return false;
+};
+
 /**
  * A root email starts a brand-new conversation: no In-Reply-To / References,
  * no Re:/Fwd: prefix, no existing ticket tag such as [#1033] / [#V1031],
- * and not an automated vendor ticket reply quoting an earlier message.
+ * and not an automated vendor ticket reply, fault update, or resolution notification.
  */
 const isRootEmail = ({ inReplyTo, references, subject, body } = {}) => {
     if (inReplyTo && String(inReplyTo).trim().length > 0) return false;
@@ -206,6 +249,8 @@ const isRootEmail = ({ inReplyTo, references, subject, body } = {}) => {
     if (REPLY_PREFIX_REGEX.test(sub)) return false;
     if (TICKET_TAG_REGEX.test(sub)) return false;
     if (VENDOR_APPENDED_SUFFIX_REGEX.test(sub)) return false;
+    if (isVendorAutomatedUpdateOrResolution(sub, body)) return false;
+    if (isAutoReplyOrOutOfOffice(sub, body)) return false;
     if (body) {
         const cleanB = stripHtml(body);
         if (
@@ -450,6 +495,9 @@ module.exports = {
     hasStrictIncidentSignal,
     extractCandidateMaintenanceMeta,
     hasMaintenanceScheduleConflict,
+    isVendorResolutionOrClosureNotice,
+    isVendorAutomatedUpdateOrResolution,
+    isAutoReplyOrOutOfOffice,
     isRootEmail,
     classifyOrigin,
     isBusinessProcessBarrierVeto,

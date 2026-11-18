@@ -827,21 +827,27 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
                 const candidateTickets = await prisma.ticket.findMany({
                     where: {
                         circuitId: { in: Array.from(new Set(circuitKeys.filter(Boolean))) },
-                        status: { notIn: ['Closed', 'Resolved', 'Spam'] },
+                        status: { notIn: ['Spam'] },
                         createdAt: { gte: MIN_OPERATIONAL_DATE }
                     },
                     include: { replies: { select: { text: true, subject: true } } },
                     orderBy: { createdAt: 'desc' }
                 });
-                // Prefer Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+                // Prefer Open/In Progress tickets before Closed/Resolved, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
                 candidateTickets.sort((a, b) => {
+                    const aOpen = !['Closed', 'Resolved'].includes(a.status) ? 1 : 0;
+                    const bOpen = !['Closed', 'Resolved'].includes(b.status) ? 1 : 0;
+                    if (aOpen !== bOpen) return bOpen - aOpen;
                     const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
                     const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
                     if (aClient !== bClient) return bClient - aClient;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                 });
 
-                const activeVendorTicket = candidateTickets.find(t => {
+                const isAutomatedVendorUpdateOrClose = SmartSorter.isVendorAutomatedUpdateOrResolution(subject, body);
+
+                let activeVendorTicket = candidateTickets.find(t => {
+                    if (['Closed', 'Resolved'].includes(t.status)) return false;
                     if (SmartSorter.isBusinessProcessBarrierVeto(t, { subject, body })) return false;
                     if (!isIncomingMaintEmail) {
                         // Vendor incident email: match active incident ticket (including Client tickets with active SLA even if legacy status was Maintenance)
@@ -852,6 +858,19 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
                     // Vendor maintenance update: match active maintenance ticket
                     return t.isMaintenance || t.status === 'Maintenance';
                 });
+
+                // Fallback for post-closure vendor notifications ("Issue Resolved", "Fault Update", "Ticket Closure Details", "Completion - ..."):
+                // If the agent already closed the ticket after client confirmation, attach the subsequent vendor resolution/update to the closed ticket instead of creating a duplicate!
+                if (!activeVendorTicket && isAutomatedVendorUpdateOrClose) {
+                    activeVendorTicket = candidateTickets.find(t => {
+                        if (!['Closed', 'Resolved'].includes(t.status)) return false;
+                        if (SmartSorter.isBusinessProcessBarrierVeto(t, { subject, body })) return false;
+                        if (!isIncomingMaintEmail) {
+                            return !t.isMaintenance;
+                        }
+                        return t.isMaintenance;
+                    });
+                }
 
                 if (activeVendorTicket) {
                     let shouldIntercept = true;
@@ -903,6 +922,16 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
             } catch (vInterceptErr) {
                 logger.error(`Error in Smart Vendor Active Ticket Interceptor: ${vInterceptErr.message}`);
             }
+        }
+
+        // ── BLOCK NEW TICKET CREATION FOR UNMATCHED RESOLUTION/CLOSURE OR OUT-OF-OFFICE NOTIFICATIONS ──
+        if (SmartSorter.isAutoReplyOrOutOfOffice(subject, body)) {
+            logger.info(`🚫 [SMART SORTER] Dropped unmatched Out-of-Office / Auto-Reply email "${subject}" from ${from} (never creates a new ticket).`);
+            return null;
+        }
+        if (SmartSorter.isVendorResolutionOrClosureNotice(subject, body)) {
+            logger.info(`🚫 [SMART SORTER] Dropped unmatched vendor resolution/closure notice "${subject}" from ${from} (never creates a new ticket).`);
+            return null;
         }
 
         let ticketId;

@@ -324,7 +324,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                     const rootClientCandidates = await prisma.ticket.findMany({
                         where: {
                             ticketType: 'Client',
-                            status: { notIn: ['Spam', 'Closed', 'Resolved'] },
+                            status: { notIn: ['Spam'] },
                             createdAt: { gte: MIN_OPERATIONAL_DATE, lte: matchingDocketTicket.createdAt }
                         },
                         include: candidateInclude,
@@ -352,7 +352,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
         if (searchRef && searchRef.length >= 4) {
             const maintCandidates = await prisma.ticket.findMany({
                 where: {
-                    status: { notIn: ['Spam', 'Closed', 'Resolved'] },
+                    status: { notIn: ['Spam'] },
                     createdAt: { gte: MIN_OPERATIONAL_DATE },
                     OR: [
                         { header: { contains: searchRef, mode: 'insensitive' } },
@@ -397,13 +397,16 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
 
             const allTickets = await prisma.ticket.findMany({
                 where: {
-                    status: { notIn: ['Spam', 'Closed', 'Resolved'] }
+                    status: { notIn: ['Spam'] }
                 },
                 include: candidateInclude,
                 orderBy: { createdAt: 'desc' }
             });
-            // Prefer Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+            // Prefer Open/In Progress tickets before Closed/Resolved, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
             allTickets.sort((a, b) => {
+                const aOpen = !['Closed', 'Resolved'].includes(a.status) ? 1 : 0;
+                const bOpen = !['Closed', 'Resolved'].includes(b.status) ? 1 : 0;
+                if (aOpen !== bOpen) return bOpen - aOpen;
                 const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
                 const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
                 if (aClient !== bClient) return bClient - aClient;
@@ -546,8 +549,18 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 // Second priority: non-root continuation on active circuit ticket (when not a conflicting maintenance notice or SLA rebate)
                 if (!match && isReplyPattern && !SmartSorter.isFormalMaintenanceNotice(subject, body) && !isIncomingRebate) {
                     match = allTickets.find(t => isEligibleActiveIncidentTicket(t));
+                    // If no open ticket exists on circuit and this is a vendor resolution/closure or automated fault update, match the most recent closed incident ticket
+                    if (!match && SmartSorter.isVendorAutomatedUpdateOrResolution(subject, body)) {
+                        match = allTickets.find(t =>
+                            t.circuitId &&
+                            !t.isMaintenance &&
+                            ['Closed', 'Resolved'].includes(t.status) &&
+                            !hasSubjectDocketConflict(t) &&
+                            isValidReplyCandidate(t, t.ticketId)
+                        );
+                    }
                     if (match) {
-                        logger.info(`🎟️ [TICKET] 🧵 Continuation email from ${from} matched active ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
+                        logger.info(`🎟️ [TICKET] 🧵 Continuation email from ${from} matched ticket on Circuit "${detectedCircuitId}": "${stripped}" → Ticket ${match.ticketId}`);
                     }
                 }
 
