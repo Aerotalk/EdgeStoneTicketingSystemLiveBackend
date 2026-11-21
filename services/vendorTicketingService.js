@@ -203,7 +203,7 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
 
             if (escapedNum) {
                 // Normalize any variant tag for this ticket (e.g. "[1160 V]", "[#1160 V]", "[1160-V]", "[#1160]") to canonical "[#1160-V]"
-                const variantTagRegex = new RegExp(`\\[#?V?${escapedNum}(?:[-\\s]+V)?\\]`, 'gi');
+                const variantTagRegex = new RegExp(`\\[(?:#V?${escapedNum}(?:[-\\s]+V)?|V?${escapedNum}[-\\s]+V)\\]`, 'gi');
                 s = s.replace(variantTagRegex, canonicalVendorTag);
 
                 // Collapse duplicate EdgeStone ticket tags like "[#1157-V] [#1157-V]" or "[#1082-V] RE：[#1082-V]"
@@ -247,22 +247,27 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             } catch (_) {}
         }
 
-        // 3.5 Find all message IDs strictly in the vendor thread for RFC 5322 In-Reply-To and References chain
-        // RULE 1 (P1): Strictly exclude any reply with type='client' or category='client'
+        // 3.5 Find all message IDs strictly in THIS vendor's thread for RFC 5322 In-Reply-To and References chain
+        // RULE 1 (P1): Strictly exclude any reply with type='client' or category='client', and on multi-vendor tickets isolate each vendor's category!
         const isVendorOrMaintTicket = Boolean(ticket.isMaintenance || ticket.ticketType === 'Vendor' || (ticket.ticketId && ticket.ticketId.startsWith('#V')));
-        const vendorCategoryFilter = effectiveVendorId
-            ? { in: ['vendor', `vendor_${effectiveVendorId}`] }
-            : { in: ['vendor'] };
+        const isMultiVendorCircuit = Boolean(circuitRecord?.isMultiVendor && Array.isArray(circuitRecord?.vendorCircuits) && circuitRecord.vendorCircuits.length > 1);
 
         const whereClause = {
             ticketId: ticket.id,
             messageId: { not: null },
             type: { not: 'client' },
-            OR: [
-                { category: vendorCategoryFilter },
-                ...(effectiveVendorId ? [] : [{ category: { startsWith: 'vendor_' } }]),
-                { type: 'vendor' }
-            ]
+            OR: effectiveVendorId
+                ? (isMultiVendorCircuit
+                    ? [{ category: `vendor_${effectiveVendorId}` }]
+                    : [
+                        { category: { in: ['vendor', `vendor_${effectiveVendorId}`] } },
+                        { AND: [{ type: 'vendor' }, { OR: [{ category: null }, { category: 'vendor' }, { category: `vendor_${effectiveVendorId}` }] }] }
+                    ])
+                : [
+                    { category: 'vendor' },
+                    { category: { startsWith: 'vendor_' } },
+                    { type: 'vendor' }
+                ]
         };
 
         const allVendorReplies = await prisma.reply.findMany({
@@ -280,35 +285,24 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             ? lastReply.messageId.trim()
             : (isVendorOrMaintTicket && ticket.messageId ? ticket.messageId.trim() : null);
 
-        // Helper to check if a candidate subject leaks the customer's confidential Circuit ID, Client Name, or Client Subject Header
+        // Helper to check if a candidate subject leaks the customer's confidential Circuit ID or Client Subject Header
         const leaksClientData = (candSub) => {
             if (!candSub || isVendorOrMaintTicket) return false;
             const lowerSub = candSub.toLowerCase();
             const suppId = (resolvedSupplierCircuitId || '').trim().toLowerCase();
 
-            // 1. Check customerCircuitId from Circuit table or ticket.circuitId
-            const custCandidates = [
-                circuitRecord?.customerCircuitId,
-                ticket.circuitId
-            ].map(c => (c || '').trim()).filter(Boolean);
-
-            for (const custId of custCandidates) {
-                if (custId.toLowerCase() !== suppId && lowerSub.includes(custId.toLowerCase())) {
-                    return true;
-                }
+            // 1. Check explicit customerCircuitId from Circuit table
+            const custId = (circuitRecord?.customerCircuitId || '').trim();
+            if (custId && custId.toLowerCase() !== suppId && lowerSub.includes(custId.toLowerCase())) {
+                return true;
             }
 
-            // 2. Check if subject matches the customer's root email header (when header doesn't contain supplierCircuitId)
+            // 2. Check if subject contains the customer's root email header (when header doesn't contain supplierCircuitId)
             const cleanTicketHeader = (ticket.header || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
             if (cleanTicketHeader && cleanTicketHeader.length > 8 && (!suppId || !cleanTicketHeader.toLowerCase().includes(suppId))) {
                 if (lowerSub.includes(cleanTicketHeader.toLowerCase())) {
                     return true;
                 }
-            }
-
-            // 3. Check if subject contains client company name
-            if (clientName && clientName.length >= 3 && lowerSub.includes(clientName.toLowerCase())) {
-                return true;
             }
 
             return false;
