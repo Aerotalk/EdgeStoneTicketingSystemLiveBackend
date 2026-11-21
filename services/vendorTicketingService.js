@@ -101,15 +101,22 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
 
         logger.info(`🎟️ [TICKET] 📧 replyToVendor: Sending email to vendor emails: ${vendorContactEmails.join(', ')}`);
 
-        // CHG-017: Filter CC to protect client-side privacy when emailing vendors
+        // RULE 1 (P1 CONFIDENTIALITY): Strictly block ANY client email from TO, CC, or BCC on vendor emails,
+        // and block any client subject / client circuit ID / client name from ever being sent to a vendor.
         const clientEmails = new Set();
-        if (ticket.email) clientEmails.add(ticket.email.toLowerCase().trim());
+        let clientName = '';
+        if (ticket.email && ticket.ticketType !== 'Vendor' && !ticket.isMaintenance) {
+            clientEmails.add(ticket.email.toLowerCase().trim());
+        }
         if (ticket.clientId) {
             try {
                 const ClientModel = require('../models/client');
                 const client = await ClientModel.findClientById(ticket.clientId);
-                if (client && client.emails) {
-                    client.emails.forEach(e => clientEmails.add(e.toLowerCase().trim()));
+                if (client) {
+                    if (client.name) clientName = client.name.trim();
+                    if (Array.isArray(client.emails)) {
+                        client.emails.forEach(e => e && clientEmails.add(e.toLowerCase().trim()));
+                    }
                 }
             } catch (err) {
                 logger.error(`Error loading client emails: ${err.message}`);
@@ -129,31 +136,40 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             return false;
         };
 
-        vendorContactEmails = Array.from(new Set(vendorContactEmails.map(e => e && e.trim()).filter(Boolean)));
+        vendorContactEmails = Array.from(new Set(vendorContactEmails.map(e => e && e.trim()).filter(Boolean)))
+            .filter(email => {
+                if (isClientPerson(email)) {
+                    logger.warn(`🛑 [RULE-1 VENDOR PRIVACY] Blocked client email "${email}" from vendor TO recipients on Ticket ${ticket.ticketId}`);
+                    return false;
+                }
+                return true;
+            });
         if (vendorContactEmails.length === 0) {
             throw new Error(`No valid vendor recipient specified for ticket ${ticket.ticketId}. Please add at least one vendor email address in the 'To' field.`);
         }
         const toLowerSet = new Set(vendorContactEmails.map(e => e.toLowerCase()));
 
         let visibleVendorCc = [];
-        let hiddenVendorBcc = Array.isArray(bcc) ? [...bcc] : [];
+        let hiddenVendorBcc = (Array.isArray(bcc) ? [...bcc] : []).filter(email => {
+            if (isClientPerson(email)) {
+                logger.warn(`🛑 [RULE-1 VENDOR PRIVACY] Stripped client email "${email}" from vendor BCC on Ticket ${ticket.ticketId}`);
+                return false;
+            }
+            return true;
+        });
 
         (cc || []).forEach(email => {
             if (!email) return;
             const clean = email.trim();
             if (isClientPerson(clean)) {
-                // Client-side recipient MUST NOT be visible in vendor headers! Move to BCC!
-                if (!hiddenVendorBcc.includes(clean)) {
-                    hiddenVendorBcc.push(clean);
-                }
-                logger.info(`🔒 [VENDOR PRIVACY] Moved client-side recipient "${clean}" from CC to BCC to prevent exposure to vendor.`);
-            } else {
-                if (toLowerSet.has(clean.toLowerCase())) {
-                    return; // Skip if already present in TO
-                }
-                if (!visibleVendorCc.includes(clean)) {
-                    visibleVendorCc.push(clean);
-                }
+                logger.warn(`🛑 [RULE-1 VENDOR PRIVACY] Stripped client-side recipient "${clean}" from vendor CC on Ticket ${ticket.ticketId}`);
+                return;
+            }
+            if (toLowerSet.has(clean.toLowerCase())) {
+                return; // Skip if already present in TO
+            }
+            if (!visibleVendorCc.includes(clean)) {
+                visibleVendorCc.push(clean);
             }
         });
 
@@ -231,29 +247,30 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             } catch (_) {}
         }
 
-        // 3.5 Find all message IDs in the vendor thread for RFC 5322 In-Reply-To and References chain
+        // 3.5 Find all message IDs strictly in the vendor thread for RFC 5322 In-Reply-To and References chain
+        // RULE 1 (P1): Strictly exclude any reply with type='client' or category='client'
         const isVendorOrMaintTicket = Boolean(ticket.isMaintenance || ticket.ticketType === 'Vendor' || (ticket.ticketId && ticket.ticketId.startsWith('#V')));
         const vendorCategoryFilter = effectiveVendorId
             ? { in: ['vendor', `vendor_${effectiveVendorId}`] }
-            : (isVendorOrMaintTicket ? undefined : { in: ['vendor'] });
+            : { in: ['vendor'] };
 
         const whereClause = {
             ticketId: ticket.id,
-            messageId: { not: null }
-        };
-        if (vendorCategoryFilter) {
-            whereClause.OR = [
+            messageId: { not: null },
+            type: { not: 'client' },
+            OR: [
                 { category: vendorCategoryFilter },
+                ...(effectiveVendorId ? [] : [{ category: { startsWith: 'vendor_' } }]),
                 { type: 'vendor' }
-            ];
-        }
+            ]
+        };
 
         const allVendorReplies = await prisma.reply.findMany({
             where: whereClause,
             orderBy: { createdAt: 'asc' }
         });
 
-        // CRITICAL PRIVACY & THREAD ISOLATION FIX:
+        // CRITICAL PRIVACY & THREAD ISOLATION FIX (RULE 1 P1):
         // On a Client ticket (!isVendorOrMaintTicket), ticket.messageId belongs to the CUSTOMER'S confidential root email!
         // Never use ticket.messageId as threadMessageId or in referencesList on a Client ticket, because:
         // 1) MS Graph createReply would reply directly to the customer's email thread / conversationId
@@ -263,23 +280,48 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             ? lastReply.messageId.trim()
             : (isVendorOrMaintTicket && ticket.messageId ? ticket.messageId.trim() : null);
 
-        // Helper to check if a candidate subject leaks the customer's confidential Circuit ID
-        const leaksClientCircuit = (candSub) => {
-            if (!candSub || isVendorOrMaintTicket || !circuitRecord?.customerCircuitId) return false;
-            const custId = circuitRecord.customerCircuitId.trim();
-            const suppId = (resolvedSupplierCircuitId || '').trim();
-            if (!custId || custId.toLowerCase() === suppId.toLowerCase()) return false;
-            return candSub.toLowerCase().includes(custId.toLowerCase());
+        // Helper to check if a candidate subject leaks the customer's confidential Circuit ID, Client Name, or Client Subject Header
+        const leaksClientData = (candSub) => {
+            if (!candSub || isVendorOrMaintTicket) return false;
+            const lowerSub = candSub.toLowerCase();
+            const suppId = (resolvedSupplierCircuitId || '').trim().toLowerCase();
+
+            // 1. Check customerCircuitId from Circuit table or ticket.circuitId
+            const custCandidates = [
+                circuitRecord?.customerCircuitId,
+                ticket.circuitId
+            ].map(c => (c || '').trim()).filter(Boolean);
+
+            for (const custId of custCandidates) {
+                if (custId.toLowerCase() !== suppId && lowerSub.includes(custId.toLowerCase())) {
+                    return true;
+                }
+            }
+
+            // 2. Check if subject matches the customer's root email header (when header doesn't contain supplierCircuitId)
+            const cleanTicketHeader = (ticket.header || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
+            if (cleanTicketHeader && cleanTicketHeader.length > 8 && (!suppId || !cleanTicketHeader.toLowerCase().includes(suppId))) {
+                if (lowerSub.includes(cleanTicketHeader.toLowerCase())) {
+                    return true;
+                }
+            }
+
+            // 3. Check if subject contains client company name
+            if (clientName && clientName.length >= 3 && lowerSub.includes(clientName.toLowerCase())) {
+                return true;
+            }
+
+            return false;
         };
 
         // Determine outbound subject:
-        // Ignore any historical vendor reply subject that accidentally contained the leaked client circuit ID
+        // Ignore any historical vendor reply subject that accidentally contained leaked client data
         const latestVendorReplyWithSub = [...allVendorReplies]
             .reverse()
-            .find(r => r.subject && r.subject.trim() && r.subject !== 'null' && !leaksClientCircuit(r.subject));
+            .find(r => r.subject && r.subject.trim() && r.subject !== 'null' && !leaksClientData(r.subject));
 
         let outboundSubject = '';
-        if (subject && subject.trim() && !leaksClientCircuit(subject)) {
+        if (subject && subject.trim() && !leaksClientData(subject)) {
             const cleanIncomingSub = sanitizeVendorOutboundSubject(subject);
             if (cleanIncomingSub.toLowerCase().includes(ticket.ticketId.toLowerCase())) {
                 outboundSubject = cleanIncomingSub.startsWith('Re:') ? cleanIncomingSub : `Re: ${cleanIncomingSub}`;
@@ -295,6 +337,13 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         } else {
             // Client-raised ticket fallback: NEVER use ticket.header (which contains confidential client subject/circuit ID)!
             const safeCircuitLabel = resolvedSupplierCircuitId || 'Vendor Link';
+            outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] Issue regarding Circuit ${safeCircuitLabel}`);
+        }
+
+        // FINAL HARD GATE (RULE 1 P1): Guaranteed last-line verification that outboundSubject has zero client circuit/header/name
+        if (leaksClientData(outboundSubject)) {
+            const safeCircuitLabel = resolvedSupplierCircuitId || 'Vendor Link';
+            logger.warn(`🛑 [RULE-1 VENDOR PRIVACY] Blocked client data in vendor subject "${outboundSubject}". Enforcing safe vendor subject.`);
             outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] Issue regarding Circuit ${safeCircuitLabel}`);
         }
 
