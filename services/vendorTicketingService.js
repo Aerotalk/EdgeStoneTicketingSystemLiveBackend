@@ -166,9 +166,14 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
 
         // Helper to sanitize outbound vendor subjects:
         // 1. Removes accidental "|me reply|" artifacts
-        // 2. Collapses duplicate EdgeStone ticket tags (e.g. "[#1157-V] [#1157-V]" -> "[#1157-V]")
-        // 3. Collapses stacked Re:/RE： prefixes around ticket tags (e.g. "RE：[#1082-V] RE：..." -> "Re: [#1082-V] ...")
-        // 4. Preserves external vendor tags (e.g. "[M00000-1547]") so Outlook ConversationTopic never breaks!
+        // 2. Normalizes variant EdgeStone vendor tags like "[1160 V]" or "[#1160 V]" to "[#1160-V]"
+        // 3. Collapses duplicate EdgeStone ticket tags (e.g. "[#1157-V] [#1157-V]" or "[#1160-V] [1160 V]" -> "[#1160-V]")
+        // 4. Collapses stacked Re:/RE： prefixes around ticket tags (e.g. "RE：[#1082-V] RE：..." -> "Re: [#1082-V] ...")
+        // 5. Preserves external vendor tags (e.g. "[M00000-1547]") so Outlook ConversationTopic never breaks!
+        const rawTicketNum = String(ticket.ticketId || '').replace(/^#?V?/i, '').trim();
+        const escapedNum = rawTicketNum.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const canonicalVendorTag = `[${ticket.ticketId}-V]`;
+
         const sanitizeVendorOutboundSubject = (rawSub) => {
             if (!rawSub) return '';
             let s = String(rawSub)
@@ -180,20 +185,54 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             const hasRe = /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i.test(s);
             s = s.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
 
-            // Collapse duplicate EdgeStone ticket tags like "[#1157-V] [#1157-V]" or "[#1082-V] RE：[#1082-V]"
-            const escapedId = ticket.ticketId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const dupTagRegex = new RegExp(`(\\[${escapedId}(?:-V)?\\])(?:\\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)*\\s*\\[${escapedId}(?:-V)?\\])+`, 'gi');
-            s = s.replace(dupTagRegex, '$1');
+            if (escapedNum) {
+                // Normalize any variant tag for this ticket (e.g. "[1160 V]", "[#1160 V]", "[1160-V]", "[#1160]") to canonical "[#1160-V]"
+                const variantTagRegex = new RegExp(`\\[#?V?${escapedNum}(?:[-\\s]+V)?\\]`, 'gi');
+                s = s.replace(variantTagRegex, canonicalVendorTag);
 
-            // Also strip any redundant "RE：" immediately following the EdgeStone ticket tag: "[#1082-V] RE：Link..." -> "[#1082-V] Link..."
-            const tagFollowedByReRegex = new RegExp(`(\\[${escapedId}(?:-V)?\\]\\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)+`, 'gi');
-            s = s.replace(tagFollowedByReRegex, '$1');
+                // Collapse duplicate EdgeStone ticket tags like "[#1157-V] [#1157-V]" or "[#1082-V] RE：[#1082-V]"
+                const escapedCanonical = canonicalVendorTag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const dupTagRegex = new RegExp(`(${escapedCanonical})(?:\\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)*\\s*${escapedCanonical})+`, 'gi');
+                s = s.replace(dupTagRegex, '$1');
+
+                // Also strip any redundant "RE：" immediately following the EdgeStone ticket tag: "[#1082-V] RE：Link..." -> "[#1082-V] Link..."
+                const tagFollowedByReRegex = new RegExp(`(${escapedCanonical}\\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)+`, 'gi');
+                s = s.replace(tagFollowedByReRegex, '$1');
+            }
 
             return hasRe ? `Re: ${s}` : s;
         };
 
+        // Resolve circuit record to enforce strict client-circuit confidentiality on vendor emails
+        let circuitRecord = null;
+        let resolvedSupplierCircuitId = null;
+        if (ticket.circuitId) {
+            try {
+                circuitRecord = await prisma.circuit.findFirst({
+                    where: {
+                        OR: [
+                            { customerCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } },
+                            { supplierCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } },
+                            { id: ticket.circuitId },
+                            { vendorCircuits: { some: { supplierCircuitId: { equals: ticket.circuitId, mode: 'insensitive' } } } }
+                        ]
+                    },
+                    include: { vendorCircuits: true }
+                });
+                if (circuitRecord) {
+                    if (effectiveVendorId && Array.isArray(circuitRecord.vendorCircuits)) {
+                        const vc = circuitRecord.vendorCircuits.find(v => v.vendorId === effectiveVendorId);
+                        if (vc && vc.supplierCircuitId) resolvedSupplierCircuitId = vc.supplierCircuitId;
+                    }
+                    if (!resolvedSupplierCircuitId) {
+                        resolvedSupplierCircuitId = circuitRecord.supplierCircuitId || null;
+                    }
+                }
+            } catch (_) {}
+        }
+
         // 3.5 Find all message IDs in the vendor thread for RFC 5322 In-Reply-To and References chain
-        const isVendorOrMaintTicket = ticket.isMaintenance || ticket.ticketType === 'Vendor';
+        const isVendorOrMaintTicket = Boolean(ticket.isMaintenance || ticket.ticketType === 'Vendor' || (ticket.ticketId && ticket.ticketId.startsWith('#V')));
         const vendorCategoryFilter = effectiveVendorId
             ? { in: ['vendor', `vendor_${effectiveVendorId}`] }
             : (isVendorOrMaintTicket ? undefined : { in: ['vendor'] });
@@ -214,31 +253,49 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             orderBy: { createdAt: 'asc' }
         });
 
-        // The parent message is the very last reply with a messageId, or ticket.messageId
+        // CRITICAL PRIVACY & THREAD ISOLATION FIX:
+        // On a Client ticket (!isVendorOrMaintTicket), ticket.messageId belongs to the CUSTOMER'S confidential root email!
+        // Never use ticket.messageId as threadMessageId or in referencesList on a Client ticket, because:
+        // 1) MS Graph createReply would reply directly to the customer's email thread / conversationId
+        // 2) It would link the vendor email to the customer's email thread headers.
         const lastReply = allVendorReplies.length > 0 ? allVendorReplies[allVendorReplies.length - 1] : null;
-        const threadMessageId = (lastReply && lastReply.messageId) ? lastReply.messageId.trim() : (ticket.messageId ? ticket.messageId.trim() : null);
+        const threadMessageId = (lastReply && lastReply.messageId)
+            ? lastReply.messageId.trim()
+            : (isVendorOrMaintTicket && ticket.messageId ? ticket.messageId.trim() : null);
+
+        // Helper to check if a candidate subject leaks the customer's confidential Circuit ID
+        const leaksClientCircuit = (candSub) => {
+            if (!candSub || isVendorOrMaintTicket || !circuitRecord?.customerCircuitId) return false;
+            const custId = circuitRecord.customerCircuitId.trim();
+            const suppId = (resolvedSupplierCircuitId || '').trim();
+            if (!custId || custId.toLowerCase() === suppId.toLowerCase()) return false;
+            return candSub.toLowerCase().includes(custId.toLowerCase());
+        };
 
         // Determine outbound subject:
-        // If replying to an existing vendor thread that already has a subject from the vendor, preserve that thread's subject
-        // (with clean "Re: " and no duplicate [#Ticket-V] tags) so Outlook ConversationTopic never splits!
-        const latestVendorReplyWithSub = [...allVendorReplies].reverse().find(r => r.subject && r.subject.trim() && r.subject !== 'null');
+        // Ignore any historical vendor reply subject that accidentally contained the leaked client circuit ID
+        const latestVendorReplyWithSub = [...allVendorReplies]
+            .reverse()
+            .find(r => r.subject && r.subject.trim() && r.subject !== 'null' && !leaksClientCircuit(r.subject));
+
         let outboundSubject = '';
-        if (subject && subject.trim()) {
+        if (subject && subject.trim() && !leaksClientCircuit(subject)) {
             const cleanIncomingSub = sanitizeVendorOutboundSubject(subject);
             if (cleanIncomingSub.toLowerCase().includes(ticket.ticketId.toLowerCase())) {
                 outboundSubject = cleanIncomingSub.startsWith('Re:') ? cleanIncomingSub : `Re: ${cleanIncomingSub}`;
             } else if (latestVendorReplyWithSub?.subject) {
-                // Keep existing vendor thread subject structure intact for Outlook threading
                 outboundSubject = sanitizeVendorOutboundSubject(`Re: ${latestVendorReplyWithSub.subject}`);
             } else {
                 outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] ${cleanIncomingSub.replace(/^Re:\s*/i, '')}`);
             }
         } else if (latestVendorReplyWithSub?.subject) {
             outboundSubject = sanitizeVendorOutboundSubject(`Re: ${latestVendorReplyWithSub.subject}`);
-        } else if (ticket.isMaintenance || ticket.ticketType === 'Vendor') {
+        } else if (isVendorOrMaintTicket) {
             outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] ${(ticket.header || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim()}`);
         } else {
-            outboundSubject = sanitizeVendorOutboundSubject(`[${ticket.ticketId}-V] Vendor Support Request: ${ticket.header}`);
+            // Client-raised ticket fallback: NEVER use ticket.header (which contains confidential client subject/circuit ID)!
+            const safeCircuitLabel = resolvedSupplierCircuitId || 'Vendor Link';
+            outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] Issue regarding Circuit ${safeCircuitLabel}`);
         }
 
         // 2. Create Reply Record natively mapped to the vendor category (including subject!)
@@ -265,9 +322,10 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         const emailService = require('./emailService');
 
         // Build RFC 5322 References chain:
-        // root message ID (ticket.messageId if present) + all reply message IDs up to the current one
+        // ONLY include ticket.messageId if the root ticket itself is a Vendor/Maintenance ticket!
+        // Never include a Client ticket's root messageId in vendor References.
         const referencesList = [];
-        if (ticket.messageId && ticket.messageId.trim()) {
+        if (isVendorOrMaintTicket && ticket.messageId && ticket.messageId.trim()) {
             referencesList.push(ticket.messageId.trim());
         }
         for (const rep of allVendorReplies) {

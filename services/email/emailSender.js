@@ -354,21 +354,23 @@ const sendViaGraph = async (options) => {
                 const draftId = draftData.id;
                 const draftInternetMessageId = draftData.internetMessageId;
 
-                // 2. Patch draft with custom recipients, sanitized subject (preserving Outlook ConversationTopic), and content
+                // 2. Patch draft with custom recipients, sanitized subject (always respecting explicit caller subject), and content
                 const sanitizeThreadSubject = (sub) => {
                     if (!sub) return '';
                     return String(sub)
                         .replace(/\|\s*me\s*reply\s*\|/gi, '||')
+                        .replace(/\[#?V?(\d+)(?:[-\s]+V)\]/gi, '[#$1-V]')
                         .replace(/(\[#?V?\d+(?:-V)?\])(?:\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)*\s*\1)+/gi, '$1')
                         .replace(/(\[#?V?\d+(?:-V)?\]\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '$1')
                         .replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, 'Re: ')
                         .replace(/\s+/g, ' ')
                         .trim();
                 };
-                // Preserve parentMsg.subject's topic structure when replying to an existing Graph message so Outlook never splits the thread
-                const effectiveReplySubject = parentMsg.subject
-                    ? sanitizeThreadSubject(`Re: ${parentMsg.subject.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim()}`)
-                    : sanitizeThreadSubject(subject);
+                // CRITICAL: Always use the caller's explicit `subject` (from the portal UI / ticketing service) when provided.
+                // Never overwrite `subject` with `parentMsg.subject`, as that can replace a vendor subject with a client subject or discard subject updates!
+                const effectiveReplySubject = (subject && subject.trim())
+                    ? sanitizeThreadSubject(subject)
+                    : sanitizeThreadSubject(`Re: ${(parentMsg.subject || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim()}`);
 
                 const patchUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}`;
                 const patchPayload = {
