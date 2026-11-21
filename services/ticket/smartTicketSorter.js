@@ -208,6 +208,20 @@ const isVendorResolutionOrClosureNotice = (subject = '', body = '') => {
 };
 
 /**
+ * Detects whether an incoming email is a formal Vendor Outage Notification
+ * (e.g., PCCW Global "Outage Notification - INC000011767887 - Initial Update").
+ */
+const isVendorOutageNotification = (subject = '', body = '') => {
+    const sub = stripHtml(subject || '').trim();
+    const cleanB = stripHtml(body || '').trim();
+    if (/\boutage\s+notification\b/i.test(sub)) return true;
+    if (/pccw\s+global\s+ticket\s+number\s*:\s*inc\d+/i.test(cleanB) && /outage\s+start\s+time\s*:/i.test(cleanB)) {
+        return true;
+    }
+    return false;
+};
+
+/**
  * Detects automated vendor daemon status updates, fault updates, and resolution notices
  * that omit standard RFC-5322 In-Reply-To/References headers and "Re:" prefixes.
  */
@@ -215,6 +229,9 @@ const isVendorAutomatedUpdateOrResolution = (subject = '', body = '') => {
     if (isVendorResolutionOrClosureNotice(subject, body)) return true;
     const sub = stripHtml(subject || '').trim();
     if (/^(?:fault\s+update\b|india\s+incident\s+en_im_\d+_\d+\s+has\s+been\s+opened\b)/i.test(sub)) {
+        return true;
+    }
+    if (/\boutage\s+notification\s*-\s*inc\d+.*?(?:\d+(?:st|nd|rd|th)\s+update|final\s+update|subsequent\s+update|recovery|resolved|cleared)\b/i.test(sub)) {
         return true;
     }
     if (/\bcrq[:\s“"'-]*\d{6,}.*?[–-]\s*(?:rescheduled|completed|postponed|cancelled|canceled)\b/i.test(sub)) {
@@ -495,6 +512,7 @@ module.exports = {
     hasStrictIncidentSignal,
     extractCandidateMaintenanceMeta,
     hasMaintenanceScheduleConflict,
+    isVendorOutageNotification,
     isVendorResolutionOrClosureNotice,
     isVendorAutomatedUpdateOrResolution,
     isAutoReplyOrOutOfOffice,

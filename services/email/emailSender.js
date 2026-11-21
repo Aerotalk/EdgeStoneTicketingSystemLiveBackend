@@ -304,29 +304,24 @@ const sendViaGraph = async (options) => {
                 }
             }
 
+            const coreBracketMatch = clean.match(/<[^>]+>/);
+            const coreWithBrackets = coreBracketMatch ? coreBracketMatch[0] : null;
             const withBrackets = clean.startsWith('<') && clean.endsWith('>') ? clean : `<${clean.replace(/^<+|>+$/g, '')}>`;
             const withoutBrackets = clean.replace(/^<+|>+$/g, '');
+            const idVariants = Array.from(new Set([clean, withBrackets, coreWithBrackets, withoutBrackets].filter(Boolean)));
 
-            try {
-                const queryUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$filter=internetMessageId eq '${encodeURIComponent(withBrackets)}'&$select=id,conversationId,subject&$top=1`;
-                const res = await fetch(queryUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.value && data.value.length > 0) return data.value[0];
+            for (const variant of idVariants) {
+                try {
+                    const escapedVariant = variant.replace(/'/g, "''");
+                    const queryUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$filter=internetMessageId eq '${encodeURIComponent(escapedVariant)}'&$select=id,conversationId,subject&$top=1`;
+                    const res = await fetch(queryUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.value && data.value.length > 0) return data.value[0];
+                    }
+                } catch (e) {
+                    logger.warn(`[EMAIL] Parent lookup failed for ${variant}: ${e.message}`);
                 }
-            } catch (e) {
-                logger.warn(`[EMAIL] Parent lookup with brackets failed for ${withBrackets}: ${e.message}`);
-            }
-
-            try {
-                const queryUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$filter=internetMessageId eq '${encodeURIComponent(withoutBrackets)}'&$select=id,conversationId,subject&$top=1`;
-                const res = await fetch(queryUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.value && data.value.length > 0) return data.value[0];
-                }
-            } catch (e) {
-                logger.warn(`[EMAIL] Parent lookup without brackets failed for ${withoutBrackets}: ${e.message}`);
             }
         }
 
@@ -359,10 +354,25 @@ const sendViaGraph = async (options) => {
                 const draftId = draftData.id;
                 const draftInternetMessageId = draftData.internetMessageId;
 
-                // 2. Patch draft with custom recipients, subject, and content
+                // 2. Patch draft with custom recipients, sanitized subject (preserving Outlook ConversationTopic), and content
+                const sanitizeThreadSubject = (sub) => {
+                    if (!sub) return '';
+                    return String(sub)
+                        .replace(/\|\s*me\s*reply\s*\|/gi, '||')
+                        .replace(/(\[#?V?\d+(?:-V)?\])(?:\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)*\s*\1)+/gi, '$1')
+                        .replace(/(\[#?V?\d+(?:-V)?\]\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '$1')
+                        .replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, 'Re: ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                };
+                // Preserve parentMsg.subject's topic structure when replying to an existing Graph message so Outlook never splits the thread
+                const effectiveReplySubject = parentMsg.subject
+                    ? sanitizeThreadSubject(`Re: ${parentMsg.subject.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim()}`)
+                    : sanitizeThreadSubject(subject);
+
                 const patchUrl = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${draftId}`;
                 const patchPayload = {
-                    subject: subject,
+                    subject: effectiveReplySubject,
                     body: {
                         contentType: html ? 'HTML' : 'Text',
                         content: html || text || body || ''

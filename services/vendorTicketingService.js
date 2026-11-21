@@ -164,28 +164,34 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
 
         const effectiveVendorId = emailData.vendorId || ticket.vendorId;
 
-        // 2. Create Reply Record natively mapped to the vendor category
-        const reply = await TicketModel.addReply(ticket.id, {
-            text: (message !== undefined && message !== null && message.trim() !== '') ? message : (htmlContent || ' '),
-            time: new Date().toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }),
-            date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-            author: agentName || 'Agent',
-            type: 'agent',
-            category: effectiveVendorId ? `vendor_${effectiveVendorId}` : 'vendor', // Explicitly marking this thread as vendor-side
-            to: vendorContactEmails,
-            cc: visibleVendorCc,
-            bcc: hiddenVendorBcc,
-            attachments: attachments || []
-        });
+        // Helper to sanitize outbound vendor subjects:
+        // 1. Removes accidental "|me reply|" artifacts
+        // 2. Collapses duplicate EdgeStone ticket tags (e.g. "[#1157-V] [#1157-V]" -> "[#1157-V]")
+        // 3. Collapses stacked Re:/RE： prefixes around ticket tags (e.g. "RE：[#1082-V] RE：..." -> "Re: [#1082-V] ...")
+        // 4. Preserves external vendor tags (e.g. "[M00000-1547]") so Outlook ConversationTopic never breaks!
+        const sanitizeVendorOutboundSubject = (rawSub) => {
+            if (!rawSub) return '';
+            let s = String(rawSub)
+                .replace(/\|\s*me\s*reply\s*\|/gi, '||')
+                .replace(/\s+/g, ' ')
+                .trim();
 
-        logger.info(`🎟️ [TICKET] ✅ Vendor Reply added to database for Ticket ${ticket.ticketId}`);
+            // Strip any leading Re:/RE： prefixes temporarily
+            const hasRe = /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i.test(s);
+            s = s.replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim();
 
-        const emailService = require('./emailService');
-        
+            // Collapse duplicate EdgeStone ticket tags like "[#1157-V] [#1157-V]" or "[#1082-V] RE：[#1082-V]"
+            const escapedId = ticket.ticketId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const dupTagRegex = new RegExp(`(\\[${escapedId}(?:-V)?\\])(?:\\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)*\\s*\\[${escapedId}(?:-V)?\\])+`, 'gi');
+            s = s.replace(dupTagRegex, '$1');
+
+            // Also strip any redundant "RE：" immediately following the EdgeStone ticket tag: "[#1082-V] RE：Link..." -> "[#1082-V] Link..."
+            const tagFollowedByReRegex = new RegExp(`(\\[${escapedId}(?:-V)?\\]\\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)+`, 'gi');
+            s = s.replace(tagFollowedByReRegex, '$1');
+
+            return hasRe ? `Re: ${s}` : s;
+        };
+
         // 3.5 Find all message IDs in the vendor thread for RFC 5322 In-Reply-To and References chain
         const isVendorOrMaintTicket = ticket.isMaintenance || ticket.ticketType === 'Vendor';
         const vendorCategoryFilter = effectiveVendorId
@@ -211,6 +217,52 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
         // The parent message is the very last reply with a messageId, or ticket.messageId
         const lastReply = allVendorReplies.length > 0 ? allVendorReplies[allVendorReplies.length - 1] : null;
         const threadMessageId = (lastReply && lastReply.messageId) ? lastReply.messageId.trim() : (ticket.messageId ? ticket.messageId.trim() : null);
+
+        // Determine outbound subject:
+        // If replying to an existing vendor thread that already has a subject from the vendor, preserve that thread's subject
+        // (with clean "Re: " and no duplicate [#Ticket-V] tags) so Outlook ConversationTopic never splits!
+        const latestVendorReplyWithSub = [...allVendorReplies].reverse().find(r => r.subject && r.subject.trim() && r.subject !== 'null');
+        let outboundSubject = '';
+        if (subject && subject.trim()) {
+            const cleanIncomingSub = sanitizeVendorOutboundSubject(subject);
+            if (cleanIncomingSub.toLowerCase().includes(ticket.ticketId.toLowerCase())) {
+                outboundSubject = cleanIncomingSub.startsWith('Re:') ? cleanIncomingSub : `Re: ${cleanIncomingSub}`;
+            } else if (latestVendorReplyWithSub?.subject) {
+                // Keep existing vendor thread subject structure intact for Outlook threading
+                outboundSubject = sanitizeVendorOutboundSubject(`Re: ${latestVendorReplyWithSub.subject}`);
+            } else {
+                outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] ${cleanIncomingSub.replace(/^Re:\s*/i, '')}`);
+            }
+        } else if (latestVendorReplyWithSub?.subject) {
+            outboundSubject = sanitizeVendorOutboundSubject(`Re: ${latestVendorReplyWithSub.subject}`);
+        } else if (ticket.isMaintenance || ticket.ticketType === 'Vendor') {
+            outboundSubject = sanitizeVendorOutboundSubject(`Re: [${ticket.ticketId}-V] ${(ticket.header || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim()}`);
+        } else {
+            outboundSubject = sanitizeVendorOutboundSubject(`[${ticket.ticketId}-V] Vendor Support Request: ${ticket.header}`);
+        }
+
+        // 2. Create Reply Record natively mapped to the vendor category (including subject!)
+        const reply = await TicketModel.addReply(ticket.id, {
+            text: (message !== undefined && message !== null && message.trim() !== '') ? message : (htmlContent || ' '),
+            time: new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }),
+            date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+            author: agentName || 'Agent',
+            type: 'agent',
+            category: effectiveVendorId ? `vendor_${effectiveVendorId}` : 'vendor', // Explicitly marking this thread as vendor-side
+            to: vendorContactEmails,
+            cc: visibleVendorCc,
+            bcc: hiddenVendorBcc,
+            subject: outboundSubject,
+            attachments: attachments || []
+        });
+
+        logger.info(`🎟️ [TICKET] ✅ Vendor Reply added to database for Ticket ${ticket.ticketId}`);
+
+        const emailService = require('./emailService');
 
         // Build RFC 5322 References chain:
         // root message ID (ticket.messageId if present) + all reply message IDs up to the current one
@@ -253,11 +305,7 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
             to: vendorContactEmails,
             cc: visibleVendorCc,
             bcc: hiddenVendorBcc,
-            subject: subject ? 
-                (subject.includes(`[${ticket.ticketId}`) ? subject : `Re: [${ticket.ticketId}-V] ${subject}`) : 
-                ((ticket.isMaintenance || ticket.ticketType === 'Vendor') ?
-                    `Re: [${ticket.ticketId}-V] ${ticket.header.replace(/^(Re|Fwd|FW|RE|FWD):\s*/gi, '').trim()}` :
-                    `[${ticket.ticketId}-V] Vendor Support Request: ${ticket.header}`),
+            subject: outboundSubject,
             html: emailHtml,
             text: message || '',
             inReplyTo: threadMessageId, 

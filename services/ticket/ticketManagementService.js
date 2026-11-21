@@ -77,7 +77,14 @@ const replyToTicket = async (ticketId, message, agentEmail, agentName, htmlConte
         }
 
         const recipientEmails = (emailOverrides.to && Array.isArray(emailOverrides.to) && emailOverrides.to.length > 0) ? emailOverrides.to : [ticket.email];
-        const emailSubject = emailOverrides.subject || `Re: [${ticket.ticketId}] ${ticket.header}`;
+        const rawEmailSubject = emailOverrides.subject || `Re: [${ticket.ticketId}] ${ticket.header}`;
+        const escapedTicketId = ticket.ticketId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const emailSubject = String(rawEmailSubject)
+            .replace(/\|\s*me\s*reply\s*\|/gi, '||')
+            .replace(new RegExp(`(\\[${escapedTicketId}(?:-V)?\\])(?:\\s*(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)*\\s*\\[${escapedTicketId}(?:-V)?\\])+`, 'gi'), '$1')
+            .replace(new RegExp(`(\\[${escapedTicketId}(?:-V)?\\]\\s*)(?:(?:re|fwd|fw|回复|答复|转发)[：:\\s]+)+`, 'gi'), '$1')
+            .replace(/\s+/g, ' ')
+            .trim();
         const rawCc = (emailOverrides.cc && Array.isArray(emailOverrides.cc)) ? emailOverrides.cc : (Array.isArray(ticket.cc) ? ticket.cc : []);
         const toLowerSet = new Set(recipientEmails.map(e => e && e.toLowerCase().trim()));
         const ccEmails = Array.from(new Set(rawCc.map(e => e && e.trim()).filter(Boolean)))

@@ -30,13 +30,15 @@ const appendAgentReplyFromOutlook = async (ticket, emailData) => {
         }
     }
 
-    // Duplicate check 2: by text match against existing replies
+    // Duplicate check 2: by text match against existing portal-originated agent replies without a messageId
     const existingReplies = await prisma.reply.findMany({
-        where: { ticketId: ticket.id }
+        where: { ticketId: ticket.id, type: 'agent' }
     });
+    const cleanIncomingText = replyText.trim();
     const dupText = existingReplies.find(r => {
-        const cleanRText = r.text.trim();
-        return cleanRText && cleanRText.length > 5 && replyText.includes(cleanRText);
+        if (r.messageId && messageId && r.messageId !== messageId) return false;
+        const cleanRText = (r.text || '').trim();
+        return cleanRText && cleanRText.length > 5 && cleanIncomingText === cleanRText;
     });
     if (dupText) {
         logger.info(`🎟️ [TICKET] Reply content already exists in Ticket ${ticket.ticketId}. Linking messageId.`);

@@ -91,8 +91,8 @@ const stripQuotedReply = (text) => {
         return lastTableOpen !== -1 && (lastTableClose === -1 || lastTableClose < lastTableOpen);
     };
 
-    // 1. Outlook / Exchange Style
-    let idx = text.search(/From:\s.*?\nSent:\s/i);
+    // 1. Outlook / Exchange Style (supports plain text and HTML-preserved <b>From:</b>...<br/><b>Sent:</b>)
+    let idx = text.search(/(?:<br\s*\/?>|<p>|\n|^)\s*(?:<(?:b|strong)>\s*)?From:\s*(?:<\/(?:b|strong)>\s*)?[\s\S]{1,400}?(?:<br\s*\/?>|\n)\s*(?:<(?:b|strong)>\s*)?(?:Sent|Date):\s*/i);
     if (idx !== -1 && !isInsideTable(text, idx)) text = text.substring(0, idx);
 
     // 2. Generic "Original Message" separator (English & Chinese/Vendor)

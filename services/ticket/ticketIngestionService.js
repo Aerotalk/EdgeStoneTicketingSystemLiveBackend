@@ -120,9 +120,16 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
 
             const isVendorTicket = existingTicket.ticketType === 'Vendor' || (existingTicket.ticketId && existingTicket.ticketId.startsWith('#V')) || existingTicket.isMaintenance;
 
-            // Determine if the sender is a known Vendor (case-insensitive)
+            // Determine if the sender is a known Vendor (case-insensitive exact or corporate domain match)
             const vendors = await VendorModel.findAllVendors();
-            let matchedVendors = vendors.filter(v => v.emails.some(e => e.toLowerCase() === from.toLowerCase()));
+            const cleanFromAddr = (from || '').trim().toLowerCase();
+            const fromDomain = cleanFromAddr.includes('@') ? cleanFromAddr.split('@')[1] : '';
+            let matchedVendors = vendors.filter(v =>
+                Array.isArray(v.emails) && v.emails.some(e =>
+                    e.toLowerCase() === cleanFromAddr ||
+                    (fromDomain && !GENERIC_PUBLIC_DOMAINS.has(fromDomain) && e.toLowerCase().endsWith('@' + fromDomain))
+                )
+            );
             let isVendor = matchedVendors.length > 0 || isVendorTicket;
             let finalVendorId = isVendorTicket ? (existingTicket.vendorId || (matchedVendors[0]?.id || null)) : null;
 
@@ -754,14 +761,15 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
             logger.error(`🚨 🎟️ [TICKET] ❌ Failed to process AI Circuit identification: ${dbErr.message}`);
         }
 
-        // CRITICAL GATE: If no circuit matches DB, drop email unless maintenance/CRQ notice
+        // CRITICAL GATE: If no circuit matches DB, drop email unless maintenance/CRQ notice or formal Vendor Outage Notification
         if (!circuitId) {
             const isVendorSender = potentialVendorIds.length > 0 || domainMatchedVendorIds.length > 0;
             const isClientSender = potentialClientIds.length > 0 || domainMatchedClientIds.length > 0;
             const isMaintenanceContext = SmartSorter.isFormalMaintenanceNotice(subject, body) || SmartSorter.hasMaintenanceSignal(subject, body);
+            const isVendorOutageContext = isVendorSender && SmartSorter.isVendorOutageNotification(subject, body);
 
-            if (isMaintenanceContext) {
-                logger.warn(`⚠️ 🎟️ [TICKET] Circuit not matched in DB, but maintenance/CRQ context detected in "${subject}" from ${from}. Creating Maintenance Ticket for NOC review instead of dropping.`);
+            if (isMaintenanceContext || isVendorOutageContext) {
+                logger.warn(`⚠️ 🎟️ [TICKET] Circuit not matched in DB, but ${isVendorOutageContext ? 'Vendor Outage Notification' : 'maintenance/CRQ'} context detected in "${subject}" from ${from}. Creating Ticket for NOC review instead of dropping.`);
                 if (isClientSender && !isVendorSender && !isAgentMaintenanceNotice) {
                     ticketType = 'Client';
                     clientId = potentialClientIds[0] || domainMatchedClientIds[0] || null;
@@ -1109,7 +1117,7 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
         logger.info(`🎟️ [TICKET] ✅ ${ticketType} Ticket Created Successfully: ${ticket.ticketId} at ${ticket.receivedTime}`);
         try {
             const notificationService = require('../notificationService');
-            const notifMsg = (!circuitId && initialIsMaintenance)
+            const notifMsg = (!circuitId && ticket.isMaintenance)
                 ? `🚨 New Maintenance Notice (Needs Circuit): ${ticket.ticketId} - ${ticket.header}`
                 : `New Ticket Raised: ${ticket.ticketId}`;
             notificationService.sendNotification({ type: 'new_ticket', message: notifMsg, ticketId: ticket.ticketId });
