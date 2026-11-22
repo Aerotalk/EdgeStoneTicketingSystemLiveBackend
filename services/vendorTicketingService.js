@@ -261,7 +261,7 @@ const replyToVendor = async (ticketId, emailData, agentEmail, agentName) => {
                     ? [{ category: `vendor_${effectiveVendorId}` }]
                     : [
                         { category: { in: ['vendor', `vendor_${effectiveVendorId}`] } },
-                        { AND: [{ type: 'vendor' }, { OR: [{ category: null }, { category: 'vendor' }, { category: `vendor_${effectiveVendorId}` }] }] }
+                        { type: 'vendor' }
                     ])
                 : [
                     { category: 'vendor' },
