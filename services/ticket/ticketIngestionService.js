@@ -841,10 +841,10 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
                     include: { replies: { select: { text: true, subject: true } } },
                     orderBy: { createdAt: 'desc' }
                 });
-                // Prefer Open/In Progress tickets before Closed/Resolved, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+                // Prefer Open/In Progress tickets before Closed/Resolved/Others, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
                 candidateTickets.sort((a, b) => {
-                    const aOpen = !['Closed', 'Resolved'].includes(a.status) ? 1 : 0;
-                    const bOpen = !['Closed', 'Resolved'].includes(b.status) ? 1 : 0;
+                    const aOpen = ['Open', 'In Progress'].includes(a.status) ? 1 : 0;
+                    const bOpen = ['Open', 'In Progress'].includes(b.status) ? 1 : 0;
                     if (aOpen !== bOpen) return bOpen - aOpen;
                     const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
                     const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
@@ -855,7 +855,7 @@ const createTicketFromEmail = (emailData) => withIngestionLock(async () => {
                 const isAutomatedVendorUpdateOrClose = SmartSorter.isVendorAutomatedUpdateOrResolution(subject, body);
 
                 let activeVendorTicket = candidateTickets.find(t => {
-                    if (['Closed', 'Resolved'].includes(t.status)) return false;
+                    if (['Closed', 'Resolved', 'Others'].includes(t.status)) return false;
                     if (SmartSorter.isBusinessProcessBarrierVeto(t, { subject, body })) return false;
                     if (!isIncomingMaintEmail) {
                         // Vendor incident email: match active incident ticket (including Client tickets with active SLA even if legacy status was Maintenance)

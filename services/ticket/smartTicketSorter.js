@@ -37,7 +37,7 @@ const MAINT_REGEX = /(?:emergency|planned|scheduled|urgent)?\s*maint(?:en|ain)[a
 const PURE_MAINT_NOTICE_REGEX = /(?:(?:emergency|planned|scheduled|urgent)\s*maint(?:en|ain)[ae]nce|maint(?:en|ain)[ae]nce\s*(?:activity|notification|notice|advisory|work|window)|planned\s*outage\s*notification|(?:umw|rpo)\s*reference\s*(?:number|no)?[\s:]*[a-z0-9\\/_-]+|\bcrq\s*[-#:"']*\s*\d+)/i;
 const INCIDENT_REGEX = /(?:flap|flapping|down|outage|rfo|issue|fault|alarm|los|degraded|packet\s*loss)/i;
 const STRICT_INCIDENT_REGEX = /(?:flap|flapping|down|outage|rfo|packet\s*loss)/i;
-const SLA_REBATE_REGEX = /\b(?:sla\s*rebate|rebate\s*request|rebate\s*calculation|rebate\s*information|rebate\s*claim|credit\s*note|sla\s*credit|service\s*credit|sla\s*penalty|sla\s*compensation|billing\s*dispute|invoice\s*dispute|commercial\s*rebate)\b/i;
+const SLA_REBATE_REGEX = /\b(?:sla\s*rebate|rebate\s*request|rebate\s*calculation|rebate\s*information|rebate\s*claim|credit\s*note|sla\s*credit|service\s*credit|sla\s*penalty|sla\s*compensation|billing\s*dispute|invoice\s*dispute|commercial\s*rebate|share\s+the\s+availability\s+for\s+the\s+below\s+time\s+period|monthly\s+availability\s+report)\b/i;
 const REPLY_PREFIX_REGEX = /^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/i;
 const TICKET_TAG_REGEX = /(?:\[|【)#?[A-Za-z0-9_-]+?(?:-V)?(?:\]|】)/i;
 const VENDOR_APPENDED_SUFFIX_REGEX = /(?:\byj\d{8,}\s+\d{10,}|\|\s*neutrality\.one\s*#\d+)\s*$/i;
@@ -316,6 +316,18 @@ const isBusinessProcessBarrierVeto = (candidate, { subject, body } = {}) => {
     if (incomingIsRebate !== candidateIsRebate) {
         logger.warn(`🚫 [SORTER:BUSINESS PROCESS BARRIER] Blocked "${subject}" (Rebate/Commercial=${incomingIsRebate}) from Ticket ${candidate.ticketId} ("${candidate.header}", Rebate/Commercial=${candidateIsRebate}).`);
         return true;
+    }
+
+    // Isolate tickets marked with status="Others" (e.g. general inquiries / availability reports)
+    // so new Link Down / Outage / Maintenance notifications never merge into an "Others" ticket unless the subject directly matches its header.
+    if (String(candidate.status || '').toLowerCase() === 'others') {
+        const normIn = stripHtml(subject || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim().toLowerCase();
+        const normCand = stripHtml(candidate.header || '').replace(/^(?:(?:re|fwd|fw|回复|答复|转发)[：:\s]+)+/gi, '').trim().toLowerCase();
+        const isDirectHeaderContinuation = normIn && normCand && (normIn === normCand || normIn.includes(normCand) || normCand.includes(normIn));
+        if (!isDirectHeaderContinuation && (hasStrictIncidentSignal(subject, body) || isFormalMaintenanceNotice(subject, body))) {
+            logger.warn(`🚫 [SORTER:OTHERS STATUS BARRIER] Blocked incident/maintenance email "${subject}" from "Others" Ticket ${candidate.ticketId} ("${candidate.header}").`);
+            return true;
+        }
     }
 
     // Check if the incoming email explicitly references a historical incident date that predates the candidate ticket

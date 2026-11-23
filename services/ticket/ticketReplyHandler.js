@@ -51,120 +51,126 @@ const appendAgentReplyFromOutlook = async (ticket, emailData) => {
         return dupText;
     }
 
-    // Determine category: Vendor thread or Client thread based on actual recipients
+    // Determine category: Vendor thread or Client thread based on actual recipients & multi-vendor supplier circuit ID
     let category = 'client';
-    const isVendorTag = subject && /\[#?V?\d+-V\]/i.test(subject);
+    const isVendorTag = Boolean(subject && /\[#?V?\d+(?:[-\s]+V)\]/i.test(subject));
     const toRecips = (Array.isArray(to) ? to : (to ? [to] : [])).map(r => (r || '').toLowerCase().trim());
     const ccRecips = (Array.isArray(cc) ? cc : (cc ? [cc] : [])).map(r => (r || '').toLowerCase().trim());
     const allRecips = [...toRecips, ...ccRecips];
 
-    if (isVendorTag) {
-        category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
-    } else {
-        try {
-            const ClientModel = require('../../models/client');
-            const VendorModel = require('../../models/vendor');
+    try {
+        const ClientModel = require('../../models/client');
+        const VendorModel = require('../../models/vendor');
 
-            const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'edgestone.in'];
+        const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'edgestone.in'];
 
-            // 1. Check if recipients match the specific Client on this ticket
-            let ticketClientMatch = false;
-            const clients = await ClientModel.findAllClients();
-            if (ticket.clientId) {
-                const ticketClient = clients.find(c => c.id === ticket.clientId);
-                if (ticketClient) {
-                    ticketClientMatch = (ticketClient.emails || []).some(e => {
-                        const cleanE = e.toLowerCase().trim();
-                        if (allRecips.includes(cleanE)) return true;
-                        const cDomain = cleanE.split('@')[1];
-                        if (cDomain && !genericDomains.includes(cDomain)) {
-                            return allRecips.some(r => r.endsWith('@' + cDomain));
-                        }
-                        return false;
-                    });
-                }
-            }
-
-            // 2. Check if recipients match the specific Vendor(s) on this ticket or circuit
-            const vendors = await VendorModel.findAllVendors();
-            let ticketVendorMatch = null;
-            const circuitVendorIds = new Set();
-            if (ticket.vendorId) circuitVendorIds.add(ticket.vendorId);
-            if (ticket.circuitId) {
-                try {
-                    const ckt = await prisma.circuit.findFirst({
-                        where: { OR: [ { customerCircuitId: ticket.circuitId }, { supplierCircuitId: ticket.circuitId }, { id: ticket.circuitId } ] },
-                        include: { vendorCircuits: true }
-                    });
-                    if (ckt) {
-                        if (ckt.vendorId) circuitVendorIds.add(ckt.vendorId);
-                        if (Array.isArray(ckt.vendorCircuits)) {
-                            ckt.vendorCircuits.forEach(vc => { if (vc.vendorId) circuitVendorIds.add(vc.vendorId); });
-                        }
+        // 1. Check if recipients match the specific Client on this ticket
+        let ticketClientMatch = false;
+        const clients = await ClientModel.findAllClients();
+        if (ticket.clientId) {
+            const ticketClient = clients.find(c => c.id === ticket.clientId);
+            if (ticketClient) {
+                ticketClientMatch = (ticketClient.emails || []).some(e => {
+                    const cleanE = e.toLowerCase().trim();
+                    if (allRecips.includes(cleanE)) return true;
+                    const cDomain = cleanE.split('@')[1];
+                    if (cDomain && !genericDomains.includes(cDomain)) {
+                        return allRecips.some(r => r.endsWith('@' + cDomain));
                     }
-                } catch (_) {}
+                    return false;
+                });
             }
-
-            for (const vid of circuitVendorIds) {
-                const v = vendors.find(x => x.id === vid);
-                if (v) {
-                    const hasV = (v.emails || []).some(e => {
-                        const cleanE = e.toLowerCase().trim();
-                        if (allRecips.includes(cleanE)) return true;
-                        const vDomain = cleanE.split('@')[1];
-                        if (vDomain && !genericDomains.includes(vDomain)) {
-                            return allRecips.some(r => r.endsWith('@' + vDomain));
-                        }
-                        return false;
-                    });
-                    if (hasV) {
-                        ticketVendorMatch = v;
-                        break;
-                    }
-                }
-            }
-
-            // 3. Fallback: Global client & vendor matching across the database
-            const matchedClient = clients.find(c => (c.emails || []).some(e => {
-                const cleanE = e.toLowerCase().trim();
-                if (allRecips.includes(cleanE)) return true;
-                const cDomain = cleanE.split('@')[1];
-                if (cDomain && !genericDomains.includes(cDomain)) {
-                    return allRecips.some(r => r.endsWith('@' + cDomain));
-                }
-                return false;
-            }));
-
-            const matchedVendor = vendors.find(v => (v.emails || []).some(e => {
-                const cleanE = e.toLowerCase().trim();
-                if (allRecips.includes(cleanE)) return true;
-                const vDomain = cleanE.split('@')[1];
-                if (vDomain && !genericDomains.includes(vDomain)) {
-                    return allRecips.some(r => r.endsWith('@' + vDomain));
-                }
-                return false;
-            }));
-
-            // Prioritization: Ticket-specific vendor/client beats generic, vendor beats client if ticket has vendor
-            if (ticketVendorMatch) {
-                category = `vendor_${ticketVendorMatch.id}`;
-            } else if (ticketClientMatch) {
-                category = 'client';
-            } else if (matchedVendor && !matchedClient) {
-                category = `vendor_${matchedVendor.id}`;
-            } else if (matchedClient && !matchedVendor) {
-                category = 'client';
-            } else if (matchedVendor) {
-                category = `vendor_${matchedVendor.id}`;
-            } else if (ticket.ticketType === 'Vendor') {
-                category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
-            } else {
-                category = 'client';
-            }
-        } catch (e) {
-            logger.error(`Error checking recipient category: ${e.message}`);
-            category = ticket.ticketType === 'Vendor' ? (ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor') : 'client';
         }
+
+        // 2. Check if recipients or subject Supplier Circuit ID match the specific Vendor(s) on this ticket or circuit
+        const vendors = await VendorModel.findAllVendors();
+        let ticketVendorMatch = null;
+        const circuitVendorIds = new Set();
+        let circuitRecord = null;
+        if (ticket.vendorId) circuitVendorIds.add(ticket.vendorId);
+        if (ticket.circuitId) {
+            try {
+                circuitRecord = await prisma.circuit.findFirst({
+                    where: { OR: [ { customerCircuitId: ticket.circuitId }, { supplierCircuitId: ticket.circuitId }, { id: ticket.circuitId } ] },
+                    include: { vendorCircuits: true }
+                });
+                if (circuitRecord) {
+                    if (circuitRecord.vendorId) circuitVendorIds.add(circuitRecord.vendorId);
+                    if (Array.isArray(circuitRecord.vendorCircuits)) {
+                        circuitRecord.vendorCircuits.forEach(vc => { if (vc.vendorId) circuitVendorIds.add(vc.vendorId); });
+                    }
+                }
+            } catch (_) {}
+        }
+
+        for (const vid of circuitVendorIds) {
+            const v = vendors.find(x => x.id === vid);
+            if (v) {
+                const hasV = (v.emails || []).some(e => {
+                    const cleanE = e.toLowerCase().trim();
+                    if (allRecips.includes(cleanE)) return true;
+                    const vDomain = cleanE.split('@')[1];
+                    if (vDomain && !genericDomains.includes(vDomain)) {
+                        return allRecips.some(r => r.endsWith('@' + vDomain));
+                    }
+                    return false;
+                });
+                if (hasV) {
+                    ticketVendorMatch = v;
+                    break;
+                }
+            }
+        }
+
+        // 2b. Multi-vendor subject circuit fallback: if subject mentions a specific vendorCircuit's supplierCircuitId (e.g. NEU-EDGS-1092 vs G773 276)
+        if (!ticketVendorMatch && circuitRecord?.isMultiVendor && Array.isArray(circuitRecord.vendorCircuits) && subject) {
+            const subUpper = subject.toUpperCase();
+            const matchedVc = circuitRecord.vendorCircuits.find(vc => vc.supplierCircuitId && subUpper.includes(vc.supplierCircuitId.trim().toUpperCase()));
+            if (matchedVc && matchedVc.vendorId) {
+                ticketVendorMatch = vendors.find(x => x.id === matchedVc.vendorId) || { id: matchedVc.vendorId };
+            }
+        }
+
+        // 3. Fallback: Global client & vendor matching across the database
+        const matchedClient = clients.find(c => (c.emails || []).some(e => {
+            const cleanE = e.toLowerCase().trim();
+            if (allRecips.includes(cleanE)) return true;
+            const cDomain = cleanE.split('@')[1];
+            if (cDomain && !genericDomains.includes(cDomain)) {
+                return allRecips.some(r => r.endsWith('@' + cDomain));
+            }
+            return false;
+        }));
+
+        const matchedVendor = vendors.find(v => (v.emails || []).some(e => {
+            const cleanE = e.toLowerCase().trim();
+            if (allRecips.includes(cleanE)) return true;
+            const vDomain = cleanE.split('@')[1];
+            if (vDomain && !genericDomains.includes(vDomain)) {
+                return allRecips.some(r => r.endsWith('@' + vDomain));
+            }
+            return false;
+        }));
+
+        // Prioritization: Ticket-specific vendor/client beats generic, vendor tag forces vendor fallback
+        if (ticketVendorMatch) {
+            category = `vendor_${ticketVendorMatch.id}`;
+        } else if (ticketClientMatch && !isVendorTag) {
+            category = 'client';
+        } else if (matchedVendor && (!matchedClient || isVendorTag)) {
+            category = `vendor_${matchedVendor.id}`;
+        } else if (matchedClient && !matchedVendor && !isVendorTag) {
+            category = 'client';
+        } else if (matchedVendor) {
+            category = `vendor_${matchedVendor.id}`;
+        } else if (isVendorTag || ticket.ticketType === 'Vendor') {
+            category = ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor';
+        } else {
+            category = 'client';
+        }
+    } catch (e) {
+        logger.error(`Error checking recipient category: ${e.message}`);
+        category = (isVendorTag || ticket.ticketType === 'Vendor') ? (ticket.vendorId ? `vendor_${ticket.vendorId}` : 'vendor') : 'client';
     }
 
     const reply = await TicketModel.addReply(ticket.id, {

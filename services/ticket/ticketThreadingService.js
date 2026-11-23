@@ -321,18 +321,25 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                     !SmartSorter.isFormalMaintenanceNotice(matchingDocketTicket.header || '', '') &&
                     detectedCircuit
                 ) {
+                    // Only promote a split Vendor ticket into a Client incident ticket if the Client ticket is
+                    // actively Open/In Progress and was created within 24 hours of the Vendor ticket (same incident window).
+                    // Never promote a proactive Vendor outage ticket into an old "Others" or "Closed" ticket!
+                    const vendorCreatedMs = new Date(matchingDocketTicket.createdAt).getTime();
+                    const minIncidentWindow = new Date(vendorCreatedMs - 24 * 60 * 60 * 1000);
+                    const maxIncidentWindow = new Date(vendorCreatedMs + 24 * 60 * 60 * 1000);
                     const rootClientCandidates = await prisma.ticket.findMany({
                         where: {
                             ticketType: 'Client',
-                            status: { notIn: ['Spam'] },
-                            createdAt: { gte: MIN_OPERATIONAL_DATE, lte: matchingDocketTicket.createdAt }
+                            isMaintenance: false,
+                            status: { in: ['Open', 'In Progress'] },
+                            createdAt: { gte: minIncidentWindow, lte: maxIncidentWindow }
                         },
                         include: candidateInclude,
                         orderBy: { createdAt: 'desc' }
                     });
                     const parentClientTicket = rootClientCandidates.find(t => isValidReplyCandidate(t, t.ticketId));
                     if (parentClientTicket) {
-                        logger.info(`🎟️ [TICKET] 🔀 Promoted Vendor TT Docket match "${rawDocket}" from split Vendor Ticket ${matchingDocketTicket.ticketId} to root Client Incident Ticket ${parentClientTicket.ticketId}`);
+                        logger.info(`🎟️ [TICKET] 🔀 Promoted Vendor TT Docket match "${rawDocket}" from split Vendor Ticket ${matchingDocketTicket.ticketId} to active Client Incident Ticket ${parentClientTicket.ticketId}`);
                         matchingDocketTicket = parentClientTicket;
                     }
                 }
@@ -402,10 +409,10 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 include: candidateInclude,
                 orderBy: { createdAt: 'desc' }
             });
-            // Prefer Open/In Progress tickets before Closed/Resolved, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
+            // Prefer Open/In Progress tickets before Closed/Resolved/Others, Client incident tickets over Vendor tickets, and newest (createdAt desc) first!
             allTickets.sort((a, b) => {
-                const aOpen = !['Closed', 'Resolved'].includes(a.status) ? 1 : 0;
-                const bOpen = !['Closed', 'Resolved'].includes(b.status) ? 1 : 0;
+                const aOpen = ['Open', 'In Progress'].includes(a.status) ? 1 : 0;
+                const bOpen = ['Open', 'In Progress'].includes(b.status) ? 1 : 0;
                 if (aOpen !== bOpen) return bOpen - aOpen;
                 const aClient = (a.ticketType === 'Client' && !a.isMaintenance) ? 1 : 0;
                 const bClient = (b.ticketType === 'Client' && !b.isMaintenance) ? 1 : 0;
@@ -495,7 +502,7 @@ const findExistingTicketForReply = async (inReplyTo, references, subject, body =
                 if (!t.circuitId || hasSubjectDocketConflict(t) || !isValidReplyCandidate(t, t.ticketId)) return false;
                 if (!t.isMaintenance && ['Open', 'In Progress'].includes(t.status)) return true;
                 // Handle Client incident tickets that were historically mis-tagged with status='Maintenance'
-                if (t.ticketType === 'Client' && t.isSlaActive && SmartSorter.hasStrictIncidentSignal(t.header || '', '') && !['Closed', 'Resolved', 'Spam'].includes(t.status)) {
+                if (t.ticketType === 'Client' && t.isSlaActive && SmartSorter.hasStrictIncidentSignal(t.header || '', '') && !['Closed', 'Resolved', 'Others', 'Spam'].includes(t.status)) {
                     return true;
                 }
                 return false;

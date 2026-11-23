@@ -1,0 +1,2420 @@
+{
+  "t1056": {
+    "id": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+    "ticketId": "#1056",
+    "header": "IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+    "email": "Kamal.Narula@airtel.com",
+    "status": "Others",
+    "priority": "Medium",
+    "circuitId": "BA/SG1-DX1-FR5/ESPL-013",
+    "messageId": "<PN1PPF347DBB214FC44B910254C6064EF0CF36E2@PN1PPF347DBB214.INDPRD01.PROD.OUTLOOK.COM>",
+    "date": "29 Oct 2026",
+    "receivedAt": "2026-10-29T15:46:26.000Z",
+    "receivedTime": "15:46",
+    "clientId": "ca767ba6-0b15-4dac-83c1-89acdbf5f400",
+    "vendorId": "af1ead6f-a9a3-40f3-9207-fd279643f10a",
+    "ticketType": "Client",
+    "assignedUserId": null,
+    "createdAt": "2026-10-29T15:46:28.148Z",
+    "updatedAt": "2026-10-29T18:18:59.222Z",
+    "isSlaActive": true,
+    "isMaintenance": false,
+    "cc": [
+      "prajwal@edgestone.in",
+      "kaushik@edgestone.in",
+      "pamit@edgestone.in",
+      "sandeep@edgestone.in",
+      "deval@edgestone.in"
+    ],
+    "replies": [
+      {
+        "id": "0eeceb6f-06f7-4720-9d51-5fecd406c649",
+        "text": "<p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "15:46",
+        "date": "29 Oct 2026",
+        "author": "Kamal Narula",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Amit.Pathak@airtel.com",
+          "Prashant1.Arora@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1PPF347DBB214FC44B910254C6064EF0CF36E2@PN1PPF347DBB214.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-29T15:46:28.148Z"
+      },
+      {
+        "id": "44d106b4-5ce0-44f4-a23f-7f28b3af5363",
+        "text": "<p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : Prajwal@edgestone.in</p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "21:26",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Amit.Pathak@airtel.com",
+          "Prashant1.Arora@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1P287MB3742891371E207EE8E49B552DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-29T15:56:43.748Z"
+      },
+      {
+        "id": "d5f91285-c368-4da4-acba-471a4feaba3e",
+        "text": "<p>Hi Team,</p><p> </p><p>We have a customer call scheduled for 2 November. Please share the required update by 1 November so that we can review the details and be prepared for the discussion.</p><p> </p><p><a id=\"OWAAMA755F1FECCD74CA8AA2B14F868543F8B\" href=\"mailto:Amit.Pathak@airtel.com\">@Amit Pathak</a>,</p><p> </p><p>Please follow up.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:27 PM<br/><b>To:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "15:59",
+        "date": "29 Oct 2026",
+        "author": "Kamal Narula",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "support@edgestone.in",
+          "Amit.Pathak@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Prashant1.Arora@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1PPF347DBB214B929C731864BA9AF193DF36E2@PN1PPF347DBB214.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-29T15:59:23.352Z"
+      },
+      {
+        "id": "f98338ed-8e0b-4681-af13-fcb7fcd46807",
+        "text": "<p>Hi <a id=\"OWAAM71586103466C4406AD09C2C8269D2C08\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Acknowledged your email.</p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : Prajwal@edgestone.in</p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt; <br/><b>Sent:</b> 29 October 2026 21:29<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>We have a customer call scheduled for 2 November. Please share the required update by 1 November so that we can review the details and be prepared for the discussion.</p><p> </p><p><a id=\"OWAAMA755F1FECCD74CA8AA2B14F868543F8B\" href=\"mailto:Amit.Pathak@airtel.com\">@Amit Pathak</a>,</p><p> </p><p>Please follow up.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:27 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "21:31",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "Amit.Pathak@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Prashant1.Arora@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1P287MB37421CF9FD314706B8A381C4DC6E2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-29T16:01:33.421Z"
+      },
+      {
+        "id": "c44818cf-77a9-44d9-91f3-d6ff38514a42",
+        "text": "<p>Hi Kamal,</p><p> </p><p>Please see availability report as below:</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td rowspan=\"2\"><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td rowspan=\"2\"><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.27% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.57%</p></td></tr><tr><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG segment : 100 %</p></td></tr></tbody></table><p> </p><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:31 PM<br/><b>To:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi <a id=\"OWAAM71586103466C4406AD09C2C8269D2C08\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Acknowledged your email.</p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:29<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>We have a customer call scheduled for 2 November. Please share the required update by 1 November so that we can review the details and be prepared for the discussion.</p><p> </p><p><a id=\"OWAAMA755F1FECCD74CA8AA2B14F868543F8B\" href=\"mailto:Amit.Pathak@airtel.com\">@Amit Pathak</a>,</p><p> </p><p>Please follow up.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:27 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "11:34",
+        "date": "30 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "Amit.Pathak@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Prashant1.Arora@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1P287MB3742F88A15A062088BC3DDBFDC6D2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-30T06:04:06.566Z"
+      },
+      {
+        "id": "f13289e8-9f5d-4805-a54f-0aec72c0fec0",
+        "text": "<p>Hi Team,</p><p> </p><p>Thanks, please share the reason for the low availability month wise.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt; <br/><b>Sent:</b> Friday, October 30, 2026 11:34 AM<br/><b>To:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Kamal,</p><p> </p><p>Please see availability report as below:</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td rowspan=\"2\"><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td rowspan=\"2\"><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.27% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.57%</p></td></tr><tr><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG segment : 100 %</p></td></tr></tbody></table><p> </p><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:31 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi <a id=\"OWAAM71586103466C4406AD09C2C8269D2C08\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Acknowledged your email.</p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:29<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>We have a customer call scheduled for 2 November. Please share the required update by 1 November so that we can review the details and be prepared for the discussion.</p><p> </p><p><a id=\"OWAAMA755F1FECCD74CA8AA2B14F868543F8B\" href=\"mailto:Amit.Pathak@airtel.com\">@Amit Pathak</a>,</p><p> </p><p>Please follow up.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:27 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "08:01",
+        "date": "30 Oct 2026",
+        "author": "Kamal Narula",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "support@edgestone.in",
+          "Amit.Pathak@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Prashant1.Arora@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1PPF347DBB21417CAC3757A80136A468CF36D2@PN1PPF347DBB214.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-10-30T08:01:57.744Z"
+      },
+      {
+        "id": "5228b0c1-4145-4b33-a578-6f234c91bcc7",
+        "text": "<p>Hi Kamal,</p><p> </p><p>We already shared all the report with you month wise please refer to the attached mail for your reference.</p><p> </p><p>And for September month availability is 100%.</p><p> </p><p>We shared oct month attached in this mail.</p><p> </p><p> </p><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> Kamal Narula &lt;Kamal.Narula@airtel.com&gt; <br/><b>Sent:</b> Friday, October 30, 2026 1:32 PM<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;; Amit Pathak &lt;Amit.Pathak@airtel.com&gt;<br/><b>Cc:</b> Prajwal &lt;prajwal@edgestone.in&gt;; Kaushik Sengupta &lt;kaushik@edgestone.in&gt;; Pamit Thakur &lt;pamit@edgestone.in&gt;; Sandeep Ambhore &lt;sandeep@edgestone.in&gt;; Deval Sarode &lt;deval@edgestone.in&gt;; Prashant Arora &lt;Prashant1.Arora@airtel.com&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Thanks, please share the reason for the low availability month wise.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Friday, October 30, 2026 11:34 AM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi Kamal,</p><p> </p><p>Please see availability report as below:</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td rowspan=\"2\"><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td rowspan=\"2\"><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.27% </p></td><td><p>CES Segment : 100% </p></td><td><p>CES Segment : 98.57%</p></td></tr><tr><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG Segment : 100%</p></td><td><p>BBG segment : 100 %</p></td></tr></tbody></table><p> </p><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:31 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;; EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi <a id=\"OWAAM71586103466C4406AD09C2C8269D2C08\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Acknowledged your email.</p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:29<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>We have a customer call scheduled for 2 November. Please share the required update by 1 November so that we can review the details and be prepared for the discussion.</p><p> </p><p><a id=\"OWAAMA755F1FECCD74CA8AA2B14F868543F8B\" href=\"mailto:Amit.Pathak@airtel.com\">@Amit Pathak</a>,</p><p> </p><p>Please follow up.</p><p> </p><p>Rgds,</p><p>Kamal </p><p><b>From:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt; <br/><b>Sent:</b> Thursday, October 29, 2026 9:27 PM<br/><b>To:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td></td><td><p><b>[CAUTION: External Email]</b> Do not click links or open attachments unless you recognize the sender and know the content is safe. </p></td></tr></tbody></table><p>Hi <a id=\"OWAAME4BEA805D33247DEA2A4849E7F2D869E\" href=\"mailto:Kamal.Narula@airtel.com\">@Kamal</a>,</p><p> </p><p>Please find below.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p>CES Segment : 99.86% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 98.27% </p><p>BBG Segment : 100%</p></td><td><p>CES Segment : 100% </p><p>BBG Segment : 100%</p></td><td><p>We will share on or before 7st of Nov.</p></td></tr></tbody></table><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Prajwal V.</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +91 8793284912<br/>Email : <a href=\"mailto:Prajwal@edgestone.in\">Prajwal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> <b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><p><b>From:</b> Kamal Narula &lt;<a href=\"mailto:Kamal.Narula@airtel.com\">Kamal.Narula@airtel.com</a>&gt; <br/><b>Sent:</b> 29 October 2026 21:16<br/><b>To:</b> EdgeStone Support &lt;<a href=\"mailto:support@edgestone.in\">support@edgestone.in</a>&gt;<br/><b>Cc:</b> Prajwal &lt;<a href=\"mailto:prajwal@edgestone.in\">prajwal@edgestone.in</a>&gt;; Kaushik Sengupta &lt;<a href=\"mailto:kaushik@edgestone.in\">kaushik@edgestone.in</a>&gt;; Pamit Thakur &lt;<a href=\"mailto:pamit@edgestone.in\">pamit@edgestone.in</a>&gt;; Sandeep Ambhore &lt;<a href=\"mailto:sandeep@edgestone.in\">sandeep@edgestone.in</a>&gt;; Deval Sarode &lt;<a href=\"mailto:deval@edgestone.in\">deval@edgestone.in</a>&gt;; Amit Pathak &lt;<a href=\"mailto:Amit.Pathak@airtel.com\">Amit.Pathak@airtel.com</a>&gt;; Prashant Arora &lt;<a href=\"mailto:Prashant1.Arora@airtel.com\">Prashant1.Arora@airtel.com</a>&gt;<br/><b>Subject:</b> IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013</p><p> </p><p>Hi Team,</p><p> </p><p>Please share the availability for the below time period.</p><p> </p><table class=\"edgestone-table\"><tbody><tr><td colspan=\"7\"><p><b>Availability</b></p></td></tr><tr><td><p><b>Circuit ID</b></p></td><td><p><b>Description</b></p></td><td><p><b>June’26</b></p></td><td><p><b>July’26</b></p></td><td><p><b>Aug’26</b></p></td><td><p><b>Sep’26</b></p></td><td><p><b>Oct'26</b></p></td></tr><tr><td><p>14875272 / Ckt id : BA/SG1-DX1-FR5/ESPL-013</p></td><td><p>3 GBPS IPLC Bandwidth from Germany to Singapore</p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p> </p><p> Rgds,</p><p>Kamal </p><p> </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p><p>*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. *********************************************************************************************************************************************************************** </p>",
+        "time": "14:01",
+        "date": "30 Oct 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Kamal.Narula@airtel.com",
+          "Amit.Pathak@airtel.com"
+        ],
+        "cc": [
+          "prajwal@edgestone.in",
+          "kaushik@edgestone.in",
+          "pamit@edgestone.in",
+          "sandeep@edgestone.in",
+          "deval@edgestone.in",
+          "Prashant1.Arora@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: IGEM COMMUNICATIONS LLC DBA GLOBALGIG || 3 Gig / LSI 14875272 / CKT ID: BA/SG1-DX1-FR5/ESPL-013",
+        "messageId": "<PN1P287MB37425D89BFB84A0E00D30CE2DC6D2@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793349103043-692766621-image001.gif",
+            "size": 327106,
+            "filename": "email-1793349103043-692766621-image001.gif",
+            "mimeType": "image/gif",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793349103043-692766621-image001.gif/download?name=image001.gif",
+            "originalName": "image001.gif"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793349103239-610641972-RE__Global_Gig____Ckt_id___BA_SG1-DX1-FR5_ESPL-013___LSI_14875272.eml",
+            "size": 683554,
+            "filename": "email-1793349103239-610641972-RE__Global_Gig____Ckt_id___BA_SG1-DX1-FR5_ESPL-013___LSI_14875272.eml",
+            "mimeType": "message/rfc822",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793349103239-610641972-RE__Global_Gig____Ckt_id___BA_SG1-DX1-FR5_ESPL-013___LSI_14875272.eml/download?name=RE%3A%20Global%20Gig%20%2F%20%20Ckt%20id%20%3A%20BA%2FSG1-DX1-FR5%2FESPL-013%20%2F%20LSI%2014875272.eml",
+            "originalName": "RE: Global Gig /  Ckt id : BA/SG1-DX1-FR5/ESPL-013 / LSI 14875272.eml"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1793349103240-689589693-Availabiltiy_oct26.xlsx",
+            "size": 20819,
+            "filename": "email-1793349103240-689589693-Availabiltiy_oct26.xlsx",
+            "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1793349103240-689589693-Availabiltiy_oct26.xlsx/download?name=Availabiltiy%20oct26.xlsx",
+            "originalName": "Availabiltiy oct26.xlsx"
+          }
+        ],
+        "createdAt": "2026-10-30T08:31:43.263Z"
+      },
+      {
+        "id": "17e89a47-9176-4eb0-ab66-fe5329e22f0d",
+        "text": "Dear @Neutrality NOC,\n \nAcknowledged your email.\n \nCould you please share more details about exact fiber cut location?\n \n--\nBest Regards,\nPrajwal V.\nAssistant Manager\nSupport & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\nMobile: +91 8793284912\nEmail : Prajwal@edgestone.in\nWebsite: www.edgestone.in\n\n \n IMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "15:51",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<PN1P287MB37426C48A30385E611404176DC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T10:21:49.820Z"
+      },
+      {
+        "id": "2ecf55af-83fb-4fbd-917d-fe499aff17dc",
+        "text": "Hi Team,\n \nCkt id : BA/SG1-DX1-FR5/ESPL-013\n \nWe want to inform you that, your service BA/SG1-DX1-FR5/ESPL-013 is down since 8:19am UTC.\nOur provider has informed us of a dual fiber cut in their network. The fiber cut has been located and field technicians are on their way,\nETR currently still unknown. Will keep you updated.\n\n \n \n--\nBest Regards,\nMinal More\nAssistant Manager\nSupport & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\nMobile: +917020614179\nEmail : minal@edgestone.in\nWebsite: www.edgestone.in",
+        "time": "15:59",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "cfm.l2@airtel.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Link Down Issue || ckt id  : BA/SG1-DX1-FR5/ESPL-013|| 22/11/2026",
+        "messageId": "<PN1P287MB374212CCB06A7B9230B2F742DC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T10:29:57.570Z"
+      },
+      {
+        "id": "3a2f0053-0550-4b55-aaa6-41536876075f",
+        "text": "Hi team,\n\nAny update on below?\n\nBest Regards, \n\nMinal More \nAssistant Manager Support \n\n \n\nEdgestone Singapore Pte Ltd \n#08-01, Orchard Plaza \n150, Orchard Plaza, \nSingapore-238841 \nMobile: +91 7020614179 \nEmail :Support@edgestone.in \nWebsite: www.edgestone.in",
+        "time": "16:52",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<PN1P287MB3742504F7C1C0FF0779F2924DC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T11:23:01.747Z"
+      },
+      {
+        "id": "7df1a4df-8f16-4c98-b43f-18a6404e9ccb",
+        "text": "Dear Team,\n\nWe are waiting for information from our partner. We will update you as soon as we receive information.\n\nBest Regards,\nNOC",
+        "time": "11:27",
+        "date": "22 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<LO4P123MB4557F8A6E71A2475C721DC30C3462@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T11:27:49.501Z"
+      },
+      {
+        "id": "867093e1-b1ff-49cd-afa0-c1f40ec51079",
+        "text": "Dear team,\n\nPlease confirm current service status.\n\nBest Regards,\nNOC",
+        "time": "12:39",
+        "date": "22 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<LO4P123MB455734E055E2C24FDB7A13F0C3462@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T12:40:00.663Z"
+      },
+      {
+        "id": "eb8d3d6a-4098-4a05-a0e0-90b50c4cfa22",
+        "text": "Hi team,\n\nPlease confirm service status.\n\nBest Regards, \n\nMinal More \nAssistant Manager Support \n\n \n\nEdgestone Singapore Pte Ltd \n#08-01, Orchard Plaza \n150, Orchard Plaza, \nSingapore-238841 \nMobile: +91 7020614179 \nEmail :Support@edgestone.in \nWebsite: www.edgestone.in",
+        "time": "18:10",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "cfm.l2@airtel.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: Link Down Issue || ckt id  : BA/SG1-DX1-FR5/ESPL-013|| 22/11/2026",
+        "messageId": "<PN1P287MB37420FE3F634EDD63895D683DC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T12:40:49.955Z"
+      },
+      {
+        "id": "d4d4d413-34b5-4912-921d-a149b522edf2",
+        "text": "Hi team,\n\nPlease update on below.\n\nBest Regards, \n\nMinal More \nAssistant Manager Support \n\n \n\nEdgestone Singapore Pte Ltd \n#08-01, Orchard Plaza \n150, Orchard Plaza, \nSingapore-238841 \nMobile: +91 7020614179 \nEmail :Support@edgestone.in \nWebsite: www.edgestone.in",
+        "time": "21:47",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "cfm.l2@airtel.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: Link Down Issue || ckt id  : BA/SG1-DX1-FR5/ESPL-013|| 22/11/2026",
+        "messageId": "<PN1P287MB3742CC085BA46E133493B87EDC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T16:17:50.975Z"
+      },
+      {
+        "id": "ee3c5094-d2a8-4544-a9da-55cbfd1b68bc",
+        "text": "Dear customer,\n\nPlease confirm current link status.\n\nBest Regards,\nSoumyajit Dhang\nSupport Executive\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile : +91 8479822634\nEmail : soumyajit@edgestone.in",
+        "time": "01:02",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: Link Down Issue || ckt id  : BA/SG1-DX1-FR5/ESPL-013|| 22/11/2026",
+        "messageId": "<PN1P287MB37426F06A96856C92586F1A7DC462@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-22T19:32:28.198Z"
+      },
+      {
+        "id": "59f87d9f-4c5a-43bb-823d-39317f672946",
+        "text": "Dear Team,\n \nWe are following up with our customer regarding the current link status.\n \nIn the meantime, please confirm the status of the link from your end and advise whether the reported dual fiber cut has been fully restored.\n \nAdditionally, kindly share the complete details for yesterday's outage, including:\n \nRoot Cause Analysis (RCA)\n \nReason for Outage (RFO)\n \nFiber cut location details\n \nWe look forward to your update.\n \n\n \n--\nBest Regards,\nPrajwal V.\nAssistant Manager\nSupport & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\nMobile: +91 8793284912\nEmail : Prajwal@edgestone.in\nWebsite: www.edgestone.in\n\n \n IMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "07:15",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<PN1P287MB37421B3143E5EA9A97FEA1B9DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-23T01:45:48.768Z"
+      },
+      {
+        "id": "2423cf5a-fa61-4a51-8e04-52692b76db3a",
+        "text": "Dear @Neutrality NOC,\n \nPlease update on below email.\n \n--\nBest Regards,\nPrajwal V.\nAssistant Manager\nSupport & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\nMobile: +91 8793284912\nEmail : Prajwal@edgestone.in\nWebsite: www.edgestone.in\n\n \n IMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "11:50",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "i.samuel@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: Neutrality.One#214937 | NEU-EDGS-1092 | Down",
+        "messageId": "<PN1P287MB37421A2E14A2A8EB24D9A4D7DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:20:59.776Z"
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "31e723b0-cc44-4c0c-8a40-7cf9c27871ec",
+        "action": "created",
+        "description": "Ticket created from email by Kamal Narula",
+        "time": "15:46",
+        "date": "29 Oct 2026",
+        "author": "Kamal Narula",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-29T15:46:28.148Z"
+      },
+      {
+        "id": "84690242-8f09-4e49-ace3-faa7cf38df59",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "21:26",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-29T15:56:43.754Z"
+      },
+      {
+        "id": "6e500b48-876e-48b1-88eb-1894a2a0ee9f",
+        "action": "client_replied",
+        "description": "Client Kamal Narula replied to the ticket via email",
+        "time": "15:59",
+        "date": "29 Oct 2026",
+        "author": "Kamal Narula",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-29T15:59:23.357Z"
+      },
+      {
+        "id": "2358c861-73cc-4031-bd63-bfb5fd3c698a",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "21:31",
+        "date": "29 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-29T16:01:33.427Z"
+      },
+      {
+        "id": "2d65ff72-3ca7-473b-ba52-ca454498594c",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "11:34",
+        "date": "30 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-30T06:04:06.591Z"
+      },
+      {
+        "id": "ae1e96b7-28d3-4e14-a37d-293250b759c2",
+        "action": "client_replied",
+        "description": "Client Kamal Narula replied to the ticket via email",
+        "time": "08:01",
+        "date": "30 Oct 2026",
+        "author": "Kamal Narula",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-30T08:01:57.763Z"
+      },
+      {
+        "id": "b66e24cd-1310-47d3-b98e-2c70926c14fa",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "14:01",
+        "date": "30 Oct 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-10-30T08:31:43.270Z"
+      },
+      {
+        "id": "34257c59-f866-4857-bfa2-e522701ffe56",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "15:51",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T10:21:49.841Z"
+      },
+      {
+        "id": "c7e1f07f-43ea-4467-b5ad-42b5376950e3",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "15:59",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T10:29:57.574Z"
+      },
+      {
+        "id": "9562bab1-bad0-453b-bd80-f1ac1c1b196a",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "16:53",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T11:23:01.803Z"
+      },
+      {
+        "id": "b23ec86d-0547-4ae0-aa79-4a43d15dd090",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "11:27",
+        "date": "22 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T11:27:49.507Z"
+      },
+      {
+        "id": "7f289653-e3c0-4937-8137-5bd546e9abf5",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "12:40",
+        "date": "22 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T12:40:00.689Z"
+      },
+      {
+        "id": "5b19ede3-bd29-43db-b2bf-e5f865a572b6",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "18:10",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T12:40:49.958Z"
+      },
+      {
+        "id": "945059ab-e334-4c1f-8208-210f78a4111a",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "21:47",
+        "date": "22 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T16:17:50.978Z"
+      },
+      {
+        "id": "2d0b489f-e114-4d28-8107-edb6f5467575",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "01:02",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-22T19:32:28.210Z"
+      },
+      {
+        "id": "017e6838-373f-4488-88d4-6f40e2deb2de",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "07:15",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-23T01:45:48.788Z"
+      },
+      {
+        "id": "e4f7cebf-b224-4fe8-93cf-18da7d113743",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "11:50",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "78970725-ff71-46fb-94d3-539dbf75a3d7",
+        "createdAt": "2026-11-23T06:20:59.780Z"
+      }
+    ]
+  },
+  "t1162": {
+    "id": "b91607c9-8090-4908-808a-5a9dcd756e88",
+    "ticketId": "#1162",
+    "header": "41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+    "email": "Cfm.L2@airtel.com",
+    "status": "In Progress",
+    "priority": "High",
+    "circuitId": "BA/SG1-DX1-FR5/ESPL-013",
+    "messageId": "<PN2PPF10F160173243A1C837A83FCAF8F8BAA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+    "date": "23 Nov 2026",
+    "receivedAt": "2026-11-23T04:31:45.000Z",
+    "receivedTime": "04:31",
+    "clientId": "ca767ba6-0b15-4dac-83c1-89acdbf5f400",
+    "vendorId": "af1ead6f-a9a3-40f3-9207-fd279643f10a",
+    "ticketType": "Client",
+    "assignedUserId": null,
+    "createdAt": "2026-11-23T04:31:50.168Z",
+    "updatedAt": "2026-11-23T07:37:08.462Z",
+    "isSlaActive": true,
+    "isMaintenance": false,
+    "cc": [
+      "support@edgestone.in"
+    ],
+    "replies": [
+      {
+        "id": "a5b4710d-e0c7-4261-889a-d0f449f49603",
+        "text": "Dear Team, \n \nKindly raise a TT for Link Down and share your observation. \n \nCKT ID :BA/SG1-DX1-FR5/ESPL-013\n \n \n \n \nRegards,\nPradhyumna\nGSMC Operations\nBharti Airtel\n\n*********************************************************************************************************************************************************************** This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited . The information contained in this mail is propriety and strictly confidential. ***********************************************************************************************************************************************************************",
+        "time": "04:31",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F160173243A1C837A83FCAF8F8BAA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:31:50.168Z"
+      },
+      {
+        "id": "c9d1e56c-0b61-4299-b73f-b85b312c650f",
+        "text": "Dear Customer,\n\n\nAcknowledged your email, please refer ticket number 1162\n\n\nWe request you to please provide link down time for further investigation.",
+        "time": "04:33",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_sanskar.raj@airtel.com",
+          "a_yash.anjana@airtel.com",
+          "a_prashant.tiwari1@airtel.com",
+          "a_annu.sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB3742FFF037EA0C50E96BDBD1DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:33:25.860Z"
+      },
+      {
+        "id": "e86e37c7-d106-46d9-baf4-655c3f00b564",
+        "text": "Dear Team,\n\nKindly raise a TT for Link Down and share your observation.\n\n\n Circuit G773 276",
+        "time": "04:33",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276",
+        "messageId": "<PN1P287MB37421D21D3940B87C148A906DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:33:56.781Z"
+      },
+      {
+        "id": "13d1d013-a8d5-4cb7-93e3-876e2be87a1c",
+        "text": "Dear Team,\n\nKindly raise a TT for Link Down and share your observation.\n\n\nCircuit NEU-EDGS-1092",
+        "time": "04:34",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092",
+        "messageId": "<PN1P287MB374267F3A1206AE199EE87F1DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:34:33.174Z"
+      },
+      {
+        "id": "c7e314d8-8c1b-4031-9384-bfc4cfc6b577",
+        "text": "Dear Valued Customer,\n\nTo keep you informed, CTG has created a ticket [2611230693111180] for you; you can use this number to track the status with us.\nPlease rest assured that the incident is being investigated by our professionals and we shall update you as soon as we have any further information.\n\nThanks for your patience and apologies for any inconvenience.\n--------------------------------------------------\nBest regards,\nDanny \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618",
+        "time": "04:37",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276 YJ2026112300496 2611230693111180",
+        "messageId": "<1217405550.4886.1795408659818@ofm-ticket-khbz-asmkq-6f94f6798d-t47sp>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795408671709-474396268-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1795408671709-474396268-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795408671709-474396268-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795408671710-537157859-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1795408671710-537157859-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795408671710-537157859-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795408671711-307178705-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1795408671711-307178705-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795408671711-307178705-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795408671711-373014998-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1795408671711-373014998-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795408671711-373014998-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795408671711-414948044-ATT00005.bin",
+            "size": 1172,
+            "filename": "email-1795408671711-414948044-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795408671711-414948044-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          }
+        ],
+        "createdAt": "2026-11-23T04:37:51.785Z"
+      },
+      {
+        "id": "5846b05a-6212-4729-86be-0d09e219d9b6",
+        "text": "Dear Edgestone,\n\nWe acknowledge your request to open a trouble ticket to investigate your issue.\nWe appreciate your patience while we investigate, and we will provide an update as soon as possible.\n\nNeutrality Ticket: 214957\nNeutrality Circuit ID: NEU-EDGS-1092\nCustomer Ticket: n/a\nNotification Time: 2026-11-23 4:34:00 UTC\n\nIf you have any additional questions, please contact the Neutrality.One NOC via email at noc@neutrality.one or you can call us at +359 2 426 6222 and reference our ticket number.\n\nBest Regards,\nNOC",
+        "time": "04:39",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<1f62d080-eb62-4d90-829e-a7f6bcb11a8b@neutrality.one>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:39:42.628Z"
+      },
+      {
+        "id": "47450ef1-9e6f-4f05-8e11-a03d2f280c75",
+        "text": "Dear team,\nAdditionally. \nWhat kind of issue are you experiencing ? \nKind regards,",
+        "time": "04:44",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<fe001fd8-d98e-4db2-ad70-db9cc940c2ed@neutrality.one>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:44:18.340Z"
+      },
+      {
+        "id": "ffa06de2-cd27-4743-87af-d01a05081850",
+        "text": "Dear Team,\n\n\nWe already mentioned, in our previous email.\n\nKindly raise a TT for Link Down and share your observation.\n\n \n\nPlease do the needful.",
+        "time": "04:45",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB374246C94AF5DD2768F3E83CDC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:45:47.596Z"
+      },
+      {
+        "id": "39d4e28a-87dd-46c1-9ad0-ee00a2b680c8",
+        "text": "Dear Team,\n\n\nAdditionally please share yesterday's dual fiber cut outage status?\n\n\nIs it restored fully ? Also check at your DX1 device and confirm if you are getting MAC or not?",
+        "time": "04:51",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB3742971ACF35E5AD22C4EA4ADC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:51:08.967Z"
+      },
+      {
+        "id": "8cba96b4-f2a5-487a-a6e1-2cd92e0247fc",
+        "text": "Hello Team,\nAs discussed over the call, kindly share the exact downtime.\nBest Regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "10:22",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB3742F83176F23C3E0934E35ADC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:52:08.898Z"
+      },
+      {
+        "id": "9554d256-7c85-4c5c-9200-61772bbb0e69",
+        "text": "Dear team,\nPlease share a time frame of the outage.\nKind regards,",
+        "time": "04:54",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<b8170aca-acfd-4aa2-b90e-45cecff5d80e@neutrality.one>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:54:51.109Z"
+      },
+      {
+        "id": "ce219c20-d038-4037-bf6d-05017099513d",
+        "text": "Hello Team,\n\nWe are currently checking with our customer and will share the outage time frame once we receive confirmation from them.\n\nMeanwhile, could you please check and confirm whether you are receiving the MAC address at your DX1 router?\n\nLooking forward to your confirmation.",
+        "time": "04:57",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB3742E25865C62E60AA1DC476DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:57:08.193Z"
+      },
+      {
+        "id": "909b4652-569f-4d6b-84e0-8e245418e517",
+        "text": "Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM991497\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@EdgeStone Support</a>,<br/>Kindly allow us sometime, we will share you the downtime details shortly.<br/><br/><br/><p><a name=\"x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav Namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "04:57",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F16017378EBB5C290DD4F8ADD19AA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:57:33.003Z"
+      },
+      {
+        "id": "6b908743-e7f5-4545-9293-baf02eea337a",
+        "text": "Dear team,\nRegarding yesterday's fiber outage:\nNeutrality TT is :214937.\nWe are waiting for your link status confirmation. \nAs of now we do not have any additional information from our partner.\nKind regards,",
+        "time": "04:58",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<12822f4f-b8c8-4307-8171-76e63bae6a01@neutrality.one>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T04:58:58.294Z"
+      },
+      {
+        "id": "4f37f403-d41c-411a-a62d-c6643a539cf0",
+        "text": "Hello Team,\n\nThe customer has reported that the link is down again today, as mentioned in the previous email.\n\nWe are currently coordinating with the customer and will share the outage time frame once we receive confirmation from them.\n\nMeanwhile, could you please check and confirm whether you are receiving the MAC address at your DX1 router?\n\nYour prompt confirmation would be appreciated.",
+        "time": "05:01",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB37424CBEA0602B024201180ADC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T05:01:20.278Z"
+      },
+      {
+        "id": "f2ff9cff-2db0-45c1-b759-c6d1ba82dfe2",
+        "text": "Hello Team,\n\nCould you please check and confirm whether you are receiving the MAC address at your DX1 router?",
+        "time": "06:20",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "maintenance@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB374217F2C8FE20B5491D5250DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:20:14.159Z"
+      },
+      {
+        "id": "ca38af71-a4bf-4171-ab27-dac636d1dda5",
+        "text": "Hi Edgestone, \n \nWhy you have been copying N1 Maintenance Team in this email? Is there any specific reason, when the issue is NOC related ? I have removed it from this communication. \n \nWe are checking with our network team and as soon as I have the information and MAC addresses visibility, we will share with you. However, I can confirm that our link from Frankfurt to DX1 is up and functional since yesterday after the dual fiber cuts were repaired. \n \nIrfan",
+        "time": "06:41",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "RE: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<LO4P123MB455776C0CFC150AEBD132B2CC3452@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:41:23.754Z"
+      },
+      {
+        "id": "2700c555-2bf7-4da7-add8-b4386bbcb9f7",
+        "text": "Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM415649\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@EdgeStone Support</a>,<br/>DT :- 11/23/2026 09:40:39 IST<br/><br/><br/><p><a name=\"x__MailAutoSig\" class=\"\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav Namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "06:50",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F160173AC476F08CA451C8C25EBAA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:50:42.249Z"
+      },
+      {
+        "id": "3a8e8149-10a6-4ff8-907b-831cb910c385",
+        "text": "Dear Team,\n\n\nPlease find downtime, DT :- 11/23/2026 09:40:39 IST\nPlease provide your observation.",
+        "time": "06:52",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276 YJ2026112300496 2611230693111180",
+        "messageId": "<PN1P287MB374268024878BDE50DC3B6A0DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:52:11.229Z"
+      },
+      {
+        "id": "34030210-5684-4ea6-b174-782a097902be",
+        "text": "Dear Team\n\n\nPlease find downtime, \n\n\n\nDT :- 11/23/2026 09:40:39 IST\n\nPlease share your observation on priority.",
+        "time": "06:52",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB3742F8C347A263DC49477F34DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:52:53.475Z"
+      },
+      {
+        "id": "5489c722-4d18-4d5e-8f43-ea3a3d154c9c",
+        "text": "Dear Customer,\n\n\nThank you for the details.\nWe are following with our provider; we will update you once we received any news from them.",
+        "time": "06:54",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_sanskar.raj@airtel.com",
+          "a_yash.anjana@airtel.com",
+          "a_prashant.tiwari1@airtel.com",
+          "a_annu.sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB374213A58B994D5621FF278EDC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:54:25.573Z"
+      },
+      {
+        "id": "b8ffaf80-a56f-412b-b6b4-ac1b548eb2fe",
+        "text": "Dear EdgeStone,\n\nPlease provide the time stamp in UTC or at least in UTC+N, format.\n\nIs the circuit currently down? \n\nBest Regards,\nNOC",
+        "time": "06:56",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<LO4P123MB4557D8B7B065D39508E4822BC3452@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:56:40.519Z"
+      },
+      {
+        "id": "cc9add58-9f61-4a14-aa28-89030653513f",
+        "text": "Dear Valued Customer,\n\nMail noted, we will revert to our team and get back to you once there is update\n\nThanks for your patience and sorry for any inconvenience.\n\n--------------------------------------------------\nBest regards,\nDaniel \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618",
+        "time": "06:57",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276 YJ2026112300496 2611230693111180",
+        "messageId": "<722675012.4962.1795417012853@ofm-ticket-khbz-asmkq-6f94f6798d-5sbvx>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795417025827-97869011-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1795417025827-97869011-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795417025827-97869011-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795417025828-80960242-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1795417025828-80960242-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795417025828-80960242-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795417025829-709746804-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1795417025829-709746804-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795417025829-709746804-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795417025830-823893601-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1795417025830-823893601-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795417025830-823893601-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795417025830-230159207-ATT00005.bin",
+            "size": 1172,
+            "filename": "email-1795417025830-230159207-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795417025830-230159207-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          }
+        ],
+        "createdAt": "2026-11-23T06:57:05.899Z"
+      },
+      {
+        "id": "e06774b9-59bb-436c-9e4f-eabe63662b9b",
+        "text": "Dear Team, \n\n\nUTC +5:30",
+        "time": "06:58",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "type": "agent",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB374223847D6A7BCA49F85843DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T06:58:17.898Z"
+      },
+      {
+        "id": "fd103338-c19a-4580-9a12-f58499a0fd2b",
+        "text": "Dear EdgeStone, \n\nIn order to save significant amount of time for the troubleshooting, kindly confirm explicitly by writing it down in your next email, whether the circuit is currently down or if there was just some interruption starting at the mentioned downtime. \n \nBest Regards,\nNOC",
+        "time": "07:10",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<LO4P123MB45570F20C4B991A06A136791C3452@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:10:18.820Z"
+      },
+      {
+        "id": "5a285bc7-ff7f-412a-9cd1-aa80f6103379",
+        "text": "Hello Team,\nAs discussed over the call, kindly check with your customer and confirm whether they are still experiencing the link-down issue.\nPlease share the latest status once confirmed.\nBest Regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "12:44",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_sanskar.raj@airtel.com",
+          "a_yash.anjana@airtel.com",
+          "a_prashant.tiwari1@airtel.com",
+          "a_annu.sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB37429EF45F5107FDFADD01D7DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:14:20.650Z"
+      },
+      {
+        "id": "bfafd746-4d37-4aa9-ade8-abdf974eda42",
+        "text": "Hello Team,\nWe are currently checking with our customer to confirm whether the circuit is still down or if there was only a temporary interruption. We will share an update as soon as we receive confirmation.\nMeanwhile, could you please check and confirm whether you are receiving the MAC addresses at your DX1 routers?\nBest Regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "12:46",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB3742DA741FE624DA866E8028DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:16:31.407Z"
+      },
+      {
+        "id": "76dad9e9-42c5-4212-8bee-92b5f6fc37b5",
+        "text": "Dear EdgeStone,\n\nWe cannot confirm something \"meanwhile\", we need to open ticket with our partner, and for that, we need to know in advance what kind of issue to report: RFO for some event more than three hours ago or current circuit failure.\n\nWe are awaiting your customer to compensate for the lack of very important information in their issue reporting, and we will act accordingly immediately after that. \n\nWe expect your client to respond soon, hopefully in few minutes, by providing this very basic information, but not omitting it again. \n \n\nBest Regards,\nNOC",
+        "time": "07:32",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one",
+          "i.samuel@neutrality.one",
+          "noc@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<LO4P123MB45579A310C42F0A5A80928FFC3452@LO4P123MB4557.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:32:18.016Z"
+      },
+      {
+        "id": "3b4f4033-b36e-48ee-bace-1aa41b8e5581",
+        "text": "Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM525705\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@EdgeStone Support</a>,<br/>Kindly share the Logs asap.<br/><br/><br/><p><a name=\"x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p><br/>",
+        "time": "07:37",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F16017356A03B96EC125E03FDE5AA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:37:08.438Z"
+      },
+      {
+        "id": "572cf83b-3553-4d90-8583-d9377cfa4707",
+        "text": "Hello Team,As discussed over the call, kindly check with your customer and confirm whether they are still experiencing the link-down issue.Meanwhile, we are coordinating with our vendor and will share an update as soon as we receive confirmation.Best Regards,<p><b>Akash Singh<br/>Asst Manager – Support &amp; Operations</b></p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/><br/>Mobile: +91 9051416235<br/>Email : <a href=\"mailto:akash@edgestone.in\" title=\"mailto:akash@edgestone.in\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">akash@edgestone.in</a></p><p>Website: <a href=\"https://urldefense.proofpoint.com/v2/url?u=http-3A__www.edgestone.in_&amp;d=DwMF-g&amp;c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&amp;r=COXZqT0I3kCjRqCj5dV8ck8qYWSebm0818NglNVTrPg&amp;m=rsZ03pi2H_Ga-8_iw2LBI3hxV44p6t4LfqSQCKzH2DAvGE8IKKMGK5Es5gfvTSHP&amp;s=3puCkhW6KaT3PrgTZW6Tn-2hGWWSwlKWoFArIO1IFdo&amp;e=\" title=\"http://www.edgestone.in/\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">www.edgestone.in</a></p><p><b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Sent:</b> 23 November 2026 13:06<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Prashant Tiwari &lt;a_Prashant.Tiwari1@airtel.com&gt;; Annu Sharma &lt;a_Annu.Sharma@airtel.com&gt;<br/><b>Subject:</b> Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down  Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM525705\" class=\"x_tWKOu x_mention x_ms-bgc-nlr x_ms-fcl-b\">@EdgeStone Support</a>,<br/>Kindly share the Logs asap.<br/><br/><br/><p><a name=\"x_x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p><br/>",
+        "time": "13:14",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB3742AC1C1D71FA17646484E1DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T07:44:13.473Z"
+      },
+      {
+        "id": "39db2aaf-37d2-44dc-989d-59afc3dd5208",
+        "text": "<p>Dear <a id=\"OWAAM6A2714756BF24BDDAAD2885EB0FEDD9D\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a>,</p><p> </p><p>Could you please share the relevant logs, as the US customer has requested them to verify the link status from their end .</p><p> </p><p>Your prompt support in providing the required logs would be appreciated.</p><p> </p><p> </p><p> </p><p>Thanks &amp; Regards,</p><p>Yash Anjana</p><p> </p>",
+        "time": "08:09",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "RE: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F16017355AF903E299FFAF12A7AAA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T08:09:07.322Z"
+      },
+      {
+        "id": "d3577a5b-d2ba-4438-b6dd-f3eaf2386ce7",
+        "text": "Hello Team,We have requested the relevant logs from our partner. Once we receive them, we will share them with you.Thank you for your patience.Best Regards,<p><b>Akash Singh<br/>Asst Manager – Support &amp; Operations</b></p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/><br/>Mobile: +91 9051416235<br/>Email : <a href=\"mailto:akash@edgestone.in\" title=\"mailto:akash@edgestone.in\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">akash@edgestone.in</a></p><p>Website: <a href=\"https://urldefense.proofpoint.com/v2/url?u=http-3A__www.edgestone.in_&amp;d=DwMF-g&amp;c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&amp;r=COXZqT0I3kCjRqCj5dV8ck8qYWSebm0818NglNVTrPg&amp;m=rsZ03pi2H_Ga-8_iw2LBI3hxV44p6t4LfqSQCKzH2DAvGE8IKKMGK5Es5gfvTSHP&amp;s=3puCkhW6KaT3PrgTZW6Tn-2hGWWSwlKWoFArIO1IFdo&amp;e=\" title=\"http://www.edgestone.in/\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">www.edgestone.in</a></p><p><b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Sent:</b> 23 November 2026 13:38<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Prashant Tiwari &lt;a_Prashant.Tiwari1@airtel.com&gt;; Annu Sharma &lt;a_Annu.Sharma@airtel.com&gt;<br/><b>Subject:</b> RE: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down  <p>Dear <a id=\"OWAAM6A2714756BF24BDDAAD2885EB0FEDD9D\" href=\"mailto:support@edgestone.in\">@EdgeStone Support</a>,</p><p> </p><p>Could you please share the relevant logs, as the US customer has requested them to verify the link status from their end .</p><p> </p><p>Your prompt support in providing the required logs would be appreciated.</p><p> </p><p> </p><p> </p><p>Thanks &amp; Regards,</p><p>Yash Anjana</p><p> </p>",
+        "time": "13:42",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB3742CD2F304DE707C21AA309DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T08:12:08.275Z"
+      },
+      {
+        "id": "a61bc1eb-0eca-45b9-8b3d-3834da3b2da2",
+        "text": "Dear Team,<br/>Please share the required logs as soon as possible as it is important for us to coordinate with the customer.<br/>We will keep following up for the same.<br/><br/><br/><p><a name=\"x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Tanmay<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "08:34",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F1601733E0A83191FE965A70472AA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T08:34:57.663Z"
+      },
+      {
+        "id": "6ba82c4b-a7eb-45f3-badd-72b99716687f",
+        "text": "Hello Irfan Sir,\nAs discussed over the call, could you please check and confirm whether you are receiving the MAC addresses on both ends at your DX1 routers?\nBest Regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "14:07",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "i.samuel@neutrality.one"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one",
+          "noc@neutrality.one",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<PN1P287MB3742F91EBF06D54F5FD6ADF7DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T08:37:48.783Z"
+      },
+      {
+        "id": "bf827b06-a95e-4f4d-94fa-119d1b75ddd8",
+        "text": "Hello Team,\n\nPlease share the initial findings/observation on the reported incident\n\nBest Regards,\nAkash Singh\nAsst Manager – Support & Operations\n\nEdgestone Singapore Pte Ltd\n#08-01, Orchard Plaza\n150, Orchard Plaza,\nSingapore-238841\n\nMobile: +91 9051416235\nEmail : akash@edgestone.in\nWebsite: www.edgestone.in\nIMPORTANT - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.",
+        "time": "14:41",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com",
+          "support@edgestone.in"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276 YJ2026112300496 2611230693111180",
+        "messageId": "<PN1P287MB3742ACA75BFA27430BDFBED6DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T09:11:37.554Z"
+      },
+      {
+        "id": "7c88b1f8-a914-4e75-b4da-b4841cdeaf9e",
+        "text": "Dear Valued Customer,\n\nMail noted, we will push our team again and get back to you once there is update\n\nThanks for your patience and sorry for any inconvenience.\n\n--------------------------------------------------\nBest regards,\nDaniel \nCTG Customer Service Center (GCSC)\nChina Telecom Global Limited\nEmail: global.noc@chinatelecomglobal.com\nHotlines: Hong Kong China: 852-3100 0000 /Mainland China: 4008-852310 / United Kingdom: 44-20 7536 8373 / United State: 1-877-244-6241\nToll-free: Taiwan China: 0080-185-7170 / Japan: 0034-800-100255 / Vietnam: 1800-555580 / Singapore: 1800-852-3100 / Australia: 1800-739140\n Indonesia: 0800-150-3280 / India: 1800-120-2212 / Germany: 0800-1806109 / France: 80522-3180 / Russia: 8800-3018618",
+        "time": "09:13",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "type": "vendor",
+        "category": "vendor_af1ead6f-a9a3-40f3-9207-fd279643f10a",
+        "to": [
+          "global.noc@chinatelecomglobal.com",
+          "support@edgestone.in",
+          "rajeshkj@chinatelecomglobal.com",
+          "nelsonso@chinatelecomglobal.com",
+          "uday.sikka@chinatelecomglobal.com",
+          "patrickduan@chinatelecomglobal.com"
+        ],
+        "cc": [],
+        "bcc": [],
+        "subject": "Re: [#1162-V] Issue regarding Circuit G773 276 YJ2026112300496 2611230693111180",
+        "messageId": "<1144714115.5011.1795425213314@ofm-ticket-khbz-asmkq-6f94f6798d-sghv2>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227822-502583195-ATT00001.bin",
+            "size": 1808,
+            "filename": "email-1795425227822-502583195-ATT00001.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227822-502583195-ATT00001.bin/download?name=ATT00001.bin",
+            "originalName": "ATT00001.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227823-815371086-ATT00002.bin",
+            "size": 23279,
+            "filename": "email-1795425227823-815371086-ATT00002.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227823-815371086-ATT00002.bin/download?name=ATT00002.bin",
+            "originalName": "ATT00002.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227824-101920162-ATT00003.bin",
+            "size": 973,
+            "filename": "email-1795425227824-101920162-ATT00003.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227824-101920162-ATT00003.bin/download?name=ATT00003.bin",
+            "originalName": "ATT00003.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227824-619486133-ATT00004.bin",
+            "size": 811,
+            "filename": "email-1795425227824-619486133-ATT00004.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227824-619486133-ATT00004.bin/download?name=ATT00004.bin",
+            "originalName": "ATT00004.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227825-46565480-ATT00005.bin",
+            "size": 327106,
+            "filename": "email-1795425227825-46565480-ATT00005.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227825-46565480-ATT00005.bin/download?name=ATT00005.bin",
+            "originalName": "ATT00005.bin"
+          },
+          {
+            "url": "http://localhost:5000/uploads/attachments/email-1795425227825-255399087-ATT00006.bin",
+            "size": 1172,
+            "filename": "email-1795425227825-255399087-ATT00006.bin",
+            "mimeType": "application/octet-stream",
+            "downloadUrl": "http://localhost:5000/api/upload/attachments/email-1795425227825-255399087-ATT00006.bin/download?name=ATT00006.bin",
+            "originalName": "ATT00006.bin"
+          }
+        ],
+        "createdAt": "2026-11-23T09:13:47.965Z"
+      },
+      {
+        "id": "9eff0691-2a24-4dc5-b457-ccef508529b6",
+        "text": "Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM11299\" class=\"tWKOu mention ms-bgc-nlr ms-fcl-b\">@EdgeStone Support</a>,<br/>The link status confirmation is still pending from the customer. Meanwhile, kindly share the primary logs from your end.<br/><br/><br/><p><a name=\"x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav Namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "09:21",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F160173024235A81A06E4F22EA7AA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T09:22:03.457Z"
+      },
+      {
+        "id": "187e0ecf-8bde-4104-a9ff-2e8a49c38384",
+        "text": "Hello Team,As discussed earlier, we are actively following up with our partner to obtain the required logs. We will share them with you as soon as we receive them.Meanwhile, kindly check with your customer and share the current link status so that we can proceed accordingly.Looking forward to your confirmation.<p>Best Regards,</p><p><b>Akash Singh<br/>Asst Manager – Support &amp; Operations</b></p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/><br/>Mobile: +91 9051416235<br/>Email : <a href=\"mailto:akash@edgestone.in\" title=\"mailto:akash@edgestone.in\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">akash@edgestone.in</a></p><p>Website: <a href=\"https://urldefense.proofpoint.com/v2/url?u=http-3A__www.edgestone.in_&amp;d=DwMF-g&amp;c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&amp;r=COXZqT0I3kCjRqCj5dV8ck8qYWSebm0818NglNVTrPg&amp;m=rsZ03pi2H_Ga-8_iw2LBI3hxV44p6t4LfqSQCKzH2DAvGE8IKKMGK5Es5gfvTSHP&amp;s=3puCkhW6KaT3PrgTZW6Tn-2hGWWSwlKWoFArIO1IFdo&amp;e=\" title=\"http://www.edgestone.in/\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">www.edgestone.in</a></p><p><b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Sent:</b> 23 November 2026 14:51<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Prashant Tiwari &lt;a_Prashant.Tiwari1@airtel.com&gt;; Annu Sharma &lt;a_Annu.Sharma@airtel.com&gt;<br/><b>Subject:</b> Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down  Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM11299\" class=\"x_tWKOu x_mention x_ms-bgc-nlr x_ms-fcl-b\">@EdgeStone Support</a>,<br/>The link status confirmation is still pending from the customer. Meanwhile, kindly share the primary logs from your end.<br/><br/><br/><p><a name=\"x_x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav Namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "14:54",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB37428924C451DA79C092DC84DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T09:24:24.113Z"
+      },
+      {
+        "id": "ba8012f6-2261-40ce-aa86-48078e2667cc",
+        "text": "We confirm that we are seeing all 4 MAC addresses at our end. The circuit is UP and not down. \n \n3024 3473.2d42.33aa DYNAMIC Te0/0/26.Efp3024 \n 3024 3c51.0e82.53f7 DYNAMIC Te0/0/24.Efp3024 \n 3024 a0b4.39b2.b1d1 DYNAMIC Te0/0/24.Efp3024 \n 3024 bcd2.95a5.fd5f DYNAMIC Te0/0/26.Efp3024 \n\nSo traffic is passing all the way from FRK to SG. \n \nRegards,\n \nIrfan",
+        "time": "10:04",
+        "date": "23 Nov 2026",
+        "author": "Irfan Samuel",
+        "type": "vendor",
+        "category": "vendor_aebceb7c-4316-4a6c-935a-fc5faaef6728",
+        "to": [
+          "i.samuel@neutrality.one",
+          "support@edgestone.in",
+          "noc@neutrality.one"
+        ],
+        "cc": [
+          "n.verhoven@neutrality.one"
+        ],
+        "bcc": [],
+        "subject": "RE: [#1162-V] Issue regarding Circuit NEU-EDGS-1092 | Neutrality.one#214957",
+        "messageId": "<CW1P123MB8648FD0D68B55FA1C25AC1E7E5452@CW1P123MB8648.GBRP123.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T10:04:06.905Z"
+      },
+      {
+        "id": "4356901b-a20b-4af8-9036-69b5dd4a8c12",
+        "text": "Hello Team,Our partner has confirmed that the link is currently UP.Could you please check with your customer and confirm the current link status from their end?Best Regards,<p><b>Akash Singh<br/>Asst Manager – Support &amp; Operations</b></p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/><br/>Mobile: +91 9051416235<br/>Email : <a href=\"mailto:akash@edgestone.in\" title=\"mailto:akash@edgestone.in\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">akash@edgestone.in</a></p><p>Website: <a href=\"https://urldefense.proofpoint.com/v2/url?u=http-3A__www.edgestone.in_&amp;d=DwMF-g&amp;c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&amp;r=COXZqT0I3kCjRqCj5dV8ck8qYWSebm0818NglNVTrPg&amp;m=rsZ03pi2H_Ga-8_iw2LBI3hxV44p6t4LfqSQCKzH2DAvGE8IKKMGK5Es5gfvTSHP&amp;s=3puCkhW6KaT3PrgTZW6Tn-2hGWWSwlKWoFArIO1IFdo&amp;e=\" title=\"http://www.edgestone.in/\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">www.edgestone.in</a></p><p><b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><b>From:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Sent:</b> 23 November 2026 14:54<br/><b>To:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Prashant Tiwari &lt;a_Prashant.Tiwari1@airtel.com&gt;; Annu Sharma &lt;a_Annu.Sharma@airtel.com&gt;; EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Subject:</b> Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down  Hello Team,As discussed earlier, we are actively following up with our partner to obtain the required logs. We will share them with you as soon as we receive them.Meanwhile, kindly check with your customer and share the current link status so that we can proceed accordingly.Looking forward to your confirmation.<p>Best Regards,</p><p><b>Akash Singh<br/>Asst Manager – Support &amp; Operations</b></p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/><br/>Mobile: +91 9051416235<br/>Email : <a href=\"mailto:akash@edgestone.in\" title=\"mailto:akash@edgestone.in\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">akash@edgestone.in</a></p><p>Website: <a href=\"https://urldefense.proofpoint.com/v2/url?u=http-3A__www.edgestone.in_&amp;d=DwMF-g&amp;c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&amp;r=COXZqT0I3kCjRqCj5dV8ck8qYWSebm0818NglNVTrPg&amp;m=rsZ03pi2H_Ga-8_iw2LBI3hxV44p6t4LfqSQCKzH2DAvGE8IKKMGK5Es5gfvTSHP&amp;s=3puCkhW6KaT3PrgTZW6Tn-2hGWWSwlKWoFArIO1IFdo&amp;e=\" title=\"http://www.edgestone.in/\" style=\"color:rgb(38,126,240); margin-top:0px; margin-bottom:0px\">www.edgestone.in</a></p><p><b>IMPORTANT</b> - The content of this email is confidential and intended for the recipient specified in message only. It is strictly forbidden to share any part of this message with any third party, without a written consent of the sender. If you received this message by mistake, please reply to this message and follow with its deletion, so that we can ensure such a mistake does not occur in the future.</p><p> </p><b>From:</b> Cfm L2 &lt;Cfm.L2@airtel.com&gt;<br/><b>Sent:</b> 23 November 2026 14:51<br/><b>To:</b> EdgeStone Support &lt;support@edgestone.in&gt;<br/><b>Cc:</b> SANSKAR RAJ &lt;a_SANSKAR.RAJ@airtel.com&gt;; YASH ANJANA &lt;a_YASH.ANJANA@airtel.com&gt;; Prashant Tiwari &lt;a_Prashant.Tiwari1@airtel.com&gt;; Annu Sharma &lt;a_Annu.Sharma@airtel.com&gt;<br/><b>Subject:</b> Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down  Hi <a href=\"mailto:support@edgestone.in\" id=\"OWAAM11299\" class=\"x_x_tWKOu x_x_mention x_x_ms-bgc-nlr x_x_ms-fcl-b\">@EdgeStone Support</a>,<br/>The link status confirmation is still pending from the customer. Meanwhile, kindly share the primary logs from your end.<br/><br/><br/><p><a name=\"x_x_x__MailAutoSig\" style=\"margin:0px\"><b>Thanks &amp; Regards,</b></a><br/>Vaibhav Namdeo<br/>Bharti Airtel Limited</p><p>Phone:7042023528<br/>Cfm.L2@airtel.com</p><p></p>",
+        "time": "15:41",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "Re: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB37429C5CBF82DE0641935000DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T10:11:23.136Z"
+      },
+      {
+        "id": "0e8b331e-4d9c-4679-9af7-0328f1c86a4f",
+        "text": "<p>Hi <a id=\"OWAAM337117D0F63D43838342E09247BA9F2D\" href=\"mailto:deval@edgestone.in\">@Deval Sarode</a></p><p> </p><p>Could you please share the relevant logs. We require them so that the customer can review the details and confirm the current service status accordingly. </p><p> </p><p> </p><p>Thanks &amp; Regards,</p><p>Yash Anjana</p><p> </p><p> </p>",
+        "time": "10:13",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "type": "client",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "support@edgestone.in",
+          "deval@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com"
+        ],
+        "bcc": [],
+        "subject": "RE: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN2PPF10F160173B0C8323DBBD6E5F75400AA452@PN2PPF10F160173.INDPRD01.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T10:14:00.695Z"
+      },
+      {
+        "id": "fa7e9642-333d-4e25-a928-29f0d0687f3b",
+        "text": "<p>Hi Team,</p><p> </p><p>We have checked our DX1 device and confirmed that we are receiving MAC addresses from both the SG and FR ends.</p><p>Please find the attached screenshot for your reference.</p><p> </p><p></p><p> </p><p>Kindly confirm whether the link was down at <b>09:40:39 IST on 23-Nov-2026</b>, or whether it experienced flap during that time.</p><p>Please check and share the link status .</p><p> </p><p> </p><p> </p><p>--</p><p>Best Regards,</p><p><b>Minal More</b></p><p>Assistant Manager</p><p>Support &amp; Operations</p><p></p><p><b>Edgestone Singapore Pte Ltd<br/></b>#08-01, Orchard Plaza<br/>150, Orchard Plaza,<br/>Singapore-238841<br/>Mobile: +917020614179<br/>Email : <a href=\"mailto:minal@edgestone.in\">minal@edgestone.in</a></p><p>Website: <a href=\"http://www.edgestone.in/\" target=\"_blank\" title=\"http://www.edgestone.in/\">www.edgestone.in</a></p><p> </p><p> </p><p> </p>",
+        "time": "15:50",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "type": "agent",
+        "category": "client",
+        "to": [
+          "Cfm.L2@airtel.com",
+          "deval@edgestone.in"
+        ],
+        "cc": [
+          "a_SANSKAR.RAJ@airtel.com",
+          "a_YASH.ANJANA@airtel.com",
+          "a_Prashant.Tiwari1@airtel.com",
+          "a_Annu.Sharma@airtel.com",
+          "support@edgestone.in"
+        ],
+        "bcc": [],
+        "subject": "RE: [#1162] 41695559 || CKT ID :BA/SG1-DX1-FR5/ESPL-013 || Primary Link Down",
+        "messageId": "<PN1P287MB37424A649CD742F4477FC041DC452@PN1P287MB3742.INDP287.PROD.OUTLOOK.COM>",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "attachments": [],
+        "createdAt": "2026-11-23T10:20:33.134Z"
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "a754903f-2064-44e9-9f0f-a9ca549bfc21",
+        "action": "created",
+        "description": "Ticket created from email by Cfm L2",
+        "time": "04:31",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:31:50.168Z"
+      },
+      {
+        "id": "998eba3c-febe-4137-be3a-d96ea3707fe6",
+        "action": "priority_changed",
+        "description": "Priority changed from \"Medium\" to \"High\"",
+        "time": "04:32",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": "Medium",
+        "newValue": "High",
+        "fieldName": "priority",
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:32:14.995Z"
+      },
+      {
+        "id": "7743cdd1-f918-4298-a25a-35a222f5da8f",
+        "action": "replied",
+        "description": "Prajwal Vyawahare replied to the ticket",
+        "time": "04:33",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:33:27.579Z"
+      },
+      {
+        "id": "8a87e4e5-1421-49be-b63f-44d11bcb491e",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to global.noc@chinatelecomglobal.com, rajeshkj@chinatelecomglobal.com, nelsonso@chinatelecomglobal.com, uday.sikka@chinatelecomglobal.com, patrickduan@chinatelecomglobal.com.",
+        "time": "04:33",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:33:57.227Z"
+      },
+      {
+        "id": "4fb3df2c-92de-408e-a9c5-83bc576184f7",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "04:34",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:34:33.822Z"
+      },
+      {
+        "id": "78693ac6-d4c8-479c-a002-a5bf90d843a3",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "04:37",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:37:51.792Z"
+      },
+      {
+        "id": "07088d7c-be09-437b-8768-bdc96883a6a9",
+        "action": "vendor_replied",
+        "description": "Vendor Boyko Sarchadzhiev replied to the ticket via email",
+        "time": "04:39",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:39:42.634Z"
+      },
+      {
+        "id": "78dfb8d7-7988-4163-a5e2-c78425be2490",
+        "action": "vendor_replied",
+        "description": "Vendor Boyko Sarchadzhiev replied to the ticket via email",
+        "time": "04:44",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:44:18.345Z"
+      },
+      {
+        "id": "a4b1ec3b-a0bf-4ab7-b1bc-1c59d968c2a5",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "04:45",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:45:48.843Z"
+      },
+      {
+        "id": "03443efe-667d-4da5-9a2a-16cfbab85360",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "04:51",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:51:10.347Z"
+      },
+      {
+        "id": "fa956f2d-defc-4bb0-a90c-bf4b7c93eb68",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "10:22",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:52:08.905Z"
+      },
+      {
+        "id": "025743c0-461e-4673-8974-3354a3da988e",
+        "action": "vendor_replied",
+        "description": "Vendor Boyko Sarchadzhiev replied to the ticket via email",
+        "time": "04:54",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:54:51.115Z"
+      },
+      {
+        "id": "d9b9aa4d-91be-48c9-aa95-c2cef963af88",
+        "action": "vendor_replied",
+        "description": "Agent Akash Kumar Singh replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "04:57",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:57:09.776Z"
+      },
+      {
+        "id": "a2b20d80-ff3a-4feb-b07d-7846a28764cd",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "04:57",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:57:33.007Z"
+      },
+      {
+        "id": "c6d9156e-6e81-4a7a-8ed8-eb62bc80cb9f",
+        "action": "vendor_replied",
+        "description": "Vendor Boyko Sarchadzhiev replied to the ticket via email",
+        "time": "04:58",
+        "date": "23 Nov 2026",
+        "author": "Boyko Sarchadzhiev",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T04:58:58.301Z"
+      },
+      {
+        "id": "abc5a802-8f48-4c41-8ec1-16a1ebf2dc38",
+        "action": "vendor_replied",
+        "description": "Agent Akash Kumar Singh replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "05:01",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T05:01:21.553Z"
+      },
+      {
+        "id": "00cf7eb5-f011-455f-aa5e-2c3f9c32afc2",
+        "action": "vendor_replied",
+        "description": "Agent Akash Kumar Singh replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one, maintenance@neutrality.one.",
+        "time": "06:20",
+        "date": "23 Nov 2026",
+        "author": "Akash Kumar Singh",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:20:15.696Z"
+      },
+      {
+        "id": "a31ff961-5bed-40f1-9709-0898b9fcc9c1",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "06:41",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:41:23.763Z"
+      },
+      {
+        "id": "5e7944b2-0374-4c65-8d03-97ffad87d9f7",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "06:50",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:50:42.258Z"
+      },
+      {
+        "id": "1083bc7b-8156-4003-ab87-b327ea04da2a",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to global.noc@chinatelecomglobal.com, rajeshkj@chinatelecomglobal.com, nelsonso@chinatelecomglobal.com, uday.sikka@chinatelecomglobal.com, patrickduan@chinatelecomglobal.com.",
+        "time": "06:52",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:52:12.092Z"
+      },
+      {
+        "id": "0a515cd3-fe6a-44a6-a0ff-b0183667ad31",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one.",
+        "time": "06:52",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:52:54.786Z"
+      },
+      {
+        "id": "b823d230-b9c4-4934-ac46-777b86066939",
+        "action": "replied",
+        "description": "Prajwal Vyawahare replied to the ticket",
+        "time": "06:54",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:54:27.187Z"
+      },
+      {
+        "id": "f6df1523-9a79-471f-bc12-adebbf10da5b",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "06:56",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:56:40.528Z"
+      },
+      {
+        "id": "f6975714-0c1d-46d8-b4f9-1a4644fdc41e",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "06:57",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:57:05.905Z"
+      },
+      {
+        "id": "1334bc87-d860-4c5d-93e7-f9b0604b77c9",
+        "action": "vendor_replied",
+        "description": "Agent Prajwal Vyawahare replied in the vendor thread to noc@neutrality.one, n.verhoven@neutrality.one, i.samuel@neutrality.one.",
+        "time": "06:58",
+        "date": "23 Nov 2026",
+        "author": "Prajwal Vyawahare",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T06:58:18.802Z"
+      },
+      {
+        "id": "d1c63e7a-0cec-4202-b7e1-d98d2a628d43",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "07:10",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:10:18.827Z"
+      },
+      {
+        "id": "0fa29f77-9b2d-48f2-aa6a-58ed7d628ace",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "12:44",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:14:20.654Z"
+      },
+      {
+        "id": "34b7c8a6-e767-496b-8e76-a64facd5d026",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "12:46",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:16:31.412Z"
+      },
+      {
+        "id": "bbb8bf94-f171-4048-9101-bf1238a509b6",
+        "action": "vendor_replied",
+        "description": "Vendor Neutrality NOC replied to the ticket via email",
+        "time": "07:32",
+        "date": "23 Nov 2026",
+        "author": "Neutrality NOC",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:32:18.024Z"
+      },
+      {
+        "id": "37673703-ab9c-4782-8e6a-c0fbf5286bbb",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "07:37",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:37:08.452Z"
+      },
+      {
+        "id": "20591162-2dcb-430f-bbb0-569a73962b53",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "13:14",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T07:44:13.478Z"
+      },
+      {
+        "id": "d2623820-badf-4274-acfd-0aedf8154c2b",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "08:09",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T08:09:07.326Z"
+      },
+      {
+        "id": "6f2e58cc-f5c8-4352-bfa0-bcf3d7c1ea65",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "13:42",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T08:12:08.279Z"
+      },
+      {
+        "id": "0ae243d9-477f-455c-9cf9-761c7c04ecd3",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "08:34",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T08:34:57.667Z"
+      },
+      {
+        "id": "600a49e9-fa43-4a0a-afc5-7d87cd2c45c3",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "14:07",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T08:37:48.803Z"
+      },
+      {
+        "id": "f7f8d8ae-69e1-41f9-b70e-371377cc7c74",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "14:41",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T09:11:37.586Z"
+      },
+      {
+        "id": "c8ab5929-2158-42e9-bc16-1902c564766e",
+        "action": "vendor_replied",
+        "description": "Vendor global.noc@chinatelecomglobal.com replied to the ticket via email",
+        "time": "09:13",
+        "date": "23 Nov 2026",
+        "author": "global.noc@chinatelecomglobal.com",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T09:13:47.973Z"
+      },
+      {
+        "id": "c4d30252-433b-4f03-bf24-918c8bd7821f",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "09:22",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T09:22:03.464Z"
+      },
+      {
+        "id": "a5fbbbc9-36c6-4695-90e3-07af2715b8f5",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "14:54",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T09:24:24.118Z"
+      },
+      {
+        "id": "f05f4d9f-0687-4835-9f78-1e4079006120",
+        "action": "vendor_replied",
+        "description": "Vendor Irfan Samuel replied to the ticket via email",
+        "time": "10:04",
+        "date": "23 Nov 2026",
+        "author": "Irfan Samuel",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T10:04:06.913Z"
+      },
+      {
+        "id": "c721cfc7-9756-45c0-a696-9d440ee9be06",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "15:41",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T10:11:23.160Z"
+      },
+      {
+        "id": "fd25052d-bb4e-49bf-a332-cb45f603e106",
+        "action": "client_replied",
+        "description": "Client Cfm L2 replied to the ticket via email",
+        "time": "10:14",
+        "date": "23 Nov 2026",
+        "author": "Cfm L2",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T10:14:00.701Z"
+      },
+      {
+        "id": "898e2111-48b5-4c6b-b0bb-4e9452376ec8",
+        "action": "replied",
+        "description": "EdgeStone Support replied to the ticket via Outlook email",
+        "time": "15:50",
+        "date": "23 Nov 2026",
+        "author": "EdgeStone Support",
+        "oldValue": null,
+        "newValue": null,
+        "fieldName": null,
+        "ticketId": "b91607c9-8090-4908-808a-5a9dcd756e88",
+        "createdAt": "2026-11-23T10:20:33.139Z"
+      }
+    ]
+  }
+}
